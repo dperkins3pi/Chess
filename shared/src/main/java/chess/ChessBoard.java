@@ -21,7 +21,6 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow()][position.getColumn()] = piece;
-        //throw new RuntimeException("Not implemented");
     }
 
     /**

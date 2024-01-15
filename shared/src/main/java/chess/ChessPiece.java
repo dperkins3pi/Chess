@@ -272,6 +272,151 @@ public class ChessPiece {
                 }
                 break;
             case PAWN:
+                // White pieces (Capital Letters)
+                if(this.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    if (row == 7) { // If it can be promoted
+                        var position = new ChessPosition(row + 1, col);  // Can always move one forward
+                        if (board.getPiece(position) == null) {
+                            var new_move = new ChessMove(myPosition, position, type.QUEEN);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, type.BISHOP);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, type.KNIGHT);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, type.ROOK);
+                            moves.add(new_move);
+                        }
+                        // Diaganols only work if opposite enemy is there
+                        if (row + 1 == 8 && col + 1 <= 8) {
+                            var position2 = new ChessPosition(row + 1, col + 1);
+                            if (board.getPiece(position2) != null && board.getPiece(position2).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position2, type.QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position2, type.BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position2, type.KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position2, type.ROOK);
+                                moves.add(new_move);
+                            }
+                        }
+                        if (row + 1 == 8 && col - 1 >= 1) {
+                            var position3 = new ChessPosition(row + 1, col - 1);
+                            if (board.getPiece(position3) != null && board.getPiece(position3).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position3, type.QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position3, type.BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position3, type.KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position3, type.ROOK);
+                                moves.add(new_move);
+                            }
+                        }
+                    } else {
+                        var position = new ChessPosition(row + 1, col);  // Can always move one forward
+                        if (board.getPiece(position) == null) {
+                            var new_move = new ChessMove(myPosition, position, null);
+                            moves.add(new_move);
+                        }
+                        if (row == 2) {   // If it hasn't moved yet
+                            position = new ChessPosition(row + 1, col);
+                            if (board.getPiece(position) == null) {  // If not blocked in front
+                                position = new ChessPosition(row + 2, col);
+                                if (board.getPiece(position) == null) {
+                                    var new_move = new ChessMove(myPosition, position, null);
+                                    moves.add(new_move);
+                                }
+                            }
+                        }
+                        // Diaganols only work if opposite enemy is there
+                        if (row + 1 <= 8 && col + 1 <= 8) {
+                            var position2 = new ChessPosition(row + 1, col + 1);
+                            if (board.getPiece(position2) != null && board.getPiece(position2).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position2, null);
+                                moves.add(new_move);
+                            }
+                        }
+                        if (row + 1 <= 8 && col - 1 >= 1) {
+                            var position3 = new ChessPosition(row + 1, col - 1);
+                            if (board.getPiece(position3) != null && board.getPiece(position3).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position3, null);
+                                moves.add(new_move);
+                            }
+                        }
+                    }
+                }
+                if(this.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    if (row == 2) { // If it can be promoted
+                        var position = new ChessPosition(row - 1, col);  // Can always move one forward
+                        if (board.getPiece(position) == null) {
+                            var new_move = new ChessMove(myPosition, position, type.QUEEN);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, type.BISHOP);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, type.KNIGHT);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, type.ROOK);
+                            moves.add(new_move);
+                        }
+                        if (row - 1 == 1 && col + 1 <= 8) {
+                            var position4 = new ChessPosition(row - 1, col + 1);
+                            if (board.getPiece(position4) != null && board.getPiece(position4).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position4, type.QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position4, type.BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position4, type.KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position4, type.ROOK);
+                                moves.add(new_move);
+                            }
+                        }
+                        if (row - 1 == 1 && col - 1 >= 1) {
+                            var position5 = new ChessPosition(row - 1, col - 1);
+                            if (board.getPiece(position5) != null && board.getPiece(position5).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position5, type.QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position5, type.BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position5, type.KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position5, type.ROOK);
+                                moves.add(new_move);
+                            }
+                        }
+                    } else {
+                    var position = new ChessPosition(row - 1, col);  // Can always move one forward
+                    if (board.getPiece(position) == null) {
+                        var new_move = new ChessMove(myPosition, position, null);
+                        moves.add(new_move);
+                    }
+                    if (row == 7) {   // If it hasn't moved yet
+                        position = new ChessPosition(row - 1, col);
+                        if (board.getPiece(position) == null) {
+                            position = new ChessPosition(row - 2, col);
+                            if (board.getPiece(position) == null) {
+                                var new_move = new ChessMove(myPosition, position, null);
+                                moves.add(new_move);
+                            }
+                        }
+                    }
+                    if (row - 1 >= 1 && col + 1 <= 8) {
+                        var position4 = new ChessPosition(row - 1, col + 1);
+                        if (board.getPiece(position4) != null && board.getPiece(position4).getTeamColor() != this.getTeamColor()) {
+                            var new_move = new ChessMove(myPosition, position4, null);
+                            moves.add(new_move);
+                        }
+                        }
+                        if (row - 1 >= 1 && col - 1 >= 1) {
+                            var position5 = new ChessPosition(row - 1, col - 1);
+                            if (board.getPiece(position5) != null && board.getPiece(position5).getTeamColor() != this.getTeamColor()) {
+                                var new_move = new ChessMove(myPosition, position5, null);
+                                moves.add(new_move);
+                            }
+                        }
+                    }
+                }
                 break;
         }
 
@@ -286,11 +431,11 @@ public class ChessPiece {
      */
     private boolean CheckMove(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
         if(board.getPiece(position) == null) {  // hit empty square
-            var new_move = new ChessMove(myPosition, position, type);
+            var new_move = new ChessMove(myPosition, position, null);
             moves.add(new_move);
         }
         else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
-            var new_move = new ChessMove(myPosition, position, type);
+            var new_move = new ChessMove(myPosition, position, null);
             moves.add(new_move);
             return true;
         }

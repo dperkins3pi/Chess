@@ -446,6 +446,50 @@ public class ChessPiece {
     }
 
     @Override
+    public String toString() {
+        if(this.getTeamColor() == ChessGame.TeamColor.WHITE){
+            if(this.getPieceType() == PieceType.BISHOP) {
+                return "B";
+            }
+            else if(this.getPieceType() == PieceType.KING) {
+                return "K";
+            }
+            else if(this.getPieceType() == PieceType.KNIGHT) {
+                return "N";
+            }
+            else if(this.getPieceType() == PieceType.PAWN) {
+                return "P";
+            }
+            else if(this.getPieceType() == PieceType.QUEEN) {
+                return "Q";
+            }
+            else if(this.getPieceType() == PieceType.ROOK) {
+                return "R";
+            }
+        }
+        else if(this.getTeamColor() == ChessGame.TeamColor.BLACK){
+            if(this.getPieceType() == PieceType.BISHOP) {
+                return "b";
+            }
+            else if(this.getPieceType() == PieceType.KING) {
+                return "k";
+            }
+            else if(this.getPieceType() == PieceType.KNIGHT) {
+                return "n";
+            }
+            else if(this.getPieceType() == PieceType.PAWN) {
+                return "p";
+            }
+            else if(this.getPieceType() == PieceType.QUEEN) {
+                return "q";
+            }
+            else if(this.getPieceType() == PieceType.ROOK) {
+                return "r";
+            }
+        }
+        return " ";
+    }
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

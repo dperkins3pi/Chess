@@ -31,4 +31,26 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+
+    @Override  // Positions are equal if they are the same row and column
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        else if (obj == this) {
+            return true;
+        }
+        else if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        ChessPosition o = (ChessPosition) obj; //to allow access of attribtube
+        return (this.getRow() == o.getRow() && this.getColumn() == o.getColumn());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = this.getRow();
+        hash = hash * 13 + this.getColumn();
+        return hash;
+    }
 }

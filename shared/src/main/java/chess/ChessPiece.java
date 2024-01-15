@@ -1,7 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -52,8 +52,127 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
-        // NOT IMPLEMENTED YET
+
+    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        // Initialize data
+        HashSet<ChessMove> moves = new HashSet<ChessMove>();  // Store Possible Moves
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        // Check for each piece type
+        switch(type) {
+            case KING:
+                break;
+            case QUEEN:
+                break;
+            case BISHOP:
+                // Check down-left direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 0 && col - i >= 1) {
+                        var position = new ChessPosition(row - i, col - i);
+                        if(board.getPiece(position) == null) {  // hit empty square
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                        }
+                        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                            break;  // can't go any farther because piece would be captured
+                        }
+                        else {   // hit piece of same team
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // Check up-right direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 0 && col + i <= 8) {
+                        var position = new ChessPosition(row - i, col + i);
+                        if(board.getPiece(position) == null) {  // hit empty square
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                        }
+                        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                            break;  // can't go any farther because piece would be captured
+                        }
+                        else {   // hit piece of same team
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // Check up-left direction
+                for (int i = 1; i < 8; i++) {
+                    if(row + i <= 8 && col - i >= 0) {
+                        var position = new ChessPosition(row + i, col - i);
+                        if(board.getPiece(position) == null) {  // hit empty square
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                        }
+                        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                            break;  // can't go any farther because piece would be captured
+                        }
+                        else {   // hit piece of same team
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // Check down-right direction
+                for (int i = 1; i < 8; i++) {
+                    if(row + i <= 8 && col + i <= 8) {
+                        var position = new ChessPosition(row + i, col + i);
+                        if(board.getPiece(position) == null) {  // hit empty square
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                        }
+                        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                            break;  // can't go any farther because piece would be captured
+                        }
+                        else {   // hit piece of same team
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            case KNIGHT:
+                break;
+            case ROOK:
+                break;
+            case PAWN:
+                break;
+        }
+
+        return moves;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        else if (obj == this) {
+            return true;
+        }
+        else if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        ChessPiece o = (ChessPiece) obj; //to allow access of attribute
+        return (this.getPieceType().equals(o.getPieceType()) && this.getTeamColor().equals(o.getTeamColor()));
     }
 }

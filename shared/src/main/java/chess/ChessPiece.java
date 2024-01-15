@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -68,29 +69,8 @@ public class ChessPiece {
             case BISHOP:
                 // Check down-left direction
                 for (int i = 1; i < 8; i++) {
-                    if(row - i >= 0 && col - i >= 1) {
+                    if(row - i >= 1 && col - i >= 1) {
                         var position = new ChessPosition(row - i, col - i);
-                        if(board.getPiece(position) == null) {  // hit empty square
-                            var new_move = new ChessMove(myPosition, position, type);
-                            moves.add(new_move);
-                        }
-                        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
-                            var new_move = new ChessMove(myPosition, position, type);
-                            moves.add(new_move);
-                            break;  // can't go any farther because piece would be captured
-                        }
-                        else {   // hit piece of same team
-                            break;
-                        }
-                    }
-                    else {
-                        break;
-                    }
-                }
-                // Check up-right direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 0 && col + i <= 8) {
-                        var position = new ChessPosition(row - i, col + i);
                         if(board.getPiece(position) == null) {  // hit empty square
                             var new_move = new ChessMove(myPosition, position, type);
                             moves.add(new_move);
@@ -110,8 +90,29 @@ public class ChessPiece {
                 }
                 // Check up-left direction
                 for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8 && col - i >= 0) {
+                    if(row + i <= 8 && col - i >= 1) {
                         var position = new ChessPosition(row + i, col - i);
+                        if(board.getPiece(position) == null) {  // hit empty square
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                        }
+                        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
+                            var new_move = new ChessMove(myPosition, position, type);
+                            moves.add(new_move);
+                            break;  // can't go any farther because piece would be captured
+                        }
+                        else {   // hit piece of same team
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // Check up-right direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 1 && col + i <= 8) {
+                        var position = new ChessPosition(row - i, col + i);
                         if(board.getPiece(position) == null) {  // hit empty square
                             var new_move = new ChessMove(myPosition, position, type);
                             moves.add(new_move);
@@ -162,17 +163,15 @@ public class ChessPiece {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        else if (obj == this) {
-            return true;
-        }
-        else if (obj.getClass() != this.getClass()) {
-            return false;
-        }
-        ChessPiece o = (ChessPiece) obj; //to allow access of attribute
-        return (this.getPieceType().equals(o.getPieceType()) && this.getTeamColor().equals(o.getTeamColor()));
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 }

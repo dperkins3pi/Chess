@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ChessPositionTests {
-    private ChessPosition original;
+    private ChessPosition original
     private ChessPosition equal;
     private ChessPosition different;
     @BeforeEach

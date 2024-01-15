@@ -98,7 +98,72 @@ public class ChessPiece {
                     var position7 = new ChessPosition(row, col - 1);
                     CheckMove(board, myPosition, moves, position7);
                 }
+                break;
             case QUEEN:
+                // Check down-left direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 1 && col - i >= 1) {
+                        var position = new ChessPosition(row - i, col - i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check up-right direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 1 && col + i <= 8) {
+                        var position = new ChessPosition(row - i, col + i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check up-left direction
+                for (int i = 1; i < 8; i++) {
+                    if(row + i <= 8 && col - i >= 1) {
+                        var position = new ChessPosition(row + i, col - i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check down-right direction
+                for (int i = 1; i < 8; i++) {
+                    if(row + i <= 8 && col + i <= 8) {
+                        var position = new ChessPosition(row + i, col + i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check down direction
+                for (int i = 1; i < 8; i++) {
+                    if(row + i <= 8) {
+                        var position = new ChessPosition(row + i, col);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check up direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 1) {
+                        var position = new ChessPosition(row - i, col);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check left direction
+                for (int i = 1; i < 8; i++) {
+                    if(col - i >= 1) {
+                        var position = new ChessPosition(row, col - i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check right direction
+                for (int i = 1; i < 8; i++) {
+                    if(col + i <= 8) {
+                        var position = new ChessPosition(row, col + i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
                 break;
             case BISHOP:
                 // Check down-left direction
@@ -133,6 +198,7 @@ public class ChessPiece {
                     }
                     else break;
                 }
+                break;
             case KNIGHT:
                 // Down Right
                 if(row + 1 <= 8 && col + 2 <= 8) {
@@ -170,7 +236,40 @@ public class ChessPiece {
                     var position8 = new ChessPosition(row - 2, col - 1);
                     CheckMove(board, myPosition, moves, position8);
                 }
+                break;
             case ROOK:
+                // Check down direction
+                for (int i = 1; i < 8; i++) {
+                    if(row + i <= 8) {
+                        var position = new ChessPosition(row + i, col);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check up direction
+                for (int i = 1; i < 8; i++) {
+                    if(row - i >= 1) {
+                        var position = new ChessPosition(row - i, col);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check left direction
+                for (int i = 1; i < 8; i++) {
+                    if(col - i >= 1) {
+                        var position = new ChessPosition(row, col - i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
+                // Check right direction
+                for (int i = 1; i < 8; i++) {
+                    if(col + i <= 8) {
+                        var position = new ChessPosition(row, col + i);
+                        if (CheckMove(board, myPosition, moves, position)) break;
+                    }
+                    else break;
+                }
                 break;
             case PAWN:
                 break;

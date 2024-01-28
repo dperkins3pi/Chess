@@ -63,8 +63,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        var valid_moves = validMoves(move.getStartPosition());
         var piece = this.board.getPiece(move.getStartPosition());
+        if (piece.getTeamColor() != this.getTeamTurn()){  //If the wrong team tries to move
+            var error_message = "It is not " + piece.getTeamColor() + "'s turn to play";
+            throw new InvalidMoveException(error_message);
+        }
+        var valid_moves = validMoves(move.getStartPosition());
         if(valid_moves.contains(move)){
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
@@ -72,6 +76,13 @@ public class ChessGame {
         else{
             var error_message = "The move " + move.toString() + " for the " + piece.getPieceType() + " is not possible";
             throw new InvalidMoveException(error_message);
+        }
+        // Change turn to next team
+        if(this.getTeamTurn() == TeamColor.BLACK){
+            setTeamTurn(TeamColor.WHITE);
+        }
+        else{
+            setTeamTurn(TeamColor.BLACK);
         }
     }
 

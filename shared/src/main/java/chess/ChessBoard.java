@@ -10,8 +10,9 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
+        
     }
 
     /**
@@ -40,80 +41,86 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        // Set all to Null
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                this.squares[i][j] = null;
+        var position = new ChessPosition(0, 0);
+        // Empty board
+        for (int i=0; i<8; i++){
+            for (int j=0; j<8; j++){
+                squares[i][j] = null;
             }
         }
+        // Add pieces
+        // Pawns
         var white_piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         var black_piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-        for(int i = 1; i <= 8; i++){  // The PAWNS
-            var position = new ChessPosition(2, i);
-            this.addPiece(position, white_piece);
+        for (int i=1; i<=8; i++){
+            position = new ChessPosition(2, i);
+            addPiece(position, white_piece);
             position = new ChessPosition(7, i);
-            this.addPiece(position, black_piece);
+            addPiece(position, black_piece);
         }
-        // ROOKS
+        // Rooks
         white_piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         black_piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        var position = new ChessPosition(1, 1);
-        this.addPiece(position, white_piece);
+        position = new ChessPosition(1, 1);
+        addPiece(position, white_piece);
         position = new ChessPosition(1, 8);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(8, 1);
-        this.addPiece(position, black_piece);
+        addPiece(position, black_piece);
         position = new ChessPosition(8, 8);
-        this.addPiece(position, black_piece);
-        //Knights
+        addPiece(position, black_piece);
+        // Knights
         white_piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         black_piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
         position = new ChessPosition(1, 2);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(1, 7);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(8, 2);
-        this.addPiece(position, black_piece);
+        addPiece(position, black_piece);
         position = new ChessPosition(8, 7);
-        this.addPiece(position, black_piece);
-        //Bishops
+        addPiece(position, black_piece);
+        // Bishops
         white_piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         black_piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         position = new ChessPosition(1, 3);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(1, 6);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(8, 3);
-        this.addPiece(position, black_piece);
+        addPiece(position, black_piece);
         position = new ChessPosition(8, 6);
-        this.addPiece(position, black_piece);
-        //Queens
+        addPiece(position, black_piece);
+        // Queens
         white_piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
         black_piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
         position = new ChessPosition(1, 4);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(8, 4);
-        this.addPiece(position, black_piece);
-        //Kings
+        addPiece(position, black_piece);
+        // Kings
         white_piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
         black_piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
         position = new ChessPosition(1, 5);
-        this.addPiece(position, white_piece);
+        addPiece(position, white_piece);
         position = new ChessPosition(8, 5);
-        this.addPiece(position, black_piece);
+        addPiece(position, black_piece);
     }
 
     @Override
-    public String toString() {
-        var the_string = "";
-        for(int i = 0; i < 8; i++){
+    public String toString(){
+        String the_string = "";
+        for (int i=0; i<8; i++){  // Go through the rows
             the_string += "|";
-            for(int j = 0; j < 8; j++){
-                if(squares[i][j] == null) the_string += " ";
-                else the_string += squares[i][j].toString();
-                the_string += "|";
+            for (int j=0; j<8; j++){  // Go through the columns
+                if (squares[i][j] == null){
+                    the_string += " |";
+                }
+                else {
+                    the_string += squares[i][j].toString() + "|";
+                }
             }
-            the_string += "\n";
+            the_string += "\n";  // Add new line
         }
         return the_string;
     }
@@ -128,6 +135,6 @@ public class ChessBoard {
 
     @Override
     public int hashCode() {
-        return Arrays.deepHashCode(squares);
+        return Arrays.hashCode(squares);
     }
 }

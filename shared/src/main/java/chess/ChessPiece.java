@@ -1,8 +1,10 @@
 package chess;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+
+import static chess.ChessPiece.PieceType.*;
 
 /**
  * Represents a single chess piece
@@ -53,365 +55,304 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-
-    public HashSet<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        // Initialize data
-        HashSet<ChessMove> moves = new HashSet<>();  // Store Possible Moves
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        // Order Doesn't matter, so we use a Hash set
+        HashSet<ChessMove> moves = new HashSet<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-
-        // Check for each piece type
-        switch(type) {
+        var position = new ChessPosition(0, 0);  //To store positions that will be added
+        // Switch statement to find move depending on type of piece
+        switch (type) {
             case KING:
-                // See if there are valid moves on higher rows
-                if(row < 8) {
-                    var position = new ChessPosition(row + 1, col);
-                    CheckMove(board, myPosition, moves, position);
-                    if(col < 8) {
-                        var position2 = new ChessPosition(row + 1, col + 1);
-                        CheckMove(board, myPosition, moves, position2);
+                if(row < 8){ //Up =
+                    position = new ChessPosition(row+1, col);
+                    validMove(board, myPosition, moves, position);
+                    if(col < 8){ // Up right
+                        position = new ChessPosition(row+1, col+1);
+                        validMove(board, myPosition, moves, position);
                     }
-                    if(col > 1) {
-                        var position3 = new ChessPosition(row + 1, col - 1);
-                        CheckMove(board, myPosition, moves, position3);
-                    }
-                }
-                // See if there are valid moves on lower rows
-                if(row > 1) {
-                    var position4 = new ChessPosition(row - 1, col);
-                    CheckMove(board, myPosition, moves, position4);
-                    if(col < 8) {
-                        var position5 = new ChessPosition(row - 1, col + 1);
-                        CheckMove(board, myPosition, moves, position5);
-                    }
-                    if(col > 1) {
-                        var position6 = new ChessPosition(row - 1, col - 1);
-                        CheckMove(board, myPosition, moves, position6);
+                    if(col > 1){  // Up left
+                        position = new ChessPosition(row+1, col-1);
+                        validMove(board, myPosition, moves, position);
                     }
                 }
-                // See if there are valid moves along the same row
-                if(col < 8) {
-                    var position7 = new ChessPosition(row, col + 1);
-                    CheckMove(board, myPosition, moves, position7);
+                if(row > 1){ //Down =
+                    position = new ChessPosition(row-1, col);
+                    validMove(board, myPosition, moves, position);
+                    if(col < 8){ // Down right
+                        position = new ChessPosition(row-1, col+1);
+                        validMove(board, myPosition, moves, position);
+                    }
+                    if(col > 1){  // Down left
+                        position = new ChessPosition(row-1, col-1);
+                        validMove(board, myPosition, moves, position);
+                    }
                 }
-                if(col > 1) {
-                    var position7 = new ChessPosition(row, col - 1);
-                    CheckMove(board, myPosition, moves, position7);
+                if(col < 8){ // Right
+                    position = new ChessPosition(row, col+1);
+                    validMove(board, myPosition, moves, position);
+                }
+                if(col > 1){  // Left
+                    position = new ChessPosition(row, col-1);
+                    validMove(board, myPosition, moves, position);
                 }
                 break;
             case QUEEN:
-                // Check down-left direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 1 && col - i >= 1) {
-                        var position = new ChessPosition(row - i, col - i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Up Right
+                for (int i=1; i + row <= 8 && i + col <= 8; i++){
+                    position = new ChessPosition(row+i, col+i);
+                    if (validMove(board, myPosition, moves, position)) break;    //Can't go there already taken
                 }
-                // Check up-right direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 1 && col + i <= 8) {
-                        var position = new ChessPosition(row - i, col + i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Up Left
+                for (int i=1; i + row <= 8 && col - i >= 1; i++){
+                    position = new ChessPosition(row+i, col-i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check up-left direction
-                for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8 && col - i >= 1) {
-                        var position = new ChessPosition(row + i, col - i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Down Right
+                for (int i=1; row - i >= 1 && col + i <= 8; i++){
+                    position = new ChessPosition(row-i, col+i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check down-right direction
-                for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8 && col + i <= 8) {
-                        var position = new ChessPosition(row + i, col + i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Down Left
+                for (int i=1; row - i >= 1 && col - i >= 1; i++){
+                    position = new ChessPosition(row-i, col-i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check down direction
-                for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8) {
-                        var position = new ChessPosition(row + i, col);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; i + row <= 8; i++) { //Up
+                    position = new ChessPosition(row + i, col);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check up direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 1) {
-                        var position = new ChessPosition(row - i, col);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; row - i >= 1; i++) { //Down
+                    position = new ChessPosition(row - i, col);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check left direction
-                for (int i = 1; i < 8; i++) {
-                    if(col - i >= 1) {
-                        var position = new ChessPosition(row, col - i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; i + col <= 8; i++) { //Right
+                    position = new ChessPosition(row, col + i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check right direction
-                for (int i = 1; i < 8; i++) {
-                    if(col + i <= 8) {
-                        var position = new ChessPosition(row, col + i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; col - i >= 1; i++) { //Left
+                    position = new ChessPosition(row, col - i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
                 break;
             case BISHOP:
-                // Check down-left direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 1 && col - i >= 1) {
-                        var position = new ChessPosition(row - i, col - i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Up Right
+                for (int i=1; i + row <= 8 && i + col <= 8; i++){
+                    position = new ChessPosition(row+i, col+i);
+                    if (validMove(board, myPosition, moves, position)) break;    //Can't go there already taken
                 }
-                // Check up-right direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 1 && col + i <= 8) {
-                        var position = new ChessPosition(row - i, col + i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Up Left
+                for (int i=1; i + row <= 8 && col - i >= 1; i++){
+                    position = new ChessPosition(row+i, col-i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check up-left direction
-                for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8 && col - i >= 1) {
-                        var position = new ChessPosition(row + i, col - i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Down Right
+                for (int i=1; row - i >= 1 && col + i <= 8; i++){
+                    position = new ChessPosition(row-i, col+i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check down-right direction
-                for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8 && col + i <= 8) {
-                        var position = new ChessPosition(row + i, col + i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                // Down Left
+                for (int i=1; row - i >= 1 && col - i >= 1; i++){
+                    position = new ChessPosition(row-i, col-i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
                 break;
             case KNIGHT:
-                // Down Right
-                if(row + 1 <= 8 && col + 2 <= 8) {
-                    var position = new ChessPosition(row + 1, col + 2);
-                    CheckMove(board, myPosition, moves, position);
+                if (row + 1 <= 8 && col + 2 <= 8){
+                    position = new ChessPosition(row+1, col+2);
+                    validMove(board, myPosition, moves, position);
                 }
-                if(row + 2 <= 8 && col + 1 <= 8) {
-                    var position2 = new ChessPosition(row + 2, col + 1);
-                    CheckMove(board, myPosition, moves, position2);
+                if (row + 1 <= 8 && col - 2 >= 1){
+                    position = new ChessPosition(row+1, col-2);
+                    validMove(board, myPosition, moves, position);
                 }
-                // Up Right
-                if(row - 1 >= 1 && col + 2 <= 8) {
-                    var position3 = new ChessPosition(row - 1, col + 2);
-                    CheckMove(board, myPosition, moves, position3);
+                if (row + 2 <= 8 && col + 1 <= 8){
+                    position = new ChessPosition(row+2, col+1);
+                    validMove(board, myPosition, moves, position);
                 }
-                if(row - 2 >= 1 && col + 1 <= 8) {
-                    var position4 = new ChessPosition(row - 2, col + 1);
-                    CheckMove(board, myPosition, moves, position4);
+                if (row + 2 <= 8 && col - 1 >= 1){
+                    position = new ChessPosition(row+2, col-1);
+                    validMove(board, myPosition, moves, position);
                 }
-                // Down Left
-                if(row + 1 <= 8 && col - 2 >= 1) {
-                    var position5 = new ChessPosition(row + 1, col - 2);
-                    CheckMove(board, myPosition, moves, position5);
+                if (row - 1 >= 1 && col + 2 <= 8){
+                    position = new ChessPosition(row-1, col+2);
+                    validMove(board, myPosition, moves, position);
                 }
-                if(row + 2 <= 8 && col - 1 >= 1) {
-                    var position6 = new ChessPosition(row + 2, col - 1);
-                    CheckMove(board, myPosition, moves, position6);
+                if (row - 1 >= 1 && col - 2 >= 1){
+                    position = new ChessPosition(row-1, col-2);
+                    validMove(board, myPosition, moves, position);
                 }
-                // Up Right
-                if(row - 1 >= 1 && col - 2 >= 1) {
-                    var position7 = new ChessPosition(row - 1, col - 2);
-                    CheckMove(board, myPosition, moves, position7);
+                if (row - 2 >= 1 && col + 1 <= 8){
+                    position = new ChessPosition(row-2, col+1);
+                    validMove(board, myPosition, moves, position);
                 }
-                if(row - 2 >= 1 && col - 1 >= 1) {
-                    var position8 = new ChessPosition(row - 2, col - 1);
-                    CheckMove(board, myPosition, moves, position8);
+                if (row - 2 >= 1 && col - 1 >= 1){
+                    position = new ChessPosition(row-2, col-1);
+                    validMove(board, myPosition, moves, position);
                 }
                 break;
             case ROOK:
-                // Check down direction
-                for (int i = 1; i < 8; i++) {
-                    if(row + i <= 8) {
-                        var position = new ChessPosition(row + i, col);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; i + row <= 8; i++) { //Up
+                    position = new ChessPosition(row + i, col);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check up direction
-                for (int i = 1; i < 8; i++) {
-                    if(row - i >= 1) {
-                        var position = new ChessPosition(row - i, col);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; row - i >= 1; i++) { //Down
+                    position = new ChessPosition(row - i, col);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check left direction
-                for (int i = 1; i < 8; i++) {
-                    if(col - i >= 1) {
-                        var position = new ChessPosition(row, col - i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; i + col <= 8; i++) { //Right
+                    position = new ChessPosition(row, col + i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
-                // Check right direction
-                for (int i = 1; i < 8; i++) {
-                    if(col + i <= 8) {
-                        var position = new ChessPosition(row, col + i);
-                        if (CheckMove(board, myPosition, moves, position)) break;
-                    }
-                    else break;
+                for (int i=1; col - i >= 1; i++) { //Left
+                    position = new ChessPosition(row, col - i);
+                    if (validMove(board, myPosition, moves, position)) break;
                 }
                 break;
             case PAWN:
-                // White pieces (Capital Letters)
-                if(this.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    if (row == 7) { // If it can be promoted
-                        var position = new ChessPosition(row + 1, col);  // Can always move one forward
-                        if (board.getPiece(position) == null) {
-                            var new_move = new ChessMove(myPosition, position, type.QUEEN);
-                            moves.add(new_move);
-                            new_move = new ChessMove(myPosition, position, type.BISHOP);
-                            moves.add(new_move);
-                            new_move = new ChessMove(myPosition, position, type.KNIGHT);
-                            moves.add(new_move);
-                            new_move = new ChessMove(myPosition, position, type.ROOK);
-                            moves.add(new_move);
-                        }
-                        // Diaganols only work if opposite enemy is there
-                        if (row + 1 == 8 && col + 1 <= 8) {
-                            var position2 = new ChessPosition(row + 1, col + 1);
-                            if (board.getPiece(position2) != null && board.getPiece(position2).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position2, type.QUEEN);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position2, type.BISHOP);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position2, type.KNIGHT);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position2, type.ROOK);
-                                moves.add(new_move);
-                            }
-                        }
-                        if (row + 1 == 8 && col - 1 >= 1) {
-                            var position3 = new ChessPosition(row + 1, col - 1);
-                            if (board.getPiece(position3) != null && board.getPiece(position3).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position3, type.QUEEN);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position3, type.BISHOP);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position3, type.KNIGHT);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position3, type.ROOK);
-                                moves.add(new_move);
-                            }
-                        }
-                    } else {
-                        var position = new ChessPosition(row + 1, col);  // Can always move one forward
-                        if (board.getPiece(position) == null) {
+                if (getTeamColor() == ChessGame.TeamColor.WHITE){  //Capital letter
+                    if (row < 7){   //Normal move
+                        position = new ChessPosition(row + 1, col);
+                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
                             var new_move = new ChessMove(myPosition, position, null);
                             moves.add(new_move);
-                        }
-                        if (row == 2) {   // If it hasn't moved yet
-                            position = new ChessPosition(row + 1, col);
-                            if (board.getPiece(position) == null) {  // If not blocked in front
+                            if (row == 2){   //Hasn't moved yet
                                 position = new ChessPosition(row + 2, col);
-                                if (board.getPiece(position) == null) {
-                                    var new_move = new ChessMove(myPosition, position, null);
+                                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                                    new_move = new ChessMove(myPosition, position, null);
                                     moves.add(new_move);
                                 }
                             }
                         }
-                        // Diaganols only work if opposite enemy is there
-                        if (row + 1 <= 8 && col + 1 <= 8) {
-                            var position2 = new ChessPosition(row + 1, col + 1);
-                            if (board.getPiece(position2) != null && board.getPiece(position2).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position2, null);
+                        // Capture enemies
+                        if (col < 7){
+                            position = new ChessPosition(row + 1, col + 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, null);
                                 moves.add(new_move);
                             }
                         }
-                        if (row + 1 <= 8 && col - 1 >= 1) {
-                            var position3 = new ChessPosition(row + 1, col - 1);
-                            if (board.getPiece(position3) != null && board.getPiece(position3).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position3, null);
-                                moves.add(new_move);
-                            }
-                        }
-                    }
-                }
-                if(this.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    if (row == 2) { // If it can be promoted
-                        var position = new ChessPosition(row - 1, col);  // Can always move one forward
-                        if (board.getPiece(position) == null) {
-                            var new_move = new ChessMove(myPosition, position, type.QUEEN);
-                            moves.add(new_move);
-                            new_move = new ChessMove(myPosition, position, type.BISHOP);
-                            moves.add(new_move);
-                            new_move = new ChessMove(myPosition, position, type.KNIGHT);
-                            moves.add(new_move);
-                            new_move = new ChessMove(myPosition, position, type.ROOK);
-                            moves.add(new_move);
-                        }
-                        if (row - 1 == 1 && col + 1 <= 8) {
-                            var position4 = new ChessPosition(row - 1, col + 1);
-                            if (board.getPiece(position4) != null && board.getPiece(position4).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position4, type.QUEEN);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position4, type.BISHOP);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position4, type.KNIGHT);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position4, type.ROOK);
-                                moves.add(new_move);
-                            }
-                        }
-                        if (row - 1 == 1 && col - 1 >= 1) {
-                            var position5 = new ChessPosition(row - 1, col - 1);
-                            if (board.getPiece(position5) != null && board.getPiece(position5).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position5, type.QUEEN);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position5, type.BISHOP);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position5, type.KNIGHT);
-                                moves.add(new_move);
-                                new_move = new ChessMove(myPosition, position5, type.ROOK);
-                                moves.add(new_move);
-                            }
-                        }
-                    } else {
-                    var position = new ChessPosition(row - 1, col);  // Can always move one forward
-                    if (board.getPiece(position) == null) {
-                        var new_move = new ChessMove(myPosition, position, null);
-                        moves.add(new_move);
-                    }
-                    if (row == 7) {   // If it hasn't moved yet
-                        position = new ChessPosition(row - 1, col);
-                        if (board.getPiece(position) == null) {
-                            position = new ChessPosition(row - 2, col);
-                            if (board.getPiece(position) == null) {
+                        if (col > 1){
+                            position = new ChessPosition(row + 1, col - 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                                // Enemy is there
                                 var new_move = new ChessMove(myPosition, position, null);
                                 moves.add(new_move);
                             }
                         }
                     }
-                    if (row - 1 >= 1 && col + 1 <= 8) {
-                        var position4 = new ChessPosition(row - 1, col + 1);
-                        if (board.getPiece(position4) != null && board.getPiece(position4).getTeamColor() != this.getTeamColor()) {
-                            var new_move = new ChessMove(myPosition, position4, null);
+                    if (row == 7){  // Promotion time!
+                        position = new ChessPosition(row + 1, col);
+                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                            var new_move = new ChessMove(myPosition, position, QUEEN);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, KNIGHT);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, BISHOP);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, ROOK);
                             moves.add(new_move);
                         }
+                        if (col < 7){
+                            position = new ChessPosition(row + 1, col + 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, ROOK);
+                                moves.add(new_move);
+                            }
                         }
-                        if (row - 1 >= 1 && col - 1 >= 1) {
-                            var position5 = new ChessPosition(row - 1, col - 1);
-                            if (board.getPiece(position5) != null && board.getPiece(position5).getTeamColor() != this.getTeamColor()) {
-                                var new_move = new ChessMove(myPosition, position5, null);
+                        if (col > 1){
+                            position = new ChessPosition(row + 1, col - 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, ROOK);
+                                moves.add(new_move);
+                            }
+                        }
+                    }
+                }
+                else if (getTeamColor() == ChessGame.TeamColor.BLACK){  //LowerCase letter
+                    if (row > 2){   //Normal move
+                        position = new ChessPosition(row - 1, col);
+                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                            var new_move = new ChessMove(myPosition, position, null);
+                            moves.add(new_move);
+                            if (row == 7){   //Hasn't moved yet
+                                position = new ChessPosition(row - 2, col);
+                                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                                    new_move = new ChessMove(myPosition, position, null);
+                                    moves.add(new_move);
+                                }
+                            }
+                        }
+                        // Capture enemies
+                        if (col < 7){
+                            position = new ChessPosition(row - 1, col + 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, null);
+                                moves.add(new_move);
+                            }
+                        }
+                        if (col > 1){
+                            position = new ChessPosition(row - 1, col - 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, null);
+                                moves.add(new_move);
+                            }
+                        }
+                    }
+                    if (row == 2){  // Promotion time!
+                        position = new ChessPosition(row - 1, col);
+                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                            var new_move = new ChessMove(myPosition, position, QUEEN);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, KNIGHT);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, BISHOP);
+                            moves.add(new_move);
+                            new_move = new ChessMove(myPosition, position, ROOK);
+                            moves.add(new_move);
+                        }
+                        if (col < 7){
+                            position = new ChessPosition(row - 1, col + 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, ROOK);
+                                moves.add(new_move);
+                            }
+                        }
+                        if (col > 1){
+                            position = new ChessPosition(row - 1, col - 1);
+                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                                // Enemy is there
+                                var new_move = new ChessMove(myPosition, position, QUEEN);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, KNIGHT);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, BISHOP);
+                                moves.add(new_move);
+                                new_move = new ChessMove(myPosition, position, ROOK);
                                 moves.add(new_move);
                             }
                         }
@@ -424,71 +365,74 @@ public class ChessPiece {
     }
 
     /**
-     * Checks if a position is a valid move
-     * If it is valid, adds it to the list of moves
+     * Looks at a spot to see if it is a valid move
+     * If the spot is empty, add move to the Hashset and returns false
+     * If the spot has a piece from the other team, add move and return true
+     * If the spot has a piece from the same team, return true
      *
-     * @return true if move is blocked or invalid
+     * @return true is the piece hit the end in a certain direction
      */
-    private boolean CheckMove(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
-        if(board.getPiece(position) == null) {  // hit empty square
+    private boolean validMove(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
+        if(board.getPiece(position) == null){  // Empty spot so we can keep going
             var new_move = new ChessMove(myPosition, position, null);
             moves.add(new_move);
         }
-        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()){  // hit piece on oposite team
-            var new_move = new ChessMove(myPosition, position, null);
-            moves.add(new_move);
+        else if(board.getPiece(position).getTeamColor() == this.getTeamColor()) {
             return true;
         }
-        else {   // hit piece of same team
+        else if(board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+            var new_move = new ChessMove(myPosition, position, null);
+            moves.add(new_move);
             return true;
         }
         return false;
     }
 
     @Override
-    public String toString() {
-        if(this.getTeamColor() == ChessGame.TeamColor.WHITE){
-            if(this.getPieceType() == PieceType.BISHOP) {
+    public String toString(){
+        if (this.getTeamColor() == ChessGame.TeamColor.WHITE){  //Capital Letter
+            if (this.getPieceType() == BISHOP){
                 return "B";
             }
-            else if(this.getPieceType() == PieceType.KING) {
+            else if (this.getPieceType() == KING){
                 return "K";
             }
-            else if(this.getPieceType() == PieceType.KNIGHT) {
+            else if (this.getPieceType() == KNIGHT){
                 return "N";
             }
-            else if(this.getPieceType() == PieceType.PAWN) {
+            else if (this.getPieceType() == PAWN){
                 return "P";
             }
-            else if(this.getPieceType() == PieceType.QUEEN) {
+            else if (this.getPieceType() == QUEEN){
                 return "Q";
             }
-            else if(this.getPieceType() == PieceType.ROOK) {
+            else if (this.getPieceType() == ROOK){
                 return "R";
             }
         }
-        else if(this.getTeamColor() == ChessGame.TeamColor.BLACK){
-            if(this.getPieceType() == PieceType.BISHOP) {
+        else if (this.getTeamColor() == ChessGame.TeamColor.BLACK) { //Lowercase letter
+            if (this.getPieceType() == BISHOP){
                 return "b";
             }
-            else if(this.getPieceType() == PieceType.KING) {
+            else if (this.getPieceType() == KING){
                 return "k";
             }
-            else if(this.getPieceType() == PieceType.KNIGHT) {
+            else if (this.getPieceType() == KNIGHT){
                 return "n";
             }
-            else if(this.getPieceType() == PieceType.PAWN) {
+            else if (this.getPieceType() == PAWN){
                 return "p";
             }
-            else if(this.getPieceType() == PieceType.QUEEN) {
+            else if (this.getPieceType() == QUEEN){
                 return "q";
             }
-            else if(this.getPieceType() == PieceType.ROOK) {
+            else if (this.getPieceType() == ROOK){
                 return "r";
             }
         }
         return " ";
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

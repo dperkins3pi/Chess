@@ -45,19 +45,9 @@ public class ChessMove {
         return this.promotionPiece;
     }
 
-    // Override the toString() class to improve readability of errors
     @Override
-    public String toString() {
-        // Get positions on Chess Board
-        var start_x = this.getStartPosition().getRow();
-        var start_y = this.getStartPosition().getColumn();
-        var end_x = this.getEndPosition().getRow();
-        var end_y = this.getEndPosition().getColumn();
-
-        // Convert into String
-        var starting_string =  "{" + String.valueOf(start_x) + "," + String.valueOf(start_y) + "}";  // won't use
-        var ending_string =  "{" + String.valueOf(end_x) + "," + String.valueOf(end_y) + "}";
-        return starting_string + "->" + ending_string;
+    public String toString(){
+        return startPosition.toString() + "->" + endPosition.toString();
     }
 
     @Override

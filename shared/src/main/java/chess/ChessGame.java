@@ -15,7 +15,7 @@ public class ChessGame {
     private ChessBoard board = new ChessBoard();
 
     public ChessGame() {
-        setTeamTurn(TeamColor.WHITE); // White startes
+        setTeamTurn(TeamColor.WHITE); // White starts
         this.board.resetBoard();
         setBoard(this.board);  // Set board to start
     }
@@ -72,17 +72,17 @@ public class ChessGame {
         if(valid_moves.contains(move)){
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
+            // Change turn to next team
+            if(this.getTeamTurn() == TeamColor.BLACK){
+                setTeamTurn(TeamColor.WHITE);
+            }
+            else{
+                setTeamTurn(TeamColor.BLACK);
+            }
         }
         else{
             var error_message = "The move " + move.toString() + " for the " + piece.getPieceType() + " is not possible";
             throw new InvalidMoveException(error_message);
-        }
-        // Change turn to next team
-        if(this.getTeamTurn() == TeamColor.BLACK){
-            setTeamTurn(TeamColor.WHITE);
-        }
-        else{
-            setTeamTurn(TeamColor.BLACK);
         }
     }
 
@@ -93,7 +93,32 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // Inefficient method; could optimize it by looking around the king
+        // Find the king
+        var king_position = new ChessPosition(0, 0);
+        for(int i=1; i <= 8; i++){
+            for(int j=1; j <= 8; j++){
+                var position = new ChessPosition(i, j);
+                var piece = this.board.getPiece(position);
+                if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
+                    king_position = position;
+                }
+            }
+        }
+        for(int i=1; i <= 8; i++){
+            for(int j=1; j <= 8; j++){
+                var position = new ChessPosition(i, j);
+                var piece = this.board.getPiece(position);
+                if(piece != null && piece.getTeamColor() != teamColor) {
+                    var king_move = new ChessMove(position, king_position, null);
+                    var king_move2 = new ChessMove(position, king_position, ChessPiece.PieceType.QUEEN);  //Rare case that pawn promotion results in check
+                    if (validMoves(position).contains(king_move) || validMoves(position).contains(king_move2)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

@@ -64,7 +64,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var piece = this.board.getPiece(move.getStartPosition());
-        if (piece.getTeamColor() != this.getTeamTurn()){  //If the wrong team tries to move
+        if (piece.getTeamColor() != this.getTeamTurn()) {  //If the wrong team tries to move
             var error_message = "It is not " + piece.getTeamColor() + "'s turn to play";
             throw new InvalidMoveException(error_message);
         }
@@ -72,6 +72,12 @@ public class ChessGame {
         if(valid_moves.contains(move)){
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
+            if(this.isInCheck(team)){
+                board.addPiece(move.getEndPosition(), null);
+                board.addPiece(move.getStartPosition(), piece);  //Remove the piece from where it started
+                var error_message = "The move is invalid because it puts you in check";
+                throw new InvalidMoveException(error_message);
+            }
             // Change turn to next team
             if(this.getTeamTurn() == TeamColor.BLACK){
                 setTeamTurn(TeamColor.WHITE);
@@ -105,6 +111,7 @@ public class ChessGame {
                 }
             }
         }
+        // See if the king is in any of the valid moves from the opponents' pieces
         for(int i=1; i <= 8; i++){
             for(int j=1; j <= 8; j++){
                 var position = new ChessPosition(i, j);
@@ -128,7 +135,28 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+//        if (!isInCheck(teamColor)){
+//            return false;
+//        }
+//        var possible_board = new ChessBoard(board);  // Get copy of board to avoid changing it
+//        for (int i = 1; i <= 8; i++){   // Go through each piece on the board
+//            for (int j = 1; j <= 8; j++){
+//                var position = new ChessPosition(i, j);
+//                var piece = this.board.getPiece(position);
+//                if (piece != null && piece.getTeamColor() == teamColor){  // If the piece is on the team that can move
+//                    var moves = piece.pieceMoves(board, position);   // Get possible moves
+//                    for (var move: moves){
+//                        try{
+//                            makeMove(move);
+//                        } catch (InvalidMoveException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return true;
+        return true;
     }
 
     /**

@@ -14,6 +14,16 @@ public class ChessBoard {
     public ChessBoard() {
         
     }
+    public ChessBoard(ChessBoard board) {  //create a copy of the board
+        var new_Board = new ChessBoard();
+        for(int i = 1; i <= 8; i++){
+            for(int j = 1; j <= 8; j++){
+                var position = new ChessPosition(i, j);
+                var piece = board.getPiece(position);
+                new_Board.addPiece(position, piece);
+            }
+        }
+    }
 
     /**
      * Adds a chess piece to the chessboard

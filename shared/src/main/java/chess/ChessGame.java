@@ -19,6 +19,11 @@ public class ChessGame {
         this.board.resetBoard();
         setBoard(this.board);  // Set board to start
     }
+    public ChessGame(ChessGame newGame){
+        var new_Game = new ChessGame();
+        new_Game.team = newGame.team;
+        new_Game.board = new ChessBoard(newGame.board);
+    }
 
     /**
      * @return Which team's turn it is
@@ -135,6 +140,7 @@ public class ChessGame {
         return false;
     }
 
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -152,9 +158,13 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() == teamColor){  // If the piece is on the team that can move
                     var moves = piece.pieceMoves(board, position);   // Get possible moves
                     for (var move: moves){
-                        try{    // See if the move is possible. If not, try a different move
-                            this.makeMove(move);  //NOTE: If an error results from making moves here, undo the move!!!!!!!
-                        } catch (InvalidMoveException ignored) {  //If move is invalid, do nothing
+                        try{
+                            var game_copy = new ChessGame(this);  // Create copy of this game to allow for changing
+                            game_copy.makeMove(move);
+                            if (!game_copy.isInCheck(teamColor)) {  // If there is a move that takes it out of check
+                                return false;
+                            }
+                        } catch (InvalidMoveException ignored) {
                         }
                     }
                 }
@@ -171,7 +181,22 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(this.isInCheck(teamColor)) {
+            for (int i = 1; i <= 8; i++) {
+                for (int j = 1; j <= 8; j++) {
+                    var position = new ChessPosition(i, j);
+                    var piece = this.board.getPiece(position);
+                    if (piece != null) {
+                        var moves = piece.pieceMoves(board, position);
+                        if (!moves.isEmpty()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+        //TO DO, GO HERE!!!!!!!!!!!!!
     }
 
     /**

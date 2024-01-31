@@ -70,9 +70,12 @@ public class ChessGame {
         }
         var valid_moves = validMoves(move.getStartPosition());
         if(valid_moves.contains(move)){
+            if (move.getPromotionPiece() != null){  // If it will be promoted, change the piece
+                piece = new ChessPiece(team, move.getPromotionPiece());
+            }
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
-            if(this.isInCheck(team)){
+            if(this.isInCheck(team)){  // The move is invalid if it makes it in check
                 board.addPiece(move.getEndPosition(), null);
                 board.addPiece(move.getStartPosition(), piece);  //Remove the piece from where it started
                 var error_message = "The move is invalid because it puts you in check";

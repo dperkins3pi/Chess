@@ -63,7 +63,7 @@ public class ChessGame {
         var possible_moves = piece.pieceMoves(this.board, startPosition);
         var valid_moves = new HashSet<ChessMove>();
         for (var move: possible_moves){
-            if (piece.getPieceType() == ChessPiece.PieceType.KING && !piece.GetAlreadyMoved()){
+            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.NotAlreadyMoved()){
                 if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == 2){  // If the move passed in is casteling
                     board.addPiece(move.getStartPosition(), null);
                     var new_position = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() + 1);
@@ -137,7 +137,6 @@ public class ChessGame {
                 valid_moves.add(move);   // If it didn't go in check, the move is valid
             }
         }
-        System.out.println("Yay " + piece.GetAlreadyMoved() + "  " + piece.toString() + " " + valid_moves);
         return valid_moves;
     }
 
@@ -164,11 +163,18 @@ public class ChessGame {
             }
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
-            if(this.isInCheck(team)){  // The move is invalid if it makes it in check
-                board.addPiece(move.getEndPosition(), null);
-                board.addPiece(move.getStartPosition(), piece);  //Remove the piece from where it started
-                var error_message = "The move is invalid because it puts you in check";
-                throw new InvalidMoveException(error_message);
+            // If the move was a castling
+            if(piece.getPieceType() == ChessPiece.PieceType.KING && move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == 2){
+                var rook_position = new ChessPosition(move.getStartPosition().getRow(), 8);
+                var rook = this.board.getPiece(rook_position);
+                board.addPiece(rook_position, null); // Remove old rook
+                board.addPiece(new ChessPosition(move.getStartPosition().getRow(), 6), rook); // Move old rook
+            }
+            else if(piece.getPieceType() == ChessPiece.PieceType.KING && move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == -2){
+                var rook_position = new ChessPosition(move.getStartPosition().getRow(), 1);
+                var rook = this.board.getPiece(rook_position);
+                board.addPiece(rook_position, null); // Remove old rook
+                board.addPiece(new ChessPosition(move.getStartPosition().getRow(), 4), rook); // Move old rook
             }
             // Change turn to next team
             if(this.getTeamTurn() == TeamColor.BLACK){

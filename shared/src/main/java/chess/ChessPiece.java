@@ -16,12 +16,21 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private boolean alreadyMoved;   // Marks true if the piece has already moved
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        this.alreadyMoved = false;
     }
 
+    public void SetAlreadyMoved (boolean val){
+        this.alreadyMoved = val;
+    }
+
+    public boolean GetAlreadyMoved (){
+        return alreadyMoved;
+    }
     /**
      * The various different chess piece options
      */
@@ -64,6 +73,50 @@ public class ChessPiece {
         // Switch statement to find move depending on type of piece
         switch (type) {
             case KING:
+                /**
+                 * Tests if the ChessGame implementation can handle Castling moves
+                 * Castling is a situational move the king can make as it's first move. If one of the rooks has not yet moved
+                 * and there are no pieces between the rook and the king, and the path is "safe", the king can castle. Castling is
+                 * performed by moving the king 2 spaces towards the qualifying rook, and the rook "jumping" the king to sit next
+                 * to the king on the opposite side it was previously. A path is considered "safe" if 1: the king is not in check
+                 * and 2: neither the space the king moves past nor the space the king ends up at can be reached by an opponents piece.
+                 */
+                if(!alreadyMoved){
+                    if(myPosition.getRow() == 1){
+                        var rook1 = board.getPiece(new ChessPosition(1, 1));
+                        if (rook1 != null && !rook1.GetAlreadyMoved() &&
+                                board.getPiece(new ChessPosition(1, 2))==null &&
+                                board.getPiece(new ChessPosition(1, 3))==null &&
+                                board.getPiece(new ChessPosition(1, 4))==null){
+                            var new_position_king = new ChessPosition(1, 3);
+                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                        }
+                        var rook2 = board.getPiece(new ChessPosition(1, 8));
+                        if (rook2 != null && !rook2.GetAlreadyMoved() &&
+                                board.getPiece(new ChessPosition(1, 6))==null &&
+                                board.getPiece(new ChessPosition(1, 7))==null){
+                            var new_position_king = new ChessPosition(1, 7);
+                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                        }
+                    }
+                    if(myPosition.getRow() == 8){
+                        var rook1 = board.getPiece(new ChessPosition(8, 1));
+                        if (rook1 != null && !rook1.GetAlreadyMoved() &&
+                                board.getPiece(new ChessPosition(8, 2))==null &&
+                                board.getPiece(new ChessPosition(8, 3))==null &&
+                                board.getPiece(new ChessPosition(8, 4))==null){
+                            var new_position_king = new ChessPosition(8, 3);
+                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                        }
+                        var rook2 = board.getPiece(new ChessPosition(8, 8));
+                        if (rook2 != null && !rook2.GetAlreadyMoved() &&
+                                board.getPiece(new ChessPosition(8, 6))==null &&
+                                board.getPiece(new ChessPosition(8, 7))==null){
+                            var new_position_king = new ChessPosition(8, 7);
+                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                        }
+                    }
+                }
                 if(row < 8){ //Up =
                     position = new ChessPosition(row+1, col);
                     validMove(board, myPosition, moves, position);

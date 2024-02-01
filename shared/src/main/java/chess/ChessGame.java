@@ -63,6 +63,57 @@ public class ChessGame {
         var possible_moves = piece.pieceMoves(this.board, startPosition);
         var valid_moves = new HashSet<ChessMove>();
         for (var move: possible_moves){
+            if (piece.getPieceType() == ChessPiece.PieceType.KING && !piece.GetAlreadyMoved()){
+                if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == 2){  // If the move passed in is casteling
+                    board.addPiece(move.getStartPosition(), null);
+                    var new_position = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() + 1);
+                    board.addPiece(new_position, piece);
+                    if(isInCheck(color)) {
+                        ;  // Path is not safe
+                        board.addPiece(move.getStartPosition(), piece); // Undo the moves
+                        board.addPiece(new_position, null);
+                        break;
+                    }
+                    // move one more time
+                    board.addPiece(new_position, null);
+                    board.addPiece(move.getEndPosition(), piece);
+                    if(isInCheck(color)) {
+                        ;  // Path is not safe
+                        board.addPiece(move.getStartPosition(), piece); // Undo the moves
+                        board.addPiece(move.getEndPosition(), null);
+                        break;
+                    }
+                    else{
+                        board.addPiece(move.getStartPosition(), piece); // Undo the moves
+                        board.addPiece(move.getEndPosition(), null);
+                        valid_moves.add(move);
+                    }
+                }
+                else if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == -2){  // If the move passed in is casteling
+                    board.addPiece(move.getStartPosition(), null);
+                    var new_position = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() - 1);
+                    board.addPiece(new_position, piece);
+                    if(isInCheck(color)) {  // Path is not safe
+                        board.addPiece(move.getStartPosition(), piece); // Undo the moves
+                        board.addPiece(new_position, null);
+                        break;
+                    }
+                    // move on more time
+                    board.addPiece(new_position, null);
+                    board.addPiece(move.getEndPosition(), piece);
+                    if(isInCheck(color)) {
+                        ;  // Path is not safe
+                        board.addPiece(move.getStartPosition(), piece); // Undo the moves
+                        board.addPiece(move.getEndPosition(), null);
+                        break;
+                    }
+                    else {
+                        board.addPiece(move.getStartPosition(), piece); // Undo the moves
+                        board.addPiece(move.getEndPosition(), null);
+                        valid_moves.add(move);
+                    }
+                }
+            }
             var pieceAttacked = board.getPiece(move.getEndPosition());   // Store piece that may be lost
             board.addPiece(move.getStartPosition(), null);   // Remove initial piece
             if (move.getPromotionPiece() == null){   // Need to change it back if it gets promoted
@@ -86,6 +137,7 @@ public class ChessGame {
                 valid_moves.add(move);   // If it didn't go in check, the move is valid
             }
         }
+        System.out.println("Yay " + piece.GetAlreadyMoved() + "  " + piece.toString() + " " + valid_moves);
         return valid_moves;
     }
 
@@ -105,7 +157,7 @@ public class ChessGame {
             var error_message = "It is not " + piece.getTeamColor() + "'s turn to play";
             throw new InvalidMoveException(error_message);
         }
-        var valid_moves = piece.pieceMoves(this.board, move.getStartPosition());
+        var valid_moves = this.validMoves(move.getStartPosition());
         if(valid_moves.contains(move)){
             if (move.getPromotionPiece() != null){  // If it will be promoted, change the piece
                 piece = new ChessPiece(team, move.getPromotionPiece());
@@ -125,6 +177,7 @@ public class ChessGame {
             else{
                 setTeamTurn(TeamColor.BLACK);
             }
+            piece.SetAlreadyMoved(true);  // Mark that the piece has moved
         }
         else{
             var error_message = "The move " + move.toString() + " for the " + piece.getPieceType() + " is not possible";

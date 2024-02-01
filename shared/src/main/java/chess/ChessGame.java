@@ -64,15 +64,15 @@ public class ChessGame {
         var valid_moves = new HashSet<ChessMove>();
         for (var move: possible_moves){
             var pieceAttacked = board.getPiece(move.getEndPosition());   // Store piece that may be lost
-            board.addPiece(move.getStartPosition(), null);
+            board.addPiece(move.getStartPosition(), null);   // Remove initial piece
             if (move.getPromotionPiece() == null){   // Need to change it back if it gets promoted
                 board.addPiece(move.getEndPosition(), piece);
             }
-            if (move.getPromotionPiece() != null){
+            if (move.getPromotionPiece() != null){     // If it was promoted
                 piece = new ChessPiece(color, move.getPromotionPiece());
                 board.addPiece(move.getEndPosition(), piece);
             }
-            boolean is_in_check = isInCheck(color);
+            boolean is_in_check = isInCheck(color);   // If it is in check, we will not add the move
             // Undo moves
             board.addPiece(move.getEndPosition(), pieceAttacked);
             if (move.getPromotionPiece() == null){
@@ -83,7 +83,7 @@ public class ChessGame {
                 board.addPiece(move.getStartPosition(), piece);
             }
             if (!is_in_check){
-                valid_moves.add(move);
+                valid_moves.add(move);   // If it didn't go in check, the move is valid
             }
         }
         return valid_moves;
@@ -184,7 +184,7 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++){
                 var position = new ChessPosition(i, j);
                 var moves = this.validMoves(position);
-                if (!moves.isEmpty() && this.board.getPiece(position).getTeamColor() == teamColor){  // If the piece is on the team that can move
+                if (this.board.getPiece(position) != null && !moves.isEmpty() && this.board.getPiece(position).getTeamColor() == teamColor){  // If the piece is on the team that can move
                     return false;
                 }
             }
@@ -203,7 +203,7 @@ public class ChessGame {
         if(this.isInCheck(teamColor)) {  // If already in check it can't be in stalemate
             return false;
         }
-        for (int i = 1; i <= 8; i++) {
+        for (int i = 1; i <= 8; i++) {   // Similar to code for checkmate
             for (int j = 1; j <= 8; j++) {
                 var position = new ChessPosition(i, j);
                 var moves = validMoves(position);

@@ -83,7 +83,6 @@ public class ChessGame {
                 board.addPiece(move.getStartPosition(), piece);
             }
             if (!is_in_check){
-                System.out.println("Adding" + move.toString());
                 valid_moves.add(move);
             }
         }
@@ -208,7 +207,7 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++) {
                 var position = new ChessPosition(i, j);
                 var moves = validMoves(position);
-                if (moves.isEmpty() && this.board.getPiece(position).getTeamColor() == teamColor) {
+                if (this.board.getPiece(position) != null && moves.isEmpty() && this.board.getPiece(position).getTeamColor() == teamColor) {
                     return true;
                 }
             }

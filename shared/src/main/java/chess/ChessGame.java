@@ -15,14 +15,27 @@ public class ChessGame {
     private TeamColor team;
     private ChessBoard board = new ChessBoard();
 
+    private ChessPosition PassantPosition;   // Stores the position of pawns that moved 2 (for just one turn)
+    // This allows the code to change Passant to false after one turn is made
+
     public ChessGame() {
         setTeamTurn(TeamColor.WHITE); // White starts
         this.board.resetBoard();
         setBoard(this.board);  // Set board to start
+        this.PassantPosition = null;
     }
     public ChessGame(ChessGame newGame){
         this.setTeamTurn(newGame.getTeamTurn());
         this.board = new ChessBoard(newGame.board);
+        this.PassantPosition = null;
+    }
+
+    public ChessPosition getPassantPosition() {
+        return this.PassantPosition;
+    }
+
+    public void setPassantPosition(ChessPosition passantPosition) {
+        this.PassantPosition = passantPosition;
     }
 
     /**
@@ -161,6 +174,18 @@ public class ChessGame {
             if (move.getPromotionPiece() != null){  // If it will be promoted, change the piece
                 piece = new ChessPiece(team, move.getPromotionPiece());
             }
+            // If the move was a Passant
+            if(piece.getPieceType() == ChessPiece.PieceType.PAWN && board.getPiece(move.getEndPosition()) == null &&
+                    move.getEndPosition().getColumn() - move.getStartPosition().getColumn() != 0){
+                if(move.getEndPosition().getRow()==3){
+                    var new_position = new ChessPosition(4, move.getEndPosition().getColumn());
+                    board.addPiece(new_position, null);  // Attack the passaned piece
+                }
+                if(move.getEndPosition().getRow()==6){
+                    var new_position = new ChessPosition(5, move.getEndPosition().getColumn());
+                    board.addPiece(new_position, null);  // Attack the passaned piece
+                }
+            }
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
             // If the move was a castling
@@ -176,6 +201,9 @@ public class ChessGame {
                 board.addPiece(rook_position, null); // Remove old rook
                 board.addPiece(new ChessPosition(move.getStartPosition().getRow(), 4), rook); // Move old rook
             }
+            if (getPassantPosition() != null && this.board.getPiece(getPassantPosition()) != null){  // If the previous board had something on passant
+                board.getPiece(getPassantPosition()).SetPassant(false);  // Passant is no longer possible
+            }
             // Change turn to next team
             if(this.getTeamTurn() == TeamColor.BLACK){
                 setTeamTurn(TeamColor.WHITE);
@@ -183,7 +211,15 @@ public class ChessGame {
             else{
                 setTeamTurn(TeamColor.BLACK);
             }
-            piece.SetAlreadyMoved(true);  // Mark that the piece has moved
+            piece.SetAlreadyMoved();  // Mark that the piece has moved
+            // Mark that Passant is possible
+            if(piece.getPieceType() == ChessPiece.PieceType.PAWN &&
+                    move.getEndPosition().getRow() - move.getStartPosition().getRow() == 2 ||
+                    move.getEndPosition().getRow() - move.getStartPosition().getRow() == -2){
+                piece.SetPassant(true);
+                setPassantPosition(move.getEndPosition());  // Store what what moved 2
+                System.out.println(PassantPosition);
+            }
         }
         else{
             var error_message = "The move " + move.toString() + " for the " + piece.getPieceType() + " is not possible";

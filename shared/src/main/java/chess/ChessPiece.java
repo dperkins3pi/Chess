@@ -18,18 +18,28 @@ public class ChessPiece {
     private final PieceType type;
     private boolean alreadyMoved;   // Marks true if the piece has already moved
 
+    private boolean passant_possible;   // True if the piece is a pawn that just moved up to
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
         this.alreadyMoved = false;
+        this.passant_possible = false;
     }
 
-    public void SetAlreadyMoved (boolean val){
-        this.alreadyMoved = val;
+    public void SetAlreadyMoved(){  // Mark the piece as moved
+        this.alreadyMoved = true;
     }
 
     public boolean NotAlreadyMoved(){
         return !alreadyMoved;
+    }
+
+    public void SetPassant(boolean val){  // Mark the piece as moved
+        this.passant_possible = val;
+    }
+
+    public boolean getPassantPossible(){
+        return this.passant_possible;
     }
     /**
      * The various different chess piece options
@@ -73,14 +83,6 @@ public class ChessPiece {
         // Switch statement to find move depending on type of piece
         switch (type) {
             case KING:
-                /**
-                 * Tests if the ChessGame implementation can handle Castling moves
-                 * Castling is a situational move the king can make as it's first move. If one of the rooks has not yet moved
-                 * and there are no pieces between the rook and the king, and the path is "safe", the king can castle. Castling is
-                 * performed by moving the king 2 spaces towards the qualifying rook, and the rook "jumping" the king to sit next
-                 * to the king on the opposite side it was previously. A path is considered "safe" if 1: the king is not in check
-                 * and 2: neither the space the king moves past nor the space the king ends up at can be reached by an opponents piece.
-                 */
                 if(!alreadyMoved){
                     if(myPosition.getRow() == 1){
                         var rook1 = board.getPiece(new ChessPosition(1, 1));
@@ -285,12 +287,26 @@ public class ChessPiece {
                                 var new_move = new ChessMove(myPosition, position, null);
                                 moves.add(new_move);
                             }
+                            // Passant
+                            var other_position = new ChessPosition(row, col + 1);
+                            var other_piece = board.getPiece(other_position);
+                            if(other_piece != null && other_piece.getPassantPossible()){
+                                var new_move = new ChessMove(myPosition, position, null);;
+                                moves.add(new_move);
+                            }
                         }
                         if (col > 1){
                             position = new ChessPosition(row + 1, col - 1);
                             if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
                                 // Enemy is there
                                 var new_move = new ChessMove(myPosition, position, null);
+                                moves.add(new_move);
+                            }
+                            // Passant
+                            var other_position = new ChessPosition(row, col - 1);
+                            var other_piece = board.getPiece(other_position);
+                            if(other_piece != null && other_piece.getPassantPossible()){
+                                var new_move = new ChessMove(myPosition, position, null);;
                                 moves.add(new_move);
                             }
                         }
@@ -359,12 +375,26 @@ public class ChessPiece {
                                 var new_move = new ChessMove(myPosition, position, null);
                                 moves.add(new_move);
                             }
+                            // Passant
+                            var other_position = new ChessPosition(row, col + 1);
+                            var other_piece = board.getPiece(other_position);
+                            if(other_piece != null && other_piece.getPassantPossible()){
+                                var new_move = new ChessMove(myPosition, position, null);;
+                                moves.add(new_move);
+                            }
                         }
                         if (col > 1){
                             position = new ChessPosition(row - 1, col - 1);
                             if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
                                 // Enemy is there
                                 var new_move = new ChessMove(myPosition, position, null);
+                                moves.add(new_move);
+                            }
+                            // Passant
+                            var other_position = new ChessPosition(row, col - 1);
+                            var other_piece = board.getPiece(other_position);
+                            if(other_piece != null && other_piece.getPassantPossible()){
+                                var new_move = new ChessMove(myPosition, position, null);;
                                 moves.add(new_move);
                             }
                         }

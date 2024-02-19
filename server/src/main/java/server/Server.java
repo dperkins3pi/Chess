@@ -1,7 +1,13 @@
 package server;
 
 import com.google.gson.Gson;
-import model.AuthData;
+import dataAccess.AuthDAO;
+import dataAccess.MemoryAuthDAO;
+import dataAccess.GameDAO;
+import dataAccess.MemoryGameDAO;
+import dataAccess.UserDAO;
+import dataAccess.MemoryUserDAO;
+import handler.ClearHandler;
 import spark.*;
 
 public class Server {
@@ -10,8 +16,13 @@ public class Server {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
-//        Spark.delete("/db", this::clear);    // HOW DO I MAKE IT UTILIZE THE CLEAR HANDLER CLASS??????
+        // Create DAOs
+        AuthDAO authDao = new MemoryAuthDAO();
+        GameDAO gameDao = new MemoryGameDAO();
+        UserDAO userDao = new MemoryUserDAO();
+
+        // Register your endpoints and handle exceptions here.   //HELP
+        Spark.delete("/db", new ClearHandler(authDao, gameDao, userDao)::handleRequest);  //Clear
 
         Spark.init();
         Spark.awaitInitialization();
@@ -22,11 +33,4 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
-
-
-    // DELETE STUFF BELOW HERE
-//    private Object clear(Request req, Response res) {
-//        var auth = new Gson().fromJson(req.body(), AuthData.class);
-//        return new Gson().toJson(auth);
-//    }
 }

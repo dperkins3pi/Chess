@@ -1,7 +1,9 @@
 package model;
+import java.util.UUID;   // Used to get random auth token
 
-public record AuthData() {
-    private static String username;
-    private static String password;
-    private static String email;
+public record AuthData(String authToken, String Username){
+    public AuthData createAuthToken(String username){  // Creates a new AuthData object with a new authtoken
+        String new_token = UUID.randomUUID().toString();
+        return new AuthData(new_token, username);
+    }
 }

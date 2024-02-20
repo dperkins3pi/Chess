@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO{
     // Hash map of integers to GameData Objects
-    private final Map<Integer, GameData> games = new HashMap<>();
+    private static final Map<Integer, GameData> games = new HashMap<>();
 
     @Override
     public void clear() throws DataAccessException {

@@ -1,4 +1,5 @@
 package handler;
+import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
@@ -15,8 +16,9 @@ public class ClearHandler{
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
-    public Object handleRequest(Request request, Response response) throws DataAccessException {
+    public Object handle(Request request, Response response) throws DataAccessException {
         ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
-        return clearService.clear(request, response);
+        clearService.clear();
+        return "{}";
     }
 }

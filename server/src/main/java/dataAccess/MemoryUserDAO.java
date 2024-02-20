@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO{
     // Hash map of each username as a string to a UserData object
-    private final Map<String, UserData> users = new HashMap<>();
+    private static final Map<String, UserData> users = new HashMap<>();
 
     @Override
     public void clear() throws DataAccessException{

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class MemoryAuthDAO implements AuthDAO{
         // Hash map of each authtoken as a string to an AuthData object
-        private final Map<String, AuthData> authTokens = new HashMap<>();
+        private static final Map<String, AuthData> authTokens = new HashMap<>();
 
         @Override
         public void clear() throws DataAccessException {

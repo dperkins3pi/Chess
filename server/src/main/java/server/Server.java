@@ -1,13 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.AuthDAO;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.GameDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.UserDAO;
-import dataAccess.MemoryUserDAO;
-import handler.ClearHandler;
+import dataAccess.*;
+import handler.*;
 import spark.*;
 
 public class Server {
@@ -22,7 +17,8 @@ public class Server {
         UserDAO userDao = new MemoryUserDAO();
 
         // Register your endpoints and handle exceptions here.   //HELP
-        Spark.delete("/db", new ClearHandler(authDao, gameDao, userDao)::handleRequest);  //Clear
+        Spark.delete("/db", new ClearHandler(authDao, gameDao, userDao)::handle);  //Clear
+        Spark.post("/user", new RegisterHandler(authDao, gameDao, userDao)::handle);   //Register
 
         Spark.init();
         Spark.awaitInitialization();

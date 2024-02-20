@@ -15,10 +15,9 @@ public class ClearService {
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
-    public Object clear(Request request, Response response) throws DataAccessException {
+    public void clear() throws DataAccessException {
         this.authDAO.clear();
         this.gameDAO.clear();
         this.userDAO.clear();
-        return new Gson().toJson(null);
     }
 }

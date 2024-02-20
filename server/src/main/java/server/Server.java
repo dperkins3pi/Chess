@@ -28,7 +28,6 @@ public class Server {
         Spark.awaitInitialization();
         return Spark.port();
     }
-
     public void stop() {
         Spark.stop();
         Spark.awaitStop();

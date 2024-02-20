@@ -1,7 +1,9 @@
 package handler;
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
+import service.ClearService;
 import spark.*;
 
 public class ClearHandler{
@@ -13,8 +15,8 @@ public class ClearHandler{
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
-    public Object handleRequest(Request request, Response response) {
-        // HELP!!!!!!!!!
-        return null;
+    public Object handleRequest(Request request, Response response) throws DataAccessException {
+        ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
+        return clearService.clear(request, response);
     }
 }

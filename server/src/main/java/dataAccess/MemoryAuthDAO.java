@@ -2,6 +2,7 @@ package dataAccess;
 import model.AuthData;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
         // Hash map of each authtoken as a string to an AuthData object
@@ -13,8 +14,11 @@ public class MemoryAuthDAO implements AuthDAO{
         }
 
         @Override
-        public void createAuth() throws DataAccessException {
-
+        public String createAuth(String username) throws DataAccessException {
+                String new_token = UUID.randomUUID().toString();  // Create authToken
+                AuthData auth_token = new AuthData(new_token, username);
+                authTokens.put(new_token, auth_token);  // Add it to the map
+                return new_token;
         }
 
         @Override

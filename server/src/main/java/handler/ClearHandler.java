@@ -17,8 +17,9 @@ public class ClearHandler{
         this.userDAO = userDAO;
     }
     public Object handle(Request request, Response response) throws DataAccessException {
+        // Call clear service
         ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
         clearService.clear();
-        return "{}";
+        return "{}";  // Return empty JSON
     }
 }

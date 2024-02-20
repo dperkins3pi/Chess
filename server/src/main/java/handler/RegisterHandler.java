@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataAccess.*;
 import request.RegisterRequest;
+import response.RegisterResponse;
 import service.RegisterService;
 import spark.Request;
 import spark.Response;
@@ -25,7 +26,7 @@ public class RegisterHandler {
 
         // Call service
         RegisterService registerService = new RegisterService(authDAO, gameDAO, userDAO);
-        registerService.register(username, password, email);
-        return "{}";
+        RegisterResponse user = registerService.register(username, password, email);
+        return new Gson().toJson(user);
     }
 }

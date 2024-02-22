@@ -1,6 +1,7 @@
 import dataAccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -90,6 +91,42 @@ public class ServiceTests{
 
         // See if an error comes from registering the same username twice
         Assertions.assertThrows(AlreadyTakenException.class, () -> service.register("username", "password2", "email2"));
+
+    }
+
+    @Test
+    public void loginServicePositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        // Register new users
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        registerer.register("username", "password", "email");
+        registerer.register("username2", "password2", "email2");
+
+        // Log in
+        LoginService service = new LoginService(authDAO, gameDAO, userDAO);
+        ResponseClass response = service.login("username", "password");
+        ResponseClass response2 = service.login("username2", "password2");
+
+        // Get authtokens from responses and create authrokens from them
+        String authToken = response.getAuthToken();
+        String authToken2 = response2.getAuthToken();
+        AuthData theAuthData = new AuthData(authToken, "username");
+        AuthData theAuthData2 = new AuthData(authToken2, "username2");
+
+        // See if users are logged in with there authtokens
+        Assertions.assertEquals(authDAO.getAuthTokens().get(authToken), theAuthData);
+        Assertions.assertEquals(authDAO.getAuthTokens().get(authToken2), theAuthData2);
+    }
+
+    @Test
+    public void logininServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
+        // Logging in without valid username
+        LoginService service = new LoginService(authDAO, gameDAO, userDAO);
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.login("username", "password"));
+
+        // Register new user and try logging in with the wrong password
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        registerer.register("username", "password", "email");
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.login("username", "password2"));
 
     }
 

@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataAccess.*;
+import exceptions.*;
 import request.RegisterRequest;
 import response.ResponseClass;
 import service.RegisterService;
@@ -30,7 +31,10 @@ public class RegisterHandler {
         try {
             res = registerService.register(username, password, email);
             response.status(200);  // It worked!!!!
-        } catch (AlreadyTakenException e) {
+        } catch (BadRequestException e) {
+            response.status(400);
+            res = new ResponseClass(e.getMessage());
+        }catch (AlreadyTakenException e) {
             response.status(403);
             res = new ResponseClass(e.getMessage());
         } catch (Exception e){

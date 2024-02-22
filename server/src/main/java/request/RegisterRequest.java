@@ -1,5 +1,8 @@
 package request;
 
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+
 public class RegisterRequest {
     String username;
     String password;
@@ -11,13 +14,13 @@ public class RegisterRequest {
         this.email = email;
     }
 
-    public String getUsername() {
+    public String getUsername(){
         return username;
     }
-    public String getPassword() {
+    public String getPassword(){
         return password;
     }
-    public String getEmail() {
+    public String getEmail(){
         return email;
     }
 }

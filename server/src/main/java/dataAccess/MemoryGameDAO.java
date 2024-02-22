@@ -32,4 +32,8 @@ public class MemoryGameDAO implements GameDAO{
 
     }
 
+    @Override
+    public Map<Integer, GameData> getGames(){
+        return games;
+    }
 }

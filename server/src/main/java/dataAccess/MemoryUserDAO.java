@@ -24,4 +24,9 @@ public class MemoryUserDAO implements UserDAO{
         // If it has the username, return the UserData Object, else return null
         return users.getOrDefault(username, null);
     }
+
+    @Override
+    public Map<String, UserData> getUsers(){
+        return users;
+    }
 }

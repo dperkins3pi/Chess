@@ -22,12 +22,16 @@ public class MemoryAuthDAO implements AuthDAO{
         }
 
         @Override
-        public AuthDAO getAuth(String authToken) throws DataAccessException {
-                return null;
+        public AuthData getAuth(String authToken) throws DataAccessException {
+                return authTokens.getOrDefault(authToken, null);
         }
 
         @Override
         public void deleteAuth(String authToken) throws DataAccessException {
 
+        }
+        @Override
+        public Map<String, AuthData> getAuthTokens(){
+                return authTokens;
         }
 }

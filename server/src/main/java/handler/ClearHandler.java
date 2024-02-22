@@ -1,9 +1,6 @@
 package handler;
-import com.google.gson.Gson;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import dataAccess.*;
+import response.ResponseClass;
 import service.ClearService;
 import spark.*;
 
@@ -18,8 +15,15 @@ public class ClearHandler{
     }
     public Object handle(Request request, Response response) throws DataAccessException {
         // Call clear service
-        ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
-        clearService.clear();
-        return "{}";  // Return empty JSON
+        Object res = "{}";
+        try {
+            ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
+            clearService.clear();
+            response.status(200);
+        } catch (Exception e){
+            res = new ResponseClass(e.getMessage());
+            response.status(500);
+        }
+        return res;  // Return empty JSON
     }
 }

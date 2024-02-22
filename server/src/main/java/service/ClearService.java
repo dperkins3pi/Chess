@@ -1,10 +1,5 @@
 package service;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
-import spark.*;
-import com.google.gson.Gson;
+import dataAccess.*;
 
 public class ClearService {
     AuthDAO authDAO;

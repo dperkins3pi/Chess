@@ -8,4 +8,5 @@ public interface GameDAO {
     GameData getGame(Integer id) throws DataAccessException; // Retrieve a specified game with the given game ID.
     Map<Integer, GameData> listGames() throws DataAccessException; // Retrieve all games.
     void updateGame(Integer id) throws DataAccessException;  // Updates a chess game. It should replace the chess game string corresponding to a given gameID. This is used when players join a game or when a move is made.
+    Map<Integer, GameData> getGames();
 }

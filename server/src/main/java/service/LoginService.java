@@ -1,8 +1,8 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import dataAccess.*;
+import model.UserData;
+import response.ResponseClass;
 
 public class LoginService {
     AuthDAO authDAO;
@@ -13,5 +13,17 @@ public class LoginService {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
+    }
+
+    public ResponseClass login(String username, String password) throws DataAccessException {
+        UserData user = userDAO.getUser(username);
+        if (user != null){  // If the user already exists
+            if (user.password().equals(password)) {  // If the password is correct
+                String authToken = authDAO.createAuth(username);
+                return new ResponseClass(username, authToken);    // Return response object
+            }
+            return null;
+        }
+        return null;
     }
 }

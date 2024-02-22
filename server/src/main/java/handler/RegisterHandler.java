@@ -3,7 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataAccess.*;
 import request.RegisterRequest;
-import response.RegisterResponse;
+import response.ResponseClass;
 import service.RegisterService;
 import spark.Request;
 import spark.Response;
@@ -19,14 +19,24 @@ public class RegisterHandler {
     }
     public Object handle(Request request, Response response) throws DataAccessException {
         // Get data from request
-        var register_request = new Gson().fromJson(request.body(), RegisterRequest.class);
+        RegisterRequest register_request = new Gson().fromJson(request.body(), RegisterRequest.class);
         String username = register_request.getUsername();
         String password = register_request.getPassword();
         String email = register_request.getEmail();
 
         // Call service
         RegisterService registerService = new RegisterService(authDAO, gameDAO, userDAO);
-        RegisterResponse user = registerService.register(username, password, email);
-        return new Gson().toJson(user);
+        ResponseClass res = null;
+        try {
+            res = registerService.register(username, password, email);
+            response.status(200);  // It worked!!!!
+        } catch (AlreadyTakenException e) {
+            response.status(403);
+            res = new ResponseClass(e.getMessage());
+        } catch (Exception e){
+            response.status(500);
+            res = new ResponseClass(e.getMessage());
+        }
+        return new Gson().toJson(res);
     }
 }

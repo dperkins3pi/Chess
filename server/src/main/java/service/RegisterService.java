@@ -1,8 +1,9 @@
 package service;
 
 import dataAccess.*;
+import handler.AlreadyTakenException;
 import model.UserData;
-import response.RegisterResponse;
+import response.ResponseClass;
 
 public class RegisterService {
     AuthDAO authDAO;
@@ -13,13 +14,15 @@ public class RegisterService {
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
-    public RegisterResponse register(String username, String password, String email) throws DataAccessException {
+    public ResponseClass register(String username, String password, String email) throws DataAccessException, AlreadyTakenException {
         UserData user = userDAO.getUser(username);
         if(user == null){   //If the user does not already exist
             userDAO.createUser(username, password, email);   // Create the user and store it
             String authToken = authDAO.createAuth(username);
-            return new RegisterResponse(username, authToken);    // Return response object
+            return new ResponseClass(username, authToken);    // Return response object
         }
-        return null;
+        else{
+            throw new AlreadyTakenException("Error: already taken");
+        }
     }
 }

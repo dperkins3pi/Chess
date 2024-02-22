@@ -20,6 +20,7 @@ public class Server {
         Spark.delete("/db", new ClearHandler(authDao, gameDao, userDao)::handle);  //Clear
         Spark.post("/user", new RegisterHandler(authDao, gameDao, userDao)::handle);   //Register
         Spark.post("/session", new LoginHandler(authDao, gameDao, userDao)::handle);  //Login
+        Spark.delete("/session", new LogoutHandler(authDao, gameDao, userDao)::handle);  //Logout
 
         Spark.init();
         Spark.awaitInitialization();

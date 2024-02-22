@@ -130,6 +130,31 @@ public class ServiceTests{
 
     }
 
+    @Test
+    public void logoutServicePositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        // Register a new user
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        ResponseClass response = registerer.register("username", "password", "email");
+
+        // Get authtoken
+        String authToken = response.getAuthToken();
+
+        // Logout
+        LogoutService service = new LogoutService(authDAO, gameDAO, userDAO);
+        service.logout(authToken);
+
+        // See if users is no longer logged in
+        Assertions.assertNull(authDAO.getAuthTokens().get(authToken));
+    }
+
+    @Test
+    public void logoutServiceNegative(){
+        // Logout with invalid authToken (since no one is logged in)
+        LogoutService service = new LogoutService(authDAO, gameDAO, userDAO);
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.logout("cheese"));
+
+    }
+
 
     //        Assertions.assertThrows(UnauthorizedException.class, () -> service.clear());
 }

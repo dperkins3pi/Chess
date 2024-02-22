@@ -2,9 +2,13 @@ package handler;
 
 import com.google.gson.Gson;
 import dataAccess.*;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
 import request.LoginRequest;
 import response.ResponseClass;
 import service.LoginService;
+import service.RegisterService;
 import spark.Request;
 import spark.Response;
 
@@ -27,7 +31,40 @@ public class LoginHandler {
 
         // Call service
         LoginService loginService = new LoginService(authDAO, gameDAO, userDAO);
-        ResponseClass user = loginService.login(username, password);
-        return new Gson().toJson(user);
+
+        ResponseClass res = null;
+        try {
+            res = loginService.login(username, password);
+            response.status(200);
+        }
+        catch (UnauthorizedException e) {
+            res = new ResponseClass(e.getMessage());
+            response.status(401);
+        }
+        catch (Exception e) {
+            res = new ResponseClass(e.getMessage());
+            response.status(500);
+        }
+        return new Gson().toJson(res);
     }
+
+
+//    RegisterService registerService = new RegisterService(authDAO, gameDAO, userDAO);
+//    ResponseClass res = null;
+//        try {
+//        res = registerService.register(username, password, email);
+//        response.status(200);  // It worked!!!!
+//    } catch (
+//    BadRequestException e) {
+//        response.status(400);
+//        res = new ResponseClass(e.getMessage());
+//    } catch (
+//    AlreadyTakenException e) {
+//        response.status(403);
+//        res = new ResponseClass(e.getMessage());
+//    } catch (Exception e){
+//        response.status(500);
+//        res = new ResponseClass(e.getMessage());
+//    }
+//        return new Gson().toJson(res);
 }

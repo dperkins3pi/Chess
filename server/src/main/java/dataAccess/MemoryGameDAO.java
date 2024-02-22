@@ -1,4 +1,5 @@
 package dataAccess;
+import chess.ChessGame;
 import model.GameData;
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +7,7 @@ import java.util.Map;
 public class MemoryGameDAO implements GameDAO{
     // Hash map of integers to GameData Objects
     private static final Map<Integer, GameData> games = new HashMap<>();
+    private static int ID = 0;   // To remember ID
 
     @Override
     public void clear() throws DataAccessException {
@@ -14,7 +16,10 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public void createGame() throws DataAccessException {
-
+        ChessGame chessGame = new ChessGame();
+        GameData game = new GameData(ID, "", "", "", chessGame);
+        games.put(ID, game);
+        ID = ID + 1;  // Increment ID
     }
 
     @Override

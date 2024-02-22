@@ -34,7 +34,7 @@ public class RegisterHandler {
         } catch (BadRequestException e) {
             response.status(400);
             res = new ResponseClass(e.getMessage());
-        }catch (AlreadyTakenException e) {
+        } catch (AlreadyTakenException e) {
             response.status(403);
             res = new ResponseClass(e.getMessage());
         } catch (Exception e){

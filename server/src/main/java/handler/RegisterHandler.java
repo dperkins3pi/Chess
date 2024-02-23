@@ -20,10 +20,10 @@ public class RegisterHandler {
     }
     public Object handle(Request request, Response response) throws DataAccessException {
         // Get data from request
-        RegisterRequest register_request = new Gson().fromJson(request.body(), RegisterRequest.class);
-        String username = register_request.getUsername();
-        String password = register_request.getPassword();
-        String email = register_request.getEmail();
+        RegisterRequest registerRequest = new Gson().fromJson(request.body(), RegisterRequest.class);
+        String username = registerRequest.getUsername();
+        String password = registerRequest.getPassword();
+        String email = registerRequest.getEmail();
 
         // Call service
         RegisterService registerService = new RegisterService(authDAO, gameDAO, userDAO);

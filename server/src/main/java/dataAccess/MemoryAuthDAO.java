@@ -20,10 +20,10 @@ public class MemoryAuthDAO implements AuthDAO{
         @Override
         public String createAuth(String username) throws DataAccessException {
                 try {
-                        String new_token = UUID.randomUUID().toString();  // Create authToken
-                        AuthData auth_token = new AuthData(new_token, username);
-                        authTokens.put(new_token, auth_token);  // Add it to the map
-                        return new_token;
+                        String newToken = UUID.randomUUID().toString();  // Create authToken
+                        AuthData authToken = new AuthData(newToken, username);
+                        authTokens.put(newToken, authToken);  // Add it to the map
+                        return newToken;
                 } catch (Exception e){
                         throw new DataAccessException("Data Access Exception");
                 }
@@ -52,14 +52,6 @@ public class MemoryAuthDAO implements AuthDAO{
         public void deleteAuth(String authToken) throws DataAccessException {
                 try{
                         authTokens.remove(authToken);
-                } catch (Exception e){
-                        throw new DataAccessException("Data Access Exception");
-                }
-        }
-        @Override
-        public Map<String, AuthData> getAuthTokens() throws DataAccessException {
-                try {
-                        return authTokens;
                 } catch (Exception e){
                         throw new DataAccessException("Data Access Exception");
                 }

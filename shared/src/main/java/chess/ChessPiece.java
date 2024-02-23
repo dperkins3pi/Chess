@@ -97,8 +97,8 @@ public class ChessPiece {
                         if (rook2 != null && rook2.notAlreadyMoved() &&
                                 board.getPiece(new ChessPosition(1, 6))==null &&
                                 board.getPiece(new ChessPosition(1, 7))==null){
-                            var new_position_king = new ChessPosition(1, 7);
-                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                            var newPositionKing = new ChessPosition(1, 7);
+                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
                         }
                     }
                     if(myPosition.getRow() == 8){
@@ -107,15 +107,15 @@ public class ChessPiece {
                                 board.getPiece(new ChessPosition(8, 2))==null &&
                                 board.getPiece(new ChessPosition(8, 3))==null &&
                                 board.getPiece(new ChessPosition(8, 4))==null){
-                            var new_position_king = new ChessPosition(8, 3);
-                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                            var newPositionKing = new ChessPosition(8, 3);
+                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
                         }
                         var rook2 = board.getPiece(new ChessPosition(8, 8));
                         if (rook2 != null && rook2.notAlreadyMoved() &&
                                 board.getPiece(new ChessPosition(8, 6))==null &&
                                 board.getPiece(new ChessPosition(8, 7))==null){
-                            var new_position_king = new ChessPosition(8, 7);
-                            moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
+                            var newPositionKing = new ChessPosition(8, 7);
+                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
                         }
                     }
                 }
@@ -288,9 +288,9 @@ public class ChessPiece {
                                 moves.add(new_move);
                             }
                             // Passant
-                            var other_position = new ChessPosition(row, col + 1);
-                            var other_piece = board.getPiece(other_position);
-                            if(other_piece != null && other_piece.getPassantPossible()){
+                            var otherPosition = new ChessPosition(row, col + 1);
+                            var otherPiece = board.getPiece(otherPosition);
+                            if(otherPiece != null && otherPiece.getPassantPossible()){
                                 var newMove = new ChessMove(myPosition, position, null);;
                                 moves.add(newMove);
                             }
@@ -304,8 +304,8 @@ public class ChessPiece {
                             }
                             // Passant
                             var other_position = new ChessPosition(row, col - 1);
-                            var other_piece = board.getPiece(other_position);
-                            if(other_piece != null && other_piece.getPassantPossible()){
+                            var otherPiece = board.getPiece(other_position);
+                            if(otherPiece != null && otherPiece.getPassantPossible()){
                                 var newMove = new ChessMove(myPosition, position, null);;
                                 moves.add(newMove);
                             }

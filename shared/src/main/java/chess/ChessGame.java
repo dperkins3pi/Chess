@@ -222,8 +222,8 @@ public class ChessGame {
             }
         }
         else{
-            var error_message = "The move " + move.toString() + " for the " + piece.getPieceType() + " is not possible";
-            throw new InvalidMoveException(error_message);
+            var errorMessage = "The move " + move.toString() + " for the " + piece.getPieceType() + " is not possible";
+            throw new InvalidMoveException(errorMessage);
         }
     }
 
@@ -253,9 +253,9 @@ public class ChessGame {
                 var position = new ChessPosition(i, j);
                 var piece = this.board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor) {
-                    var king_move = new ChessMove(position, kingPosition, null);
-                    var king_move2 = new ChessMove(position, kingPosition, ChessPiece.PieceType.QUEEN);  //Rare case that pawn promotion results in check
-                    if (piece.pieceMoves(board, position).contains(king_move) || piece.pieceMoves(board, position).contains(king_move2)) {
+                    var kingMove = new ChessMove(position, kingPosition, null);
+                    var kingMove2 = new ChessMove(position, kingPosition, ChessPiece.PieceType.QUEEN);  //Rare case that pawn promotion results in check
+                    if (piece.pieceMoves(board, position).contains(kingMove) || piece.pieceMoves(board, position).contains(kingMove2)) {
                         return true;
                     }
                 }

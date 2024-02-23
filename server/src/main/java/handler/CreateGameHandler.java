@@ -33,8 +33,8 @@ public class CreateGameHandler {
         CreateGameService createGameService = new CreateGameService(authDAO, gameDAO, userDAO);
         ResponseClass res = null;
         try {  // Catch all errors
-            int ID = createGameService.createGame(authToken, gameName);
-            res = new ResponseClass(ID);
+            int id = createGameService.createGame(authToken, gameName);
+            res = new ResponseClass(id);
             response.status(200);
             return new Gson().toJson(res);
         } catch (UnauthorizedException e) {

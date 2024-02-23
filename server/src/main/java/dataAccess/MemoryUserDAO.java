@@ -36,13 +36,4 @@ public class MemoryUserDAO implements UserDAO{
             throw new DataAccessException("Data Access Exception");
         }
     }
-
-    @Override   // Returns all the users
-    public Map<String, UserData> getUsers() throws DataAccessException {
-        try{
-            return users;
-        } catch (Exception e){
-            throw new DataAccessException("Data Access Exception");
-        }
-    }
 }

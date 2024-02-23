@@ -32,23 +32,23 @@ public class JoinGameService {
         if(game == null){  //The game does not exist
             throw new BadRequestException("Error: bad request2");
         }
-        String game_name = game.gameName();
-        String white_username = game.whiteUsername();
-        String black_username = game.blackUsername();
-        ChessGame chess_game = game.game();
+        String gameName = game.gameName();
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
+        ChessGame chessGame = game.game();
 
         if(playerColor != null)
             if(playerColor.equals("WHITE")){
-                if(white_username != null){  // White user already there
+                if(whiteUsername != null){  // White user already there
                     throw new AlreadyTakenException("Error: already taken");
                 }
-                game = new GameData(gameID, username, black_username, game_name, chess_game);
+                game = new GameData(gameID, username, blackUsername, gameName, chessGame);
                 gameDAO.updateGame(game);  // Update the game
             } else if (playerColor.equals("BLACK")) {
-                if(black_username != null){  // Black user already there
+                if(blackUsername != null){  // Black user already there
                     throw new AlreadyTakenException("Error: already taken");
                 }
-                game = new GameData(gameID, white_username, username, game_name, chess_game);
+                game = new GameData(gameID, whiteUsername, username, gameName, chessGame);
                 gameDAO.updateGame(game);  // Update the game
             }
             else{  // Invalid team color selected

@@ -22,9 +22,9 @@ public class LoginHandler {
 
     public Object handle(Request request, Response response) throws DataAccessException {
         // Get data from request
-        LoginRequest login_request = new Gson().fromJson(request.body(), LoginRequest.class);
-        String username = login_request.getUsername();
-        String password = login_request.getPassword();
+        LoginRequest loginRequest = new Gson().fromJson(request.body(), LoginRequest.class);
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
 
         // Call service
         LoginService loginService = new LoginService(authDAO, gameDAO, userDAO);

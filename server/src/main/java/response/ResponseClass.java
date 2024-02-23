@@ -14,10 +14,6 @@ public class ResponseClass {   // Used to return response objects
         return authToken;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
     public ResponseClass(String username, String authToken) {
         this.username = username;
         this.authToken = authToken;

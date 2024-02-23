@@ -76,7 +76,7 @@ public class ChessGame {
         var possible_moves = piece.pieceMoves(this.board, startPosition);
         var valid_moves = new HashSet<ChessMove>();
         for (var move: possible_moves){
-            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.NotAlreadyMoved()){
+            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.notAlreadyMoved()){
                 if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == 2){  // If the move passed in is casteling
                     board.addPiece(move.getStartPosition(), null);
                     var new_position = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() + 1);
@@ -202,7 +202,7 @@ public class ChessGame {
                 board.addPiece(new ChessPosition(move.getStartPosition().getRow(), 4), rook); // Move old rook
             }
             if (getPassantPosition() != null && this.board.getPiece(getPassantPosition()) != null){  // If the previous board had something on passant
-                board.getPiece(getPassantPosition()).SetPassant(false);  // Passant is no longer possible
+                board.getPiece(getPassantPosition()).setPassant(false);  // Passant is no longer possible
             }
             // Change turn to next team
             if(this.getTeamTurn() == TeamColor.BLACK){
@@ -211,12 +211,12 @@ public class ChessGame {
             else{
                 setTeamTurn(TeamColor.BLACK);
             }
-            piece.SetAlreadyMoved();  // Mark that the piece has moved
+            piece.setAlreadyMoved();  // Mark that the piece has moved
             // Mark that Passant is possible
             if(piece.getPieceType() == ChessPiece.PieceType.PAWN &&
                     move.getEndPosition().getRow() - move.getStartPosition().getRow() == 2 ||
                     move.getEndPosition().getRow() - move.getStartPosition().getRow() == -2){
-                piece.SetPassant(true);
+                piece.setPassant(true);
                 setPassantPosition(move.getEndPosition());  // Store what what moved 2
                 System.out.println(PassantPosition);
             }

@@ -26,15 +26,15 @@ public class ChessPiece {
         this.passant_possible = false;
     }
 
-    public void SetAlreadyMoved(){  // Mark the piece as moved
+    public void setAlreadyMoved(){  // Mark the piece as moved
         this.alreadyMoved = true;
     }
 
-    public boolean NotAlreadyMoved(){
+    public boolean notAlreadyMoved(){
         return !alreadyMoved;
     }
 
-    public void SetPassant(boolean val){  // Mark the piece as moved
+    public void setPassant(boolean val){  // Mark the piece as moved
         this.passant_possible = val;
     }
 
@@ -86,7 +86,7 @@ public class ChessPiece {
                 if(!alreadyMoved){
                     if(myPosition.getRow() == 1){
                         var rook1 = board.getPiece(new ChessPosition(1, 1));
-                        if (rook1 != null && rook1.NotAlreadyMoved() &&
+                        if (rook1 != null && rook1.notAlreadyMoved() &&
                                 board.getPiece(new ChessPosition(1, 2))==null &&
                                 board.getPiece(new ChessPosition(1, 3))==null &&
                                 board.getPiece(new ChessPosition(1, 4))==null){
@@ -94,7 +94,7 @@ public class ChessPiece {
                             moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
                         }
                         var rook2 = board.getPiece(new ChessPosition(1, 8));
-                        if (rook2 != null && rook2.NotAlreadyMoved() &&
+                        if (rook2 != null && rook2.notAlreadyMoved() &&
                                 board.getPiece(new ChessPosition(1, 6))==null &&
                                 board.getPiece(new ChessPosition(1, 7))==null){
                             var new_position_king = new ChessPosition(1, 7);
@@ -103,7 +103,7 @@ public class ChessPiece {
                     }
                     if(myPosition.getRow() == 8){
                         var rook1 = board.getPiece(new ChessPosition(8, 1));
-                        if (rook1 != null && rook1.NotAlreadyMoved() &&
+                        if (rook1 != null && rook1.notAlreadyMoved() &&
                                 board.getPiece(new ChessPosition(8, 2))==null &&
                                 board.getPiece(new ChessPosition(8, 3))==null &&
                                 board.getPiece(new ChessPosition(8, 4))==null){
@@ -111,7 +111,7 @@ public class ChessPiece {
                             moves.add(new ChessMove(myPosition, new_position_king, null));  // Add move as a vaid move
                         }
                         var rook2 = board.getPiece(new ChessPosition(8, 8));
-                        if (rook2 != null && rook2.NotAlreadyMoved() &&
+                        if (rook2 != null && rook2.notAlreadyMoved() &&
                                 board.getPiece(new ChessPosition(8, 6))==null &&
                                 board.getPiece(new ChessPosition(8, 7))==null){
                             var new_position_king = new ChessPosition(8, 7);

@@ -345,28 +345,25 @@ public class ChessPiece {
 
     private void pawnPromotion(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
         if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-            var newMove = new ChessMove(myPosition, position, QUEEN);
-            moves.add(newMove);
-            newMove = new ChessMove(myPosition, position, KNIGHT);
-            moves.add(newMove);
-            newMove = new ChessMove(myPosition, position, BISHOP);
-            moves.add(newMove);
-            newMove = new ChessMove(myPosition, position, ROOK);
-            moves.add(newMove);
+            promotePawn(myPosition, moves, position);
         }
+    }
+
+    private void promotePawn(ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
+        var newMove = new ChessMove(myPosition, position, QUEEN);
+        moves.add(newMove);
+        newMove = new ChessMove(myPosition, position, KNIGHT);
+        moves.add(newMove);
+        newMove = new ChessMove(myPosition, position, BISHOP);
+        moves.add(newMove);
+        newMove = new ChessMove(myPosition, position, ROOK);
+        moves.add(newMove);
     }
 
     private void addMovesWithEnemy(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
         if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
             // Enemy is there
-            var newMove = new ChessMove(myPosition, position, QUEEN);
-            moves.add(newMove);
-            newMove = new ChessMove(myPosition, position, KNIGHT);
-            moves.add(newMove);
-            newMove = new ChessMove(myPosition, position, BISHOP);
-            moves.add(newMove);
-            newMove = new ChessMove(myPosition, position, ROOK);
-            moves.add(newMove);
+            promotePawn(myPosition, moves, position);
         }
     }
 

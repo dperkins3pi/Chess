@@ -67,6 +67,343 @@ public class ChessPiece {
         return this.type;
     }
 
+    public HashSet<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, int row, int col){
+        if(!alreadyMoved){
+            if(myPosition.getRow() == 1){
+                var rook1 = board.getPiece(new ChessPosition(1, 1));
+                if (rook1 != null && rook1.notAlreadyMoved() &&
+                        board.getPiece(new ChessPosition(1, 2))==null &&
+                        board.getPiece(new ChessPosition(1, 3))==null &&
+                        board.getPiece(new ChessPosition(1, 4))==null){
+                    var newPositionKing = new ChessPosition(1, 3);
+                    moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
+                }
+                var rook2 = board.getPiece(new ChessPosition(1, 8));
+                if (rook2 != null && rook2.notAlreadyMoved() &&
+                        board.getPiece(new ChessPosition(1, 6))==null &&
+                        board.getPiece(new ChessPosition(1, 7))==null){
+                    var newPositionKing = new ChessPosition(1, 7);
+                    moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
+                }
+            }
+            if(myPosition.getRow() == 8){
+                var rook1 = board.getPiece(new ChessPosition(8, 1));
+                if (rook1 != null && rook1.notAlreadyMoved() &&
+                        board.getPiece(new ChessPosition(8, 2))==null &&
+                        board.getPiece(new ChessPosition(8, 3))==null &&
+                        board.getPiece(new ChessPosition(8, 4))==null){
+                    var newPositionKing = new ChessPosition(8, 3);
+                    moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
+                }
+                var rook2 = board.getPiece(new ChessPosition(8, 8));
+                if (rook2 != null && rook2.notAlreadyMoved() &&
+                        board.getPiece(new ChessPosition(8, 6))==null &&
+                        board.getPiece(new ChessPosition(8, 7))==null){
+                    var newPositionKing = new ChessPosition(8, 7);
+                    moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
+                }
+            }
+        }
+        ChessPosition position;
+        if(row < 8){ //Up =
+            position = new ChessPosition(row+1, col);
+            validMove(board, myPosition, moves, position);
+            if(col < 8){ // Up right
+                position = new ChessPosition(row+1, col+1);
+                validMove(board, myPosition, moves, position);
+            }
+            if(col > 1){  // Up left
+                position = new ChessPosition(row+1, col-1);
+                validMove(board, myPosition, moves, position);
+            }
+        }
+        if(row > 1){ //Down =
+            position = new ChessPosition(row-1, col);
+            validMove(board, myPosition, moves, position);
+            if(col < 8){ // Down right
+                position = new ChessPosition(row-1, col+1);
+                validMove(board, myPosition, moves, position);
+            }
+            if(col > 1){  // Down left
+                position = new ChessPosition(row-1, col-1);
+                validMove(board, myPosition, moves, position);
+            }
+        }
+        if(col < 8){ // Right
+            position = new ChessPosition(row, col+1);
+            validMove(board, myPosition, moves, position);
+        }
+        if(col > 1){  // Left
+            position = new ChessPosition(row, col-1);
+            validMove(board, myPosition, moves, position);
+        }
+        return moves;
+    }
+
+    public HashSet<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, int row, int col){
+        // Up Right
+        ChessPosition position;
+        for (int i=1; i + row <= 8 && i + col <= 8; i++){
+            position = new ChessPosition(row+i, col+i);
+            if (validMove(board, myPosition, moves, position)) break;    //Can't go there already taken
+        }
+        // Up Left
+        for (int i=1; i + row <= 8 && col - i >= 1; i++){
+            position = new ChessPosition(row+i, col-i);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        // Down Right
+        for (int i=1; row - i >= 1 && col + i <= 8; i++){
+            position = new ChessPosition(row-i, col+i);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        // Down Left
+        for (int i=1; row - i >= 1 && col - i >= 1; i++){
+            position = new ChessPosition(row-i, col-i);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        return moves;
+    }
+
+    public HashSet<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, int row, int col){
+        ChessPosition position;
+        if (row + 1 <= 8 && col + 2 <= 8){
+            position = new ChessPosition(row+1, col+2);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row + 1 <= 8 && col - 2 >= 1){
+            position = new ChessPosition(row+1, col-2);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row + 2 <= 8 && col + 1 <= 8){
+            position = new ChessPosition(row+2, col+1);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row + 2 <= 8 && col - 1 >= 1){
+            position = new ChessPosition(row+2, col-1);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row - 1 >= 1 && col + 2 <= 8){
+            position = new ChessPosition(row-1, col+2);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row - 1 >= 1 && col - 2 >= 1){
+            position = new ChessPosition(row-1, col-2);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row - 2 >= 1 && col + 1 <= 8){
+            position = new ChessPosition(row-2, col+1);
+            validMove(board, myPosition, moves, position);
+        }
+        if (row - 2 >= 1 && col - 1 >= 1){
+            position = new ChessPosition(row-2, col-1);
+            validMove(board, myPosition, moves, position);
+        }
+        return moves;
+    }
+
+    public HashSet<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, int row, int col){
+        ChessPosition position;
+        for (int i=1; i + row <= 8; i++) { //Up
+            position = new ChessPosition(row + i, col);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        for (int i=1; row - i >= 1; i++) { //Down
+            position = new ChessPosition(row - i, col);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        for (int i=1; i + col <= 8; i++) { //Right
+            position = new ChessPosition(row, col + i);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        for (int i=1; col - i >= 1; i++) { //Left
+            position = new ChessPosition(row, col - i);
+            if (validMove(board, myPosition, moves, position)) break;
+        }
+        return moves;
+    }
+
+    public HashSet<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, int row, int col){
+        ChessPosition position;
+        if (getTeamColor() == ChessGame.TeamColor.WHITE){  //Capital letter
+            if (row < 7){   //Normal move
+                position = new ChessPosition(row + 1, col);
+                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                    var newMove = new ChessMove(myPosition, position, null);
+                    moves.add(newMove);
+                    if (row == 2){   //Hasn't moved yet
+                        position = new ChessPosition(row + 2, col);
+                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                            newMove = new ChessMove(myPosition, position, null);
+                            moves.add(newMove);
+                        }
+                    }
+                }
+                // Capture enemies
+                if (col < 7){
+                    position = new ChessPosition(row + 1, col + 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, null);
+                        moves.add(newMove);
+                    }
+                    // Passant
+                    var otherPosition = new ChessPosition(row, col + 1);
+                    var otherPiece = board.getPiece(otherPosition);
+                    if(otherPiece != null && otherPiece.getPassantPossible()){
+                        var newMove = new ChessMove(myPosition, position, null);;
+                        moves.add(newMove);
+                    }
+                }
+                if (col > 1){
+                    position = new ChessPosition(row + 1, col - 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, null);
+                        moves.add(newMove);
+                    }
+                    // Passant
+                    var otherPosition = new ChessPosition(row, col - 1);
+                    var otherPiece = board.getPiece(otherPosition);
+                    if(otherPiece != null && otherPiece.getPassantPossible()){
+                        var newMove = new ChessMove(myPosition, position, null);;
+                        moves.add(newMove);
+                    }
+                }
+            }
+            if (row == 7){  // Promotion time!
+                position = new ChessPosition(row + 1, col);
+                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                    var newMove = new ChessMove(myPosition, position, QUEEN);
+                    moves.add(newMove);
+                    newMove = new ChessMove(myPosition, position, KNIGHT);
+                    moves.add(newMove);
+                    newMove = new ChessMove(myPosition, position, BISHOP);
+                    moves.add(newMove);
+                    newMove = new ChessMove(myPosition, position, ROOK);
+                    moves.add(newMove);
+                }
+                if (col < 7){
+                    position = new ChessPosition(row + 1, col + 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, QUEEN);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, KNIGHT);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, BISHOP);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, ROOK);
+                        moves.add(newMove);
+                    }
+                }
+                if (col > 1){
+                    position = new ChessPosition(row + 1, col - 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, QUEEN);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, KNIGHT);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, BISHOP);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, ROOK);
+                        moves.add(newMove);
+                    }
+                }
+            }
+        }
+        else if (getTeamColor() == ChessGame.TeamColor.BLACK){  //LowerCase letter
+            if (row > 2){   //Normal move
+                position = new ChessPosition(row - 1, col);
+                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                    var newMove = new ChessMove(myPosition, position, null);
+                    moves.add(newMove);
+                    if (row == 7){   //Hasn't moved yet
+                        position = new ChessPosition(row - 2, col);
+                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                            newMove = new ChessMove(myPosition, position, null);
+                            moves.add(newMove);
+                        }
+                    }
+                }
+                // Capture enemies
+                if (col < 7){
+                    position = new ChessPosition(row - 1, col + 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, null);
+                        moves.add(newMove);
+                    }
+                    // Passant
+                    var otherPosition = new ChessPosition(row, col + 1);
+                    var otherPiece = board.getPiece(otherPosition);
+                    if(otherPiece != null && otherPiece.getPassantPossible()){
+                        var newMove = new ChessMove(myPosition, position, null);;
+                        moves.add(newMove);
+                    }
+                }
+                if (col > 1){
+                    position = new ChessPosition(row - 1, col - 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, null);
+                        moves.add(newMove);
+                    }
+                    // Passant
+                    var otherPosition = new ChessPosition(row, col - 1);
+                    var otherPiece = board.getPiece(otherPosition);
+                    if(otherPiece != null && otherPiece.getPassantPossible()){
+                        var newMove = new ChessMove(myPosition, position, null);;
+                        moves.add(newMove);
+                    }
+                }
+            }
+            if (row == 2){  // Promotion time!
+                position = new ChessPosition(row - 1, col);
+                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+                    var newMove = new ChessMove(myPosition, position, QUEEN);
+                    moves.add(newMove);
+                    newMove = new ChessMove(myPosition, position, KNIGHT);
+                    moves.add(newMove);
+                    newMove = new ChessMove(myPosition, position, BISHOP);
+                    moves.add(newMove);
+                    newMove = new ChessMove(myPosition, position, ROOK);
+                    moves.add(newMove);
+                }
+                if (col < 7){
+                    position = new ChessPosition(row - 1, col + 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, QUEEN);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, KNIGHT);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, BISHOP);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, ROOK);
+                        moves.add(newMove);
+                    }
+                }
+                if (col > 1){
+                    position = new ChessPosition(row - 1, col - 1);
+                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
+                        // Enemy is there
+                        var newMove = new ChessMove(myPosition, position, QUEEN);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, KNIGHT);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, BISHOP);
+                        moves.add(newMove);
+                        newMove = new ChessMove(myPosition, position, ROOK);
+                        moves.add(newMove);
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+    
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -83,364 +420,24 @@ public class ChessPiece {
         // Switch statement to find move depending on type of piece
         switch (type) {
             case KING:
-                if(!alreadyMoved){
-                    if(myPosition.getRow() == 1){
-                        var rook1 = board.getPiece(new ChessPosition(1, 1));
-                        if (rook1 != null && rook1.notAlreadyMoved() &&
-                                board.getPiece(new ChessPosition(1, 2))==null &&
-                                board.getPiece(new ChessPosition(1, 3))==null &&
-                                board.getPiece(new ChessPosition(1, 4))==null){
-                            var newPositionKing = new ChessPosition(1, 3);
-                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
-                        }
-                        var rook2 = board.getPiece(new ChessPosition(1, 8));
-                        if (rook2 != null && rook2.notAlreadyMoved() &&
-                                board.getPiece(new ChessPosition(1, 6))==null &&
-                                board.getPiece(new ChessPosition(1, 7))==null){
-                            var newPositionKing = new ChessPosition(1, 7);
-                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
-                        }
-                    }
-                    if(myPosition.getRow() == 8){
-                        var rook1 = board.getPiece(new ChessPosition(8, 1));
-                        if (rook1 != null && rook1.notAlreadyMoved() &&
-                                board.getPiece(new ChessPosition(8, 2))==null &&
-                                board.getPiece(new ChessPosition(8, 3))==null &&
-                                board.getPiece(new ChessPosition(8, 4))==null){
-                            var newPositionKing = new ChessPosition(8, 3);
-                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
-                        }
-                        var rook2 = board.getPiece(new ChessPosition(8, 8));
-                        if (rook2 != null && rook2.notAlreadyMoved() &&
-                                board.getPiece(new ChessPosition(8, 6))==null &&
-                                board.getPiece(new ChessPosition(8, 7))==null){
-                            var newPositionKing = new ChessPosition(8, 7);
-                            moves.add(new ChessMove(myPosition, newPositionKing, null));  // Add move as a vaid move
-                        }
-                    }
-                }
-                if(row < 8){ //Up =
-                    position = new ChessPosition(row+1, col);
-                    validMove(board, myPosition, moves, position);
-                    if(col < 8){ // Up right
-                        position = new ChessPosition(row+1, col+1);
-                        validMove(board, myPosition, moves, position);
-                    }
-                    if(col > 1){  // Up left
-                        position = new ChessPosition(row+1, col-1);
-                        validMove(board, myPosition, moves, position);
-                    }
-                }
-                if(row > 1){ //Down =
-                    position = new ChessPosition(row-1, col);
-                    validMove(board, myPosition, moves, position);
-                    if(col < 8){ // Down right
-                        position = new ChessPosition(row-1, col+1);
-                        validMove(board, myPosition, moves, position);
-                    }
-                    if(col > 1){  // Down left
-                        position = new ChessPosition(row-1, col-1);
-                        validMove(board, myPosition, moves, position);
-                    }
-                }
-                if(col < 8){ // Right
-                    position = new ChessPosition(row, col+1);
-                    validMove(board, myPosition, moves, position);
-                }
-                if(col > 1){  // Left
-                    position = new ChessPosition(row, col-1);
-                    validMove(board, myPosition, moves, position);
-                }
+                moves = kingMoves(board, myPosition, moves, row, col);
                 break;
             case QUEEN:
-                // Up Right
-                for (int i=1; i + row <= 8 && i + col <= 8; i++){
-                    position = new ChessPosition(row+i, col+i);
-                    if (validMove(board, myPosition, moves, position)) break;    //Can't go there already taken
-                }
-                // Up Left
-                for (int i=1; i + row <= 8 && col - i >= 1; i++){
-                    position = new ChessPosition(row+i, col-i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                // Down Right
-                for (int i=1; row - i >= 1 && col + i <= 8; i++){
-                    position = new ChessPosition(row-i, col+i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                // Down Left
-                for (int i=1; row - i >= 1 && col - i >= 1; i++){
-                    position = new ChessPosition(row-i, col-i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; i + row <= 8; i++) { //Up
-                    position = new ChessPosition(row + i, col);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; row - i >= 1; i++) { //Down
-                    position = new ChessPosition(row - i, col);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; i + col <= 8; i++) { //Right
-                    position = new ChessPosition(row, col + i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; col - i >= 1; i++) { //Left
-                    position = new ChessPosition(row, col - i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
+                moves = bishopMoves(board, myPosition, moves, row, col);
+                HashSet<ChessMove> moves2 = new HashSet<>();
+                moves.addAll(rookMoves(board, myPosition, moves2, row, col));
                 break;
             case BISHOP:
-                // Up Right
-                for (int i=1; i + row <= 8 && i + col <= 8; i++){
-                    position = new ChessPosition(row+i, col+i);
-                    if (validMove(board, myPosition, moves, position)) break;    //Can't go there already taken
-                }
-                // Up Left
-                for (int i=1; i + row <= 8 && col - i >= 1; i++){
-                    position = new ChessPosition(row+i, col-i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                // Down Right
-                for (int i=1; row - i >= 1 && col + i <= 8; i++){
-                    position = new ChessPosition(row-i, col+i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                // Down Left
-                for (int i=1; row - i >= 1 && col - i >= 1; i++){
-                    position = new ChessPosition(row-i, col-i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
+                moves = bishopMoves(board, myPosition, moves, row, col);
                 break;
             case KNIGHT:
-                if (row + 1 <= 8 && col + 2 <= 8){
-                    position = new ChessPosition(row+1, col+2);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row + 1 <= 8 && col - 2 >= 1){
-                    position = new ChessPosition(row+1, col-2);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row + 2 <= 8 && col + 1 <= 8){
-                    position = new ChessPosition(row+2, col+1);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row + 2 <= 8 && col - 1 >= 1){
-                    position = new ChessPosition(row+2, col-1);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row - 1 >= 1 && col + 2 <= 8){
-                    position = new ChessPosition(row-1, col+2);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row - 1 >= 1 && col - 2 >= 1){
-                    position = new ChessPosition(row-1, col-2);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row - 2 >= 1 && col + 1 <= 8){
-                    position = new ChessPosition(row-2, col+1);
-                    validMove(board, myPosition, moves, position);
-                }
-                if (row - 2 >= 1 && col - 1 >= 1){
-                    position = new ChessPosition(row-2, col-1);
-                    validMove(board, myPosition, moves, position);
-                }
+                moves = knightMoves(board, myPosition, moves, row, col);
                 break;
             case ROOK:
-                for (int i=1; i + row <= 8; i++) { //Up
-                    position = new ChessPosition(row + i, col);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; row - i >= 1; i++) { //Down
-                    position = new ChessPosition(row - i, col);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; i + col <= 8; i++) { //Right
-                    position = new ChessPosition(row, col + i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
-                for (int i=1; col - i >= 1; i++) { //Left
-                    position = new ChessPosition(row, col - i);
-                    if (validMove(board, myPosition, moves, position)) break;
-                }
+                moves = rookMoves(board, myPosition, moves, row, col);
                 break;
             case PAWN:
-                if (getTeamColor() == ChessGame.TeamColor.WHITE){  //Capital letter
-                    if (row < 7){   //Normal move
-                        position = new ChessPosition(row + 1, col);
-                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                            var newMove = new ChessMove(myPosition, position, null);
-                            moves.add(newMove);
-                            if (row == 2){   //Hasn't moved yet
-                                position = new ChessPosition(row + 2, col);
-                                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                                    newMove = new ChessMove(myPosition, position, null);
-                                    moves.add(newMove);
-                                }
-                            }
-                        }
-                        // Capture enemies
-                        if (col < 7){
-                            position = new ChessPosition(row + 1, col + 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, null);
-                                moves.add(newMove);
-                            }
-                            // Passant
-                            var otherPosition = new ChessPosition(row, col + 1);
-                            var otherPiece = board.getPiece(otherPosition);
-                            if(otherPiece != null && otherPiece.getPassantPossible()){
-                                var newMove = new ChessMove(myPosition, position, null);;
-                                moves.add(newMove);
-                            }
-                        }
-                        if (col > 1){
-                            position = new ChessPosition(row + 1, col - 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, null);
-                                moves.add(newMove);
-                            }
-                            // Passant
-                            var otherPosition = new ChessPosition(row, col - 1);
-                            var otherPiece = board.getPiece(otherPosition);
-                            if(otherPiece != null && otherPiece.getPassantPossible()){
-                                var newMove = new ChessMove(myPosition, position, null);;
-                                moves.add(newMove);
-                            }
-                        }
-                    }
-                    if (row == 7){  // Promotion time!
-                        position = new ChessPosition(row + 1, col);
-                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                            var newMove = new ChessMove(myPosition, position, QUEEN);
-                            moves.add(newMove);
-                            newMove = new ChessMove(myPosition, position, KNIGHT);
-                            moves.add(newMove);
-                            newMove = new ChessMove(myPosition, position, BISHOP);
-                            moves.add(newMove);
-                            newMove = new ChessMove(myPosition, position, ROOK);
-                            moves.add(newMove);
-                        }
-                        if (col < 7){
-                            position = new ChessPosition(row + 1, col + 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, QUEEN);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, KNIGHT);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, BISHOP);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, ROOK);
-                                moves.add(newMove);
-                            }
-                        }
-                        if (col > 1){
-                            position = new ChessPosition(row + 1, col - 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, QUEEN);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, KNIGHT);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, BISHOP);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, ROOK);
-                                moves.add(newMove);
-                            }
-                        }
-                    }
-                }
-                else if (getTeamColor() == ChessGame.TeamColor.BLACK){  //LowerCase letter
-                    if (row > 2){   //Normal move
-                        position = new ChessPosition(row - 1, col);
-                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                            var newMove = new ChessMove(myPosition, position, null);
-                            moves.add(newMove);
-                            if (row == 7){   //Hasn't moved yet
-                                position = new ChessPosition(row - 2, col);
-                                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                                    newMove = new ChessMove(myPosition, position, null);
-                                    moves.add(newMove);
-                                }
-                            }
-                        }
-                        // Capture enemies
-                        if (col < 7){
-                            position = new ChessPosition(row - 1, col + 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, null);
-                                moves.add(newMove);
-                            }
-                            // Passant
-                            var otherPosition = new ChessPosition(row, col + 1);
-                            var otherPiece = board.getPiece(otherPosition);
-                            if(otherPiece != null && otherPiece.getPassantPossible()){
-                                var newMove = new ChessMove(myPosition, position, null);;
-                                moves.add(newMove);
-                            }
-                        }
-                        if (col > 1){
-                            position = new ChessPosition(row - 1, col - 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, null);
-                                moves.add(newMove);
-                            }
-                            // Passant
-                            var otherPosition = new ChessPosition(row, col - 1);
-                            var otherPiece = board.getPiece(otherPosition);
-                            if(otherPiece != null && otherPiece.getPassantPossible()){
-                                var newMove = new ChessMove(myPosition, position, null);;
-                                moves.add(newMove);
-                            }
-                        }
-                    }
-                    if (row == 2){  // Promotion time!
-                        position = new ChessPosition(row - 1, col);
-                        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                            var newMove = new ChessMove(myPosition, position, QUEEN);
-                            moves.add(newMove);
-                            newMove = new ChessMove(myPosition, position, KNIGHT);
-                            moves.add(newMove);
-                            newMove = new ChessMove(myPosition, position, BISHOP);
-                            moves.add(newMove);
-                            newMove = new ChessMove(myPosition, position, ROOK);
-                            moves.add(newMove);
-                        }
-                        if (col < 7){
-                            position = new ChessPosition(row - 1, col + 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, QUEEN);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, KNIGHT);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, BISHOP);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, ROOK);
-                                moves.add(newMove);
-                            }
-                        }
-                        if (col > 1){
-                            position = new ChessPosition(row - 1, col - 1);
-                            if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                                // Enemy is there
-                                var newMove = new ChessMove(myPosition, position, QUEEN);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, KNIGHT);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, BISHOP);
-                                moves.add(newMove);
-                                newMove = new ChessMove(myPosition, position, ROOK);
-                                moves.add(newMove);
-                            }
-                        }
-                    }
-                }
+                moves = pawnMoves(board, myPosition, moves, row, col);
                 break;
         }
 

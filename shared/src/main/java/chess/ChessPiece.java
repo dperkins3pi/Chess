@@ -29,15 +29,12 @@ public class ChessPiece {
     public void setAlreadyMoved(){  // Mark the piece as moved
         this.alreadyMoved = true;
     }
-
     public boolean notAlreadyMoved(){
         return !alreadyMoved;
     }
-
     public void setPassant(boolean val){  // Mark the piece as moved
         this.passantPossible = val;
     }
-
     public boolean getPassantPossible(){
         return this.passantPossible;
     }
@@ -285,31 +282,11 @@ public class ChessPiece {
                 }
                 if (col < 7){
                     position = new ChessPosition(row + 1, col + 1);
-                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
-                        // Enemy is there
-                        var newMove = new ChessMove(myPosition, position, QUEEN);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, KNIGHT);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, BISHOP);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, ROOK);
-                        moves.add(newMove);
-                    }
+                    addMovesWithEnemy(board, myPosition, moves, position);
                 }
                 if (col > 1){
                     position = new ChessPosition(row + 1, col - 1);
-                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                        // Enemy is there
-                        var newMove = new ChessMove(myPosition, position, QUEEN);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, KNIGHT);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, BISHOP);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, ROOK);
-                        moves.add(newMove);
-                    }
+                    addMovesWithEnemy(board, myPosition, moves, position);
                 }
             }
         }
@@ -373,37 +350,31 @@ public class ChessPiece {
                 }
                 if (col < 7){
                     position = new ChessPosition(row - 1, col + 1);
-                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
-                        // Enemy is there
-                        var newMove = new ChessMove(myPosition, position, QUEEN);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, KNIGHT);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, BISHOP);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, ROOK);
-                        moves.add(newMove);
-                    }
+                    addMovesWithEnemy(board, myPosition, moves, position);
                 }
                 if (col > 1){
                     position = new ChessPosition(row - 1, col - 1);
-                    if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                        // Enemy is there
-                        var newMove = new ChessMove(myPosition, position, QUEEN);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, KNIGHT);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, BISHOP);
-                        moves.add(newMove);
-                        newMove = new ChessMove(myPosition, position, ROOK);
-                        moves.add(newMove);
-                    }
+                    addMovesWithEnemy(board, myPosition, moves, position);
                 }
             }
         }
         return moves;
     }
-    
+
+    private void addMovesWithEnemy(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
+        if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
+            // Enemy is there
+            var newMove = new ChessMove(myPosition, position, QUEEN);
+            moves.add(newMove);
+            newMove = new ChessMove(myPosition, position, KNIGHT);
+            moves.add(newMove);
+            newMove = new ChessMove(myPosition, position, BISHOP);
+            moves.add(newMove);
+            newMove = new ChessMove(myPosition, position, ROOK);
+            moves.add(newMove);
+        }
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -520,7 +491,6 @@ public class ChessPiece {
         ChessPiece that = (ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(pieceColor, type);

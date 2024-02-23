@@ -1,8 +1,10 @@
+import chess.ChessGame;
 import dataAccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
@@ -11,6 +13,8 @@ import passoffTests.testClasses.TestModels;
 import response.ResponseClass;
 import server.Server;
 import service.*;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,8 +48,8 @@ public class ServiceTests{
         authDAO.createAuth("Cena");
         userDAO.createUser("Username", "Password", "Email");
         userDAO.createUser("Username2", "Password2", "Email2");
-        gameDAO.createGame();
-        gameDAO.createGame();
+        gameDAO.createGame("Game1");
+        gameDAO.createGame("Game2");
 
         // Call remove service
         ClearService service = new ClearService(authDAO, gameDAO, userDAO);
@@ -91,7 +95,6 @@ public class ServiceTests{
 
         // See if an error comes from registering the same username twice
         Assertions.assertThrows(AlreadyTakenException.class, () -> service.register("username", "password2", "email2"));
-
     }
 
     @Test
@@ -152,9 +155,73 @@ public class ServiceTests{
         // Logout with invalid authToken (since no one is logged in)
         LogoutService service = new LogoutService(authDAO, gameDAO, userDAO);
         Assertions.assertThrows(UnauthorizedException.class, () -> service.logout("cheese"));
-
     }
 
+    @Test
+    public void listGameServicePositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        // Register a new user
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        ResponseClass response = registerer.register("username", "password", "email");
+        String authToken = response.getAuthToken();           // Get authtoken
 
-    //        Assertions.assertThrows(UnauthorizedException.class, () -> service.clear());
+        // Call the service
+        ListGamesService service = new ListGamesService(authDAO, gameDAO, userDAO);
+        Collection<GameData> games = service.listGames(authToken);
+
+        // See if it returns an empty collection of games
+        Assertions.assertArrayEquals(gameDAO.listGames().toArray(), games.toArray());
+
+        // Add two games
+        CreateGameService addgame = new CreateGameService(authDAO, gameDAO, userDAO);
+        addgame.createGame(authToken, "Game1");
+        addgame.createGame(authToken, "Game2");
+        games = service.listGames(authToken);
+
+        // Verify if the game was added
+        Assertions.assertArrayEquals(gameDAO.listGames().toArray(), games.toArray());
+    }
+    @Test
+    public void listGameServiceNegative(){
+        // Logout with invalid authToken (since no one is logged in)
+        ListGamesService service = new ListGamesService(authDAO, gameDAO, userDAO);
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.listGames("cheese"));
+    }
+
+    @Test
+    public void createGameServicePositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        // Register a new user
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        ResponseClass response = registerer.register("username", "password", "email");
+        String authToken = response.getAuthToken();           // Get authtoken
+
+        // Call Service
+        CreateGameService service = new CreateGameService(authDAO, gameDAO, userDAO);
+        Integer id = service.createGame(authToken, "Game1");
+
+        // Verify if the game was added
+        ChessGame chessGame = new ChessGame();
+        GameData game = new GameData(id, "", "", "Game1", chessGame);
+        Assertions.assertEquals(gameDAO.getGame(id), game);
+
+        // Call Service again
+        Integer id2 = service.createGame(authToken, "Game2");
+
+        // Verify if the game was added
+        ChessGame chessGame2 = new ChessGame();
+        GameData game2 = new GameData(id2, "", "", "Game2", chessGame2);
+        Assertions.assertEquals(gameDAO.getGame(id2), game2);
+    }
+    @Test
+    public void createGameServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
+        // listGameService with invalid authToken (since no one is logged in)
+        CreateGameService service = new CreateGameService(authDAO, gameDAO, userDAO);
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.createGame("cheese", "Game1"));
+
+        // Register a new user
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        ResponseClass response = registerer.register("username", "password", "email");
+        String authToken = response.getAuthToken();           // Get authtoken
+        // See if an error results for not putting in gameName
+        Assertions.assertThrows(BadRequestException.class, () -> service.createGame(authToken, null));
+    }
 }

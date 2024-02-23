@@ -31,16 +31,19 @@ public class RegisterHandler {
         try {
             res = registerService.register(username, password, email);
             response.status(200);  // It worked!!!!
+            return new Gson().toJson(res);
         } catch (BadRequestException e) {
             response.status(400);
             res = new ResponseClass(e.getMessage());
+            return new Gson().toJson(res);
         } catch (AlreadyTakenException e) {
             response.status(403);
             res = new ResponseClass(e.getMessage());
+            return new Gson().toJson(res);
         } catch (Exception e){
             response.status(500);
             res = new ResponseClass(e.getMessage());
+            return new Gson().toJson(res);
         }
-        return new Gson().toJson(res);
     }
 }

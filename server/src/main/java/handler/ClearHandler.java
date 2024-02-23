@@ -20,10 +20,11 @@ public class ClearHandler{
             ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
             clearService.clear();
             response.status(200);
+            return res;  // Return empty JSON
         } catch (Exception e){
             res = new ResponseClass(e.getMessage());
             response.status(500);
+            return res;
         }
-        return res;  // Return empty JSON
     }
 }

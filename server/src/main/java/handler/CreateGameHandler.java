@@ -2,44 +2,48 @@ package handler;
 
 import com.google.gson.Gson;
 import dataAccess.*;
-import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
-import request.LoginRequest;
+import model.GameData;
+import request.CreateGameRequest;
 import response.ResponseClass;
-import service.LoginService;
-import service.RegisterService;
+import service.CreateGameService;
 import spark.Request;
 import spark.Response;
 
-public class LoginHandler {
+import java.util.Collection;
+
+public class CreateGameHandler {
     AuthDAO authDAO;
     GameDAO gameDAO;
     UserDAO userDAO;
 
-    public LoginHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+    public CreateGameHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
-
     public Object handle(Request request, Response response) throws DataAccessException {
         // Get data from request
-        LoginRequest login_request = new Gson().fromJson(request.body(), LoginRequest.class);
-        String username = login_request.getUsername();
-        String password = login_request.getPassword();
+        String authToken = request.headers("Authorization");
+        CreateGameRequest gameRequest = new Gson().fromJson(request.body(), CreateGameRequest.class);
+        String gameName = gameRequest.getGameName();
 
         // Call service
-        LoginService loginService = new LoginService(authDAO, gameDAO, userDAO);
-
+        CreateGameService createGameService = new CreateGameService(authDAO, gameDAO, userDAO);
         ResponseClass res = null;
         try {
-            res = loginService.login(username, password);
+            int ID = createGameService.createGame(authToken, gameName);
+            res = new ResponseClass(ID);
             response.status(200);
             return new Gson().toJson(res);
         } catch (UnauthorizedException e) {
             res = new ResponseClass(e.getMessage());
             response.status(401);
+            return new Gson().toJson(res);
+        } catch (BadRequestException e) {
+            response.status(400);
+            res = new ResponseClass(e.getMessage());
             return new Gson().toJson(res);
         } catch (Exception e) {
             res = new ResponseClass(e.getMessage());

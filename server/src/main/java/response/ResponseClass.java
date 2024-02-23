@@ -9,6 +9,7 @@ public class ResponseClass {
     String authToken;
     String message;
     Collection<GameData> games;
+    Integer gameID;
 
     public String getUsername() {
         return username;
@@ -33,5 +34,9 @@ public class ResponseClass {
 
     public ResponseClass(Collection<GameData> games) {
         this.games = games;
+    }
+
+    public ResponseClass(int ID) {
+        this.gameID = ID;
     }
 }

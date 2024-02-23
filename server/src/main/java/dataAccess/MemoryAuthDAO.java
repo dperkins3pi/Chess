@@ -27,6 +27,12 @@ public class MemoryAuthDAO implements AuthDAO{
         }
 
         @Override
+        public String getUsername(String authToken) throws DataAccessException {
+                AuthData authData = authTokens.getOrDefault(authToken, null);
+                return authData.Username();
+        }
+
+        @Override
         public void deleteAuth(String authToken) throws DataAccessException {
                 authTokens.remove(authToken);
         }

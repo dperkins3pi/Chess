@@ -9,7 +9,7 @@ import java.util.Map;
 public class MemoryGameDAO implements GameDAO{
     // Hash map of integers to GameData Objects
     private static final Map<Integer, GameData> games = new HashMap<>();
-    private static final int ID = 1;   // To remember ID
+    private static int id = 1;   // To remember ID
 
     @Override
     public void clear() throws DataAccessException {
@@ -20,10 +20,10 @@ public class MemoryGameDAO implements GameDAO{
     public Integer createGame(String GameName) throws DataAccessException {
         try {
             ChessGame chessGame = new ChessGame();
-            GameData game = new GameData(ID, null, null, GameName, chessGame);
-            games.put(ID, game);
-            int gameId = ID;
-            ID = ID + 1;  // Increment ID
+            GameData game = new GameData(id, null, null, GameName, chessGame);
+            games.put(id, game);
+            int gameId = id;
+            id = id + 1;  // Increment ID
             return gameId;   // Return the ID of the game created
         } catch (Exception e){
             throw new DataAccessException("Data Access Exception");

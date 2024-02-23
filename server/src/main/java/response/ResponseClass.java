@@ -1,14 +1,9 @@
 package response;
 
-import model.GameData;
-
-import java.util.Collection;
-
 public class ResponseClass {
     String username;
     String authToken;
     String message;
-    Collection<GameData> games;
     Integer gameID;
 
     public String getUsername() {
@@ -30,10 +25,6 @@ public class ResponseClass {
 
     public ResponseClass(String message) {
         this.message = message;
-    }
-
-    public ResponseClass(Collection<GameData> games) {
-        this.games = games;
     }
 
     public ResponseClass(int ID) {

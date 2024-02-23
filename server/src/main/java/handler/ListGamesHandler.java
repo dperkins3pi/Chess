@@ -5,7 +5,7 @@ import java.util.Collection;
 import dataAccess.*;
 import exceptions.UnauthorizedException;
 import model.GameData;
-import response.ResponseClass;
+import response.GameResponseClass;
 import service.ListGamesService;
 import spark.Request;
 import spark.Response;
@@ -27,18 +27,18 @@ public class ListGamesHandler {
 
         // Call service
         ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO, userDAO);
-        ResponseClass res = null;
+        GameResponseClass res = null;
         try {
             Collection<GameData> games = listGamesService.listGames(authToken);
-            res = new ResponseClass(games);
+            res = new GameResponseClass(games);
             response.status(200);
             return new Gson().toJson(res);
         } catch (UnauthorizedException e) {
-            res = new ResponseClass(e.getMessage());
+            res = new GameResponseClass(e.getMessage());
             response.status(401);
             return new Gson().toJson(res);
         } catch (Exception e) {
-            res = new ResponseClass(e.getMessage());
+            res = new GameResponseClass(e.getMessage());
             response.status(500);
             return new Gson().toJson(res);
         }

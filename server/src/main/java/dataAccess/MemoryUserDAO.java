@@ -10,23 +10,39 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException{
-        users.clear();
+        try{
+            users.clear();
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
-    @Override
+    @Override   // Makes a user
     public void createUser(String username, String password, String email) throws DataAccessException {
-        UserData user = new UserData(username, password, email);
-        users.put(username, user);
+        try {
+            UserData user = new UserData(username, password, email);
+            users.put(username, user);
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
-    @Override
+    @Override   // Gets a user given the username
     public UserData getUser(String username) throws DataAccessException {
-        // If it has the username, return the UserData Object, else return null
-        return users.getOrDefault(username, null);
+        try {
+            // If it has the username, return the UserData Object, else return null
+            return users.getOrDefault(username, null);
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
-    @Override
-    public Map<String, UserData> getUsers(){
-        return users;
+    @Override   // Returns all the users
+    public Map<String, UserData> getUsers() throws DataAccessException {
+        try{
+            return users;
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 }

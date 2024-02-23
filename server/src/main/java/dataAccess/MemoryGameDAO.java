@@ -18,32 +18,52 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public Integer createGame(String GameName) throws DataAccessException {
-        ChessGame chessGame = new ChessGame();
-        GameData game = new GameData(ID, "", "", GameName, chessGame);
-        games.put(ID, game);
-        int gameId = ID;
-        ID = ID + 1;  // Increment ID
-        return gameId;   // Return the ID of the game created
+        try {
+            ChessGame chessGame = new ChessGame();
+            GameData game = new GameData(ID, null, null, GameName, chessGame);
+            games.put(ID, game);
+            int gameId = ID;
+            ID = ID + 1;  // Increment ID
+            return gameId;   // Return the ID of the game created
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
     @Override
     public GameData getGame(Integer id) throws DataAccessException {
-        return games.getOrDefault(id, null);
+        try {
+            return games.getOrDefault(id, null);
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return Collections.unmodifiableCollection(games.values());  // Returns the collection as unmodifiable
+        try {
+            return Collections.unmodifiableCollection(games.values());  // Returns the collection as unmodifiable
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-        games.remove(game.gameID());  // Remove old game
-        games.put(game.gameID(), game);  // Add the new updated game
+        try {
+            games.remove(game.gameID());  // Remove old game
+            games.put(game.gameID(), game);  // Add the new updated games
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 
     @Override
-    public Map<Integer, GameData> getGames(){
-        return games;
+    public Map<Integer, GameData> getGames() throws DataAccessException {
+        try {
+            return games;
+        } catch (Exception e){
+            throw new DataAccessException("Data Access Exception");
+        }
     }
 }

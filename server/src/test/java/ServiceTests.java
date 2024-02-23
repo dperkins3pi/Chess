@@ -16,11 +16,6 @@ import service.*;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-
-import java.net.HttpURLConnection;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServiceTests{
 
@@ -200,7 +195,7 @@ public class ServiceTests{
 
         // Verify if the game was added
         ChessGame chessGame = new ChessGame();
-        GameData game = new GameData(id, "", "", "Game1", chessGame);
+        GameData game = new GameData(id, null, null, "Game1", chessGame);
         Assertions.assertEquals(gameDAO.getGame(id), game);
 
         // Call Service again
@@ -208,7 +203,7 @@ public class ServiceTests{
 
         // Verify if the game was added
         ChessGame chessGame2 = new ChessGame();
-        GameData game2 = new GameData(id2, "", "", "Game2", chessGame2);
+        GameData game2 = new GameData(id2, null, null, "Game2", chessGame2);
         Assertions.assertEquals(gameDAO.getGame(id2), game2);
     }
     @Test
@@ -248,7 +243,7 @@ public class ServiceTests{
         service.joinGame(authToken1, "WHITE", id);
         // See if users were entered in correctly
         Assertions.assertEquals(gameDAO.getGame(id).whiteUsername(), "username1");  // White user
-        Assertions.assertEquals(gameDAO.getGame(id).blackUsername(), "");  // White user
+        Assertions.assertNull(gameDAO.getGame(id).blackUsername());  // White user
 
         // Join as black user
         service.joinGame(authToken2, "BLACK", id);
@@ -259,13 +254,13 @@ public class ServiceTests{
         // Join a different game
         service.joinGame(authToken3, "BLACK", id2);
         // See if users were entered in correctly
-        Assertions.assertEquals(gameDAO.getGame(id2).whiteUsername(), "");  // White user
+        Assertions.assertNull(gameDAO.getGame(id2).whiteUsername());  // White user
         Assertions.assertEquals(gameDAO.getGame(id2).blackUsername(), "username3");  // White user
 
         // Spectate
-        service.joinGame(authToken4, "", id2);
+        service.joinGame(authToken4, null, id2);
         // See if users were entered in correctly
-        Assertions.assertEquals(gameDAO.getGame(id2).whiteUsername(), "");  // White user
+        Assertions.assertNull(gameDAO.getGame(id2).whiteUsername());  // White user
         Assertions.assertEquals(gameDAO.getGame(id2).blackUsername(), "username3");  // White user
     }
     @Test

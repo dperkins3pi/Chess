@@ -2,13 +2,10 @@ package handler;
 
 import com.google.gson.Gson;
 import dataAccess.*;
-import exceptions.AlreadyTakenException;
-import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import request.LoginRequest;
 import response.ResponseClass;
 import service.LoginService;
-import service.RegisterService;
 import spark.Request;
 import spark.Response;
 
@@ -33,7 +30,7 @@ public class LoginHandler {
         LoginService loginService = new LoginService(authDAO, gameDAO, userDAO);
 
         ResponseClass res = null;
-        try {
+        try {   // Catch all errors
             res = loginService.login(username, password);
             response.status(200);
             return new Gson().toJson(res);

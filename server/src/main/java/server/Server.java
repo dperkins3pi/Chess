@@ -1,6 +1,5 @@
 package server;
 
-import com.google.gson.Gson;
 import dataAccess.*;
 import handler.*;
 import spark.*;

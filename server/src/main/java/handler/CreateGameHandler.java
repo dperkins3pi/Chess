@@ -32,7 +32,7 @@ public class CreateGameHandler {
         // Call service
         CreateGameService createGameService = new CreateGameService(authDAO, gameDAO, userDAO);
         ResponseClass res = null;
-        try {
+        try {  // Catch all errors
             int ID = createGameService.createGame(authToken, gameName);
             res = new ResponseClass(ID);
             response.status(200);

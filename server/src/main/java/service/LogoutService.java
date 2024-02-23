@@ -1,12 +1,8 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import dataAccess.*;
 import exceptions.UnauthorizedException;
 import model.UserData;
-import response.ResponseClass;
 
 public class LogoutService {
     AuthDAO authDAO;

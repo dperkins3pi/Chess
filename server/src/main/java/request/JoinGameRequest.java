@@ -4,7 +4,7 @@ public class JoinGameRequest {
     String playerColor;
     Integer gameID;
 
-    public String getPlayerColor() {
+    public String getPlayerColor() {  // Used to parse in request object
         return playerColor;
     }
 

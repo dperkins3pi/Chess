@@ -16,7 +16,7 @@ public class ClearHandler{
     public Object handle(Request request, Response response) throws DataAccessException {
         // Call clear service
         Object res = "{}";
-        try {
+        try {  // Catch all errors
             ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
             clearService.clear();
             response.status(200);

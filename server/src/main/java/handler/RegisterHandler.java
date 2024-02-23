@@ -28,7 +28,7 @@ public class RegisterHandler {
         // Call service
         RegisterService registerService = new RegisterService(authDAO, gameDAO, userDAO);
         ResponseClass res = null;
-        try {
+        try {  // Catch all errors
             res = registerService.register(username, password, email);
             response.status(200);  // It worked!!!!
             return new Gson().toJson(res);

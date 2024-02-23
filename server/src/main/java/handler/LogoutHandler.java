@@ -26,7 +26,7 @@ public class LogoutHandler {
         // Call service
         LogoutService logoutService = new LogoutService(authDAO, gameDAO, userDAO);
         ResponseClass res = null;
-        try {
+        try {   // Catch all errors
             logoutService.logout(authToken);
             response.status(200);
             return "{}";

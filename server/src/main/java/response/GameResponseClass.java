@@ -1,12 +1,8 @@
 package response;
-
-import chess.ChessGame;
-import com.google.gson.annotations.Expose;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 public class GameResponseClass {
     String message;

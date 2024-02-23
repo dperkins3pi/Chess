@@ -28,7 +28,7 @@ public class ListGamesHandler {
         // Call service
         ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO, userDAO);
         GameResponseClass res = null;
-        try {
+        try {  // Catch all errors
             Collection<GameData> games = listGamesService.listGames(authToken);
             res = new GameResponseClass(games);
             response.status(200);

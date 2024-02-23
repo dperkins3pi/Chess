@@ -1,6 +1,6 @@
 package request;
 
-public class CreateGameRequest {
+public class CreateGameRequest { // Used to parse in request object
     String gameName;
 
     public String getGameName() {

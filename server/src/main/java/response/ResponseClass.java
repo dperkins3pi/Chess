@@ -1,6 +1,6 @@
 package response;
 
-public class ResponseClass {
+public class ResponseClass {   // Used to return response objects
     String username;
     String authToken;
     String message;

@@ -4,7 +4,7 @@ public class LoginRequest {
     String username;
     String password;
 
-    public String getUsername() {
+    public String getUsername() {  // Used to parse in request object
         return username;
     }
 

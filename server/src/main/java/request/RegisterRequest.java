@@ -1,9 +1,6 @@
 package request;
 
-import exceptions.AlreadyTakenException;
-import exceptions.BadRequestException;
-
-public class RegisterRequest {
+public class RegisterRequest {  // Used to parse in request object
     String username;
     String password;
     String email;

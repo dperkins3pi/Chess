@@ -1,6 +1,8 @@
 package dataAccess;
 import chess.ChessGame;
 import model.GameData;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +30,8 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public Map<Integer, GameData> listGames() throws DataAccessException {
-        return null;
+    public Collection<GameData> listGames() throws DataAccessException {
+        return Collections.unmodifiableCollection(games.values());  // Returns the collection as unmodifiable
     }
 
     @Override

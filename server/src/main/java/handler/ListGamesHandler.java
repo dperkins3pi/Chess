@@ -1,8 +1,14 @@
 package handler;
 
-import dataAccess.AuthDAO;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import com.google.gson.Gson;
+import java.util.Collection;
+import dataAccess.*;
+import exceptions.UnauthorizedException;
+import model.GameData;
+import response.ResponseClass;
+import service.ListGamesService;
+import spark.Request;
+import spark.Response;
 
 public class ListGamesHandler {
     AuthDAO authDAO;
@@ -13,5 +19,28 @@ public class ListGamesHandler {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
+    }
+
+    public Object handle(Request request, Response response) throws DataAccessException {
+        // Get data from request
+        String authToken = request.headers("Authorization");
+
+        // Call service
+        ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO, userDAO);
+        ResponseClass res = null;
+        try {
+            Collection<GameData> games = listGamesService.listGames(authToken);
+            res = new ResponseClass(games);
+            response.status(200);
+            return new Gson().toJson(res);
+        } catch (UnauthorizedException e) {
+            res = new ResponseClass(e.getMessage());
+            response.status(401);
+            return new Gson().toJson(res);
+        } catch (Exception e) {
+            res = new ResponseClass(e.getMessage());
+            response.status(500);
+            return new Gson().toJson(res);
+        }
     }
 }

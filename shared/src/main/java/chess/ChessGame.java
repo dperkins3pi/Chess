@@ -104,15 +104,15 @@ public class ChessGame {
                 }
                 else if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == -2){  // If the move passed in is casteling
                     board.addPiece(move.getStartPosition(), null);
-                    var new_position = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() - 1);
-                    board.addPiece(new_position, piece);
+                    var newPosition = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() - 1);
+                    board.addPiece(newPosition, piece);
                     if(isInCheck(color)) {  // Path is not safe
                         board.addPiece(move.getStartPosition(), piece); // Undo the moves
-                        board.addPiece(new_position, null);
+                        board.addPiece(newPosition, null);
                         break;
                     }
                     // move on more time
-                    board.addPiece(new_position, null);
+                    board.addPiece(newPosition, null);
                     board.addPiece(move.getEndPosition(), piece);
                     if(isInCheck(color)) {
                         ;  // Path is not safe

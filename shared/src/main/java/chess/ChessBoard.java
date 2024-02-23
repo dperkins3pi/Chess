@@ -118,20 +118,20 @@ public class ChessBoard {
 
     @Override
     public String toString(){
-        String the_string = "";
+        String theString = "";
         for (int i=0; i<8; i++){  // Go through the rows
-            the_string += "|";
+            theString += "|";
             for (int j=0; j<8; j++){  // Go through the columns
                 if (squares[i][j] == null){
-                    the_string += " |";
+                    theString += " |";
                 }
                 else {
-                    the_string += squares[i][j].toString() + "|";
+                    theString += squares[i][j].toString() + "|";
                 }
             }
-            the_string += "\n";  // Add new line
+            theString += "\n";  // Add new line
         }
-        return the_string;
+        return theString;
     }
 
     @Override

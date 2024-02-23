@@ -284,8 +284,8 @@ public class ChessPiece {
                             position = new ChessPosition(row + 1, col + 1);
                             if(board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()) {
                                 // Enemy is there
-                                var new_move = new ChessMove(myPosition, position, null);
-                                moves.add(new_move);
+                                var newMove = new ChessMove(myPosition, position, null);
+                                moves.add(newMove);
                             }
                             // Passant
                             var otherPosition = new ChessPosition(row, col + 1);
@@ -303,8 +303,8 @@ public class ChessPiece {
                                 moves.add(newMove);
                             }
                             // Passant
-                            var other_position = new ChessPosition(row, col - 1);
-                            var otherPiece = board.getPiece(other_position);
+                            var otherPosition = new ChessPosition(row, col - 1);
+                            var otherPiece = board.getPiece(otherPosition);
                             if(otherPiece != null && otherPiece.getPassantPossible()){
                                 var newMove = new ChessMove(myPosition, position, null);;
                                 moves.add(newMove);

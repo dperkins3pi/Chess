@@ -57,13 +57,4 @@ public class MemoryGameDAO implements GameDAO{
             throw new DataAccessException("Data Access Exception");
         }
     }
-
-    @Override
-    public Map<Integer, GameData> getGames() throws DataAccessException {
-        try {
-            return games;
-        } catch (Exception e){
-            throw new DataAccessException("Data Access Exception");
-        }
-    }
 }

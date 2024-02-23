@@ -38,9 +38,9 @@ public class ServiceTests{
     @Test
     public void clearService() throws Exception {
         // Arbitrarily add stuff to each DAO
-        authDAO.createAuth("Frank");
-        authDAO.createAuth("John");
-        authDAO.createAuth("Cena");
+        String authToken1 = authDAO.createAuth("Frank");
+        String authToken2 = authDAO.createAuth("John");
+        String authToken3 = authDAO.createAuth("Cena");
         userDAO.createUser("Username", "Password", "Email");
         userDAO.createUser("Username2", "Password2", "Email2");
         gameDAO.createGame("Game1");
@@ -51,9 +51,12 @@ public class ServiceTests{
         service.clear();
 
         // See if things were removed
-        Assertions.assertEquals(authDAO.getAuthTokens(), new HashMap<>());
-        Assertions.assertEquals(gameDAO.getGames(), new HashMap<>());
-        Assertions.assertEquals(userDAO.getUsers(), new HashMap<>());
+        Assertions.assertTrue(gameDAO.listGames().isEmpty());
+        Assertions.assertNull(authDAO.getAuth(authToken1));
+        Assertions.assertNull(authDAO.getAuth(authToken2));
+        Assertions.assertNull(authDAO.getAuth(authToken3));
+        Assertions.assertNull(userDAO.getUser("Username"));
+        Assertions.assertNull(userDAO.getUser("Username2"));
     }
 
     @Test
@@ -70,8 +73,8 @@ public class ServiceTests{
         UserData theUserData2 = new UserData("username2", "password2", "email2");
 
         // See if users are correctly registered
-        Assertions.assertEquals(userDAO.getUsers().get("username"), theUserData);
-        Assertions.assertEquals(userDAO.getUsers().get("username2"), theUserData2);
+        Assertions.assertEquals(userDAO.getUser("username"), theUserData);
+        Assertions.assertEquals(userDAO.getUser("username2"), theUserData2);
 
         // Create authdata objects that should be stored
         AuthData theAuthData = new AuthData(authToken, "username");
@@ -111,8 +114,8 @@ public class ServiceTests{
         AuthData theAuthData2 = new AuthData(authToken2, "username2");
 
         // See if users are logged in with there authtokens
-        Assertions.assertEquals(authDAO.getAuthTokens().get(authToken), theAuthData);
-        Assertions.assertEquals(authDAO.getAuthTokens().get(authToken2), theAuthData2);
+        Assertions.assertEquals(authDAO.getAuth(authToken), theAuthData);
+        Assertions.assertEquals(authDAO.getAuth(authToken2), theAuthData2);
     }
 
     @Test
@@ -142,7 +145,7 @@ public class ServiceTests{
         service.logout(authToken);
 
         // See if users is no longer logged in
-        Assertions.assertNull(authDAO.getAuthTokens().get(authToken));
+        Assertions.assertNull(authDAO.getAuth(authToken));
     }
 
     @Test

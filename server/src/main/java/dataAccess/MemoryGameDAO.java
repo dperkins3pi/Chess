@@ -17,10 +17,10 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public Integer createGame(String GameName) throws DataAccessException {
+    public Integer createGame(String gameName) throws DataAccessException {
         try {
             ChessGame chessGame = new ChessGame();
-            GameData game = new GameData(id, null, null, GameName, chessGame);
+            GameData game = new GameData(id, null, null, gameName, chessGame);
             games.put(id, game);
             int gameId = id;
             id = id + 1;  // Increment ID

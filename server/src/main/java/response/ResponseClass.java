@@ -23,7 +23,7 @@ public class ResponseClass {   // Used to return response objects
         this.message = message;
     }
 
-    public ResponseClass(int ID) {
-        this.gameID = ID;
+    public ResponseClass(int id) {
+        this.gameID = id;
     }
 }

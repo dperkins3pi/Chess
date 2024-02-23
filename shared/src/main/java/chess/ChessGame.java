@@ -15,27 +15,27 @@ public class ChessGame {
     private TeamColor team;
     private ChessBoard board = new ChessBoard();
 
-    private ChessPosition PassantPosition;   // Stores the position of pawns that moved 2 (for just one turn)
+    private ChessPosition passantPosition;   // Stores the position of pawns that moved 2 (for just one turn)
     // This allows the code to change Passant to false after one turn is made
 
     public ChessGame() {
         setTeamTurn(TeamColor.WHITE); // White starts
         this.board.resetBoard();
         setBoard(this.board);  // Set board to start
-        this.PassantPosition = null;
+        this.passantPosition = null;
     }
     public ChessGame(ChessGame newGame){
         this.setTeamTurn(newGame.getTeamTurn());
         this.board = new ChessBoard(newGame.board);
-        this.PassantPosition = null;
+        this.passantPosition = null;
     }
 
     public ChessPosition getPassantPosition() {
-        return this.PassantPosition;
+        return this.passantPosition;
     }
 
     public void setPassantPosition(ChessPosition passantPosition) {
-        this.PassantPosition = passantPosition;
+        this.passantPosition = passantPosition;
     }
 
     /**
@@ -218,7 +218,7 @@ public class ChessGame {
                     move.getEndPosition().getRow() - move.getStartPosition().getRow() == -2){
                 piece.setPassant(true);
                 setPassantPosition(move.getEndPosition());  // Store what what moved 2
-                System.out.println(PassantPosition);
+                System.out.println(passantPosition);
             }
         }
         else{

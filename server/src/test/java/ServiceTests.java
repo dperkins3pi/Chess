@@ -213,7 +213,7 @@ public class ServiceTests{
     }
     @Test
     public void createGameServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
-        // listGameService with invalid authToken (since no one is logged in)
+        // createGameService with invalid authToken (since no one is logged in)
         CreateGameService service = new CreateGameService(authDAO, gameDAO, userDAO);
         Assertions.assertThrows(UnauthorizedException.class, () -> service.createGame("cheese", "Game1"));
 
@@ -223,5 +223,84 @@ public class ServiceTests{
         String authToken = response.getAuthToken();           // Get authtoken
         // See if an error results for not putting in gameName
         Assertions.assertThrows(BadRequestException.class, () -> service.createGame(authToken, null));
+    }
+
+    @Test
+    public void joinGameServicePositive() throws UnauthorizedException, BadRequestException, DataAccessException, AlreadyTakenException {
+        // Register new users
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        ResponseClass response = registerer.register("username1", "password", "email");
+        String authToken1 = response.getAuthToken();           // Get authtoken
+        ResponseClass response2 = registerer.register("username2", "password", "email");
+        String authToken2 = response2.getAuthToken();           // Get authtoken
+        ResponseClass response3 = registerer.register("username3", "password", "email");
+        String authToken3 = response3.getAuthToken();           // Get authtoken
+        ResponseClass response4 = registerer.register("username4", "password", "email");
+        String authToken4 = response4.getAuthToken();           // Get authtoken
+
+        // Create two games
+        CreateGameService gameMaker = new CreateGameService(authDAO, gameDAO, userDAO);
+        Integer id = gameMaker.createGame(authToken1, "Game1");
+        Integer id2 = gameMaker.createGame(authToken1, "Game2");
+
+        // Join as white user
+        JoinGameService service = new JoinGameService(authDAO, gameDAO, userDAO);
+        service.joinGame(authToken1, "WHITE", id);
+        // See if users were entered in correctly
+        Assertions.assertEquals(gameDAO.getGame(id).whiteUsername(), "username1");  // White user
+        Assertions.assertEquals(gameDAO.getGame(id).blackUsername(), "");  // White user
+
+        // Join as black user
+        service.joinGame(authToken2, "BLACK", id);
+        // See if users were entered in correctly
+        Assertions.assertEquals(gameDAO.getGame(id).whiteUsername(), "username1");  // White user
+        Assertions.assertEquals(gameDAO.getGame(id).blackUsername(), "username2");  // White user
+
+        // Join a different game
+        service.joinGame(authToken3, "BLACK", id2);
+        // See if users were entered in correctly
+        Assertions.assertEquals(gameDAO.getGame(id2).whiteUsername(), "");  // White user
+        Assertions.assertEquals(gameDAO.getGame(id2).blackUsername(), "username3");  // White user
+
+        // Spectate
+        service.joinGame(authToken4, "", id2);
+        // See if users were entered in correctly
+        Assertions.assertEquals(gameDAO.getGame(id2).whiteUsername(), "");  // White user
+        Assertions.assertEquals(gameDAO.getGame(id2).blackUsername(), "username3");  // White user
+    }
+    @Test
+    public void joinGameServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        // joinGameService with invalid authToken (since no one is logged in)
+        JoinGameService service = new JoinGameService(authDAO, gameDAO, userDAO);
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.joinGame("cheese", "WHITE", 1));
+
+        // Register new users
+        RegisterService registerer = new RegisterService(authDAO, gameDAO, userDAO);
+        ResponseClass response = registerer.register("username1", "password", "email");
+        String authToken1 = response.getAuthToken();           // Get authtoken
+        ResponseClass response2 = registerer.register("username2", "password", "email");
+        String authToken2 = response2.getAuthToken();           // Get authtoken
+        ResponseClass response3 = registerer.register("username3", "password", "email");
+        String authToken3 = response3.getAuthToken();           // Get authtoken
+        ResponseClass response4 = registerer.register("username4", "password", "email");
+        String authToken4 = response4.getAuthToken();           // Get authtoken
+
+        // Create two games
+        CreateGameService gameMaker = new CreateGameService(authDAO, gameDAO, userDAO);
+        Integer id = gameMaker.createGame(authToken1, "Game1");
+        Integer id2 = gameMaker.createGame(authToken1, "Game2");
+
+        // Join as white user
+        service.joinGame(authToken1, "WHITE", id);
+        // Join again as white user to see if error results
+        Assertions.assertThrows(AlreadyTakenException.class, () -> service.joinGame(authToken1, "WHITE", id));
+
+        // Try joining with incorrect color
+        Assertions.assertThrows(BadRequestException.class, () -> service.joinGame(authToken1, "GREEN", id));
+        // Try joining with wrong IS
+        Assertions.assertThrows(BadRequestException.class, () -> service.joinGame(authToken1, "BLACK", 75));
+
+
+
     }
 }

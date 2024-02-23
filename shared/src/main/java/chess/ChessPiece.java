@@ -270,16 +270,7 @@ public class ChessPiece {
             }
             if (row == 7){  // Promotion time!
                 position = new ChessPosition(row + 1, col);
-                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                    var newMove = new ChessMove(myPosition, position, QUEEN);
-                    moves.add(newMove);
-                    newMove = new ChessMove(myPosition, position, KNIGHT);
-                    moves.add(newMove);
-                    newMove = new ChessMove(myPosition, position, BISHOP);
-                    moves.add(newMove);
-                    newMove = new ChessMove(myPosition, position, ROOK);
-                    moves.add(newMove);
-                }
+                pawnPromotion(board, myPosition, moves, position);
                 if (col < 7){
                     position = new ChessPosition(row + 1, col + 1);
                     addMovesWithEnemy(board, myPosition, moves, position);
@@ -338,16 +329,7 @@ public class ChessPiece {
             }
             if (row == 2){  // Promotion time!
                 position = new ChessPosition(row - 1, col);
-                if(board.getPiece(position) == null){  // Empty spot so we can actually go there
-                    var newMove = new ChessMove(myPosition, position, QUEEN);
-                    moves.add(newMove);
-                    newMove = new ChessMove(myPosition, position, KNIGHT);
-                    moves.add(newMove);
-                    newMove = new ChessMove(myPosition, position, BISHOP);
-                    moves.add(newMove);
-                    newMove = new ChessMove(myPosition, position, ROOK);
-                    moves.add(newMove);
-                }
+                pawnPromotion(board, myPosition, moves, position);
                 if (col < 7){
                     position = new ChessPosition(row - 1, col + 1);
                     addMovesWithEnemy(board, myPosition, moves, position);
@@ -359,6 +341,19 @@ public class ChessPiece {
             }
         }
         return moves;
+    }
+
+    private void pawnPromotion(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {
+        if(board.getPiece(position) == null){  // Empty spot so we can actually go there
+            var newMove = new ChessMove(myPosition, position, QUEEN);
+            moves.add(newMove);
+            newMove = new ChessMove(myPosition, position, KNIGHT);
+            moves.add(newMove);
+            newMove = new ChessMove(myPosition, position, BISHOP);
+            moves.add(newMove);
+            newMove = new ChessMove(myPosition, position, ROOK);
+            moves.add(newMove);
+        }
     }
 
     private void addMovesWithEnemy(ChessBoard board, ChessPosition myPosition, HashSet<ChessMove> moves, ChessPosition position) {

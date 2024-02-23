@@ -73,22 +73,22 @@ public class ChessGame {
         var piece = this.board.getPiece(startPosition);
         if (piece == null) return new HashSet<ChessMove>();  // If null return an empty hash set
         var color = piece.getTeamColor();
-        var possible_moves = piece.pieceMoves(this.board, startPosition);
-        var valid_moves = new HashSet<ChessMove>();
-        for (var move: possible_moves){
+        var possibleMoves = piece.pieceMoves(this.board, startPosition);
+        var validMoves = new HashSet<ChessMove>();
+        for (var move: possibleMoves){
             if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.notAlreadyMoved()){
                 if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == 2){  // If the move passed in is casteling
                     board.addPiece(move.getStartPosition(), null);
-                    var new_position = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() + 1);
-                    board.addPiece(new_position, piece);
+                    var newPosition = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() + 1);
+                    board.addPiece(newPosition, piece);
                     if(isInCheck(color)) {
                         ;  // Path is not safe
                         board.addPiece(move.getStartPosition(), piece); // Undo the moves
-                        board.addPiece(new_position, null);
+                        board.addPiece(newPosition, null);
                         break;
                     }
                     // move one more time
-                    board.addPiece(new_position, null);
+                    board.addPiece(newPosition, null);
                     board.addPiece(move.getEndPosition(), piece);
                     if(isInCheck(color)) {
                         ;  // Path is not safe
@@ -99,7 +99,7 @@ public class ChessGame {
                     else{
                         board.addPiece(move.getStartPosition(), piece); // Undo the moves
                         board.addPiece(move.getEndPosition(), null);
-                        valid_moves.add(move);
+                        validMoves.add(move);
                     }
                 }
                 else if (move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == -2){  // If the move passed in is casteling
@@ -123,7 +123,7 @@ public class ChessGame {
                     else {
                         board.addPiece(move.getStartPosition(), piece); // Undo the moves
                         board.addPiece(move.getEndPosition(), null);
-                        valid_moves.add(move);
+                        validMoves.add(move);
                     }
                 }
             }
@@ -136,7 +136,7 @@ public class ChessGame {
                 piece = new ChessPiece(color, move.getPromotionPiece());
                 board.addPiece(move.getEndPosition(), piece);
             }
-            boolean is_in_check = isInCheck(color);   // If it is in check, we will not add the move
+            boolean isInCheck = isInCheck(color);   // If it is in check, we will not add the move
             // Undo moves
             board.addPiece(move.getEndPosition(), pieceAttacked);
             if (move.getPromotionPiece() == null){
@@ -146,11 +146,11 @@ public class ChessGame {
                 piece = new ChessPiece(color, ChessPiece.PieceType.PAWN);
                 board.addPiece(move.getStartPosition(), piece);
             }
-            if (!is_in_check){
-                valid_moves.add(move);   // If it didn't go in check, the move is valid
+            if (!isInCheck){
+                validMoves.add(move);   // If it didn't go in check, the move is valid
             }
         }
-        return valid_moves;
+        return validMoves;
     }
 
     /**
@@ -162,15 +162,15 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var piece = this.board.getPiece(move.getStartPosition());
         if (piece == null) {
-            var error_message = "There is no piece there";
-            throw new InvalidMoveException(error_message);
+            var errorMessage = "There is no piece there";
+            throw new InvalidMoveException(errorMessage);
         }
         if (piece.getTeamColor() != this.getTeamTurn()) {  //If the wrong team tries to move
-            var error_message = "It is not " + piece.getTeamColor() + "'s turn to play";
-            throw new InvalidMoveException(error_message);
+            var errorMessage = "It is not " + piece.getTeamColor() + "'s turn to play";
+            throw new InvalidMoveException(errorMessage);
         }
-        var valid_moves = this.validMoves(move.getStartPosition());
-        if(valid_moves.contains(move)){
+        var validMoves = this.validMoves(move.getStartPosition());
+        if(validMoves.contains(move)){
             if (move.getPromotionPiece() != null){  // If it will be promoted, change the piece
                 piece = new ChessPiece(team, move.getPromotionPiece());
             }
@@ -178,27 +178,27 @@ public class ChessGame {
             if(piece.getPieceType() == ChessPiece.PieceType.PAWN && board.getPiece(move.getEndPosition()) == null &&
                     move.getEndPosition().getColumn() - move.getStartPosition().getColumn() != 0){
                 if(move.getEndPosition().getRow()==3){
-                    var new_position = new ChessPosition(4, move.getEndPosition().getColumn());
-                    board.addPiece(new_position, null);  // Attack the passaned piece
+                    var newPosition = new ChessPosition(4, move.getEndPosition().getColumn());
+                    board.addPiece(newPosition, null);  // Attack the passaned piece
                 }
                 if(move.getEndPosition().getRow()==6){
-                    var new_position = new ChessPosition(5, move.getEndPosition().getColumn());
-                    board.addPiece(new_position, null);  // Attack the passaned piece
+                    var newPosition = new ChessPosition(5, move.getEndPosition().getColumn());
+                    board.addPiece(newPosition, null);  // Attack the passaned piece
                 }
             }
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);  //Remove the piece from where it started
             // If the move was a castling
             if(piece.getPieceType() == ChessPiece.PieceType.KING && move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == 2){
-                var rook_position = new ChessPosition(move.getStartPosition().getRow(), 8);
-                var rook = this.board.getPiece(rook_position);
-                board.addPiece(rook_position, null); // Remove old rook
+                var rookPosition = new ChessPosition(move.getStartPosition().getRow(), 8);
+                var rook = this.board.getPiece(rookPosition);
+                board.addPiece(rookPosition, null); // Remove old rook
                 board.addPiece(new ChessPosition(move.getStartPosition().getRow(), 6), rook); // Move old rook
             }
             else if(piece.getPieceType() == ChessPiece.PieceType.KING && move.getEndPosition().getColumn() - move.getStartPosition().getColumn() == -2){
-                var rook_position = new ChessPosition(move.getStartPosition().getRow(), 1);
-                var rook = this.board.getPiece(rook_position);
-                board.addPiece(rook_position, null); // Remove old rook
+                var rookPosition = new ChessPosition(move.getStartPosition().getRow(), 1);
+                var rook = this.board.getPiece(rookPosition);
+                board.addPiece(rookPosition, null); // Remove old rook
                 board.addPiece(new ChessPosition(move.getStartPosition().getRow(), 4), rook); // Move old rook
             }
             if (getPassantPosition() != null && this.board.getPiece(getPassantPosition()) != null){  // If the previous board had something on passant
@@ -236,13 +236,13 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         // Inefficient method; could optimize it by looking around the king
         // Find the king
-        var king_position = new ChessPosition(0, 0);
+        var kingPosition = new ChessPosition(0, 0);
         for(int i=1; i <= 8; i++){
             for(int j=1; j <= 8; j++){
                 var position = new ChessPosition(i, j);
                 var piece = this.board.getPiece(position);
                 if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
-                    king_position = position;
+                    kingPosition = position;
                     break;
                 }
             }
@@ -253,8 +253,8 @@ public class ChessGame {
                 var position = new ChessPosition(i, j);
                 var piece = this.board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor) {
-                    var king_move = new ChessMove(position, king_position, null);
-                    var king_move2 = new ChessMove(position, king_position, ChessPiece.PieceType.QUEEN);  //Rare case that pawn promotion results in check
+                    var king_move = new ChessMove(position, kingPosition, null);
+                    var king_move2 = new ChessMove(position, kingPosition, ChessPiece.PieceType.QUEEN);  //Rare case that pawn promotion results in check
                     if (piece.pieceMoves(board, position).contains(king_move) || piece.pieceMoves(board, position).contains(king_move2)) {
                         return true;
                     }

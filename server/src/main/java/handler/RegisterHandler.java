@@ -30,6 +30,7 @@ public class RegisterHandler {
         ResponseClass res = null;
         try {  // Catch all errors
             res = registerService.register(username, password, email);
+            String authToken = res.getAuthToken();
             response.status(200);  // It worked!!!!
             return new Gson().toJson(res);
         } catch (BadRequestException e) {

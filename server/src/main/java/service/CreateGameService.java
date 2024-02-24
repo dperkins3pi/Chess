@@ -23,6 +23,7 @@ public class CreateGameService {
     public Integer createGame(String authToken, String gameName) throws DataAccessException, UnauthorizedException, BadRequestException {
         Map<String, AuthData> authTokens = authDAO.getAuthTokens();
         AuthData auth = authTokens.get(authToken);
+
         if(auth == null){  // If the given authtoken is not in the list
             throw new UnauthorizedException("Error: unauthorized");
         }

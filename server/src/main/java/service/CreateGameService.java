@@ -3,9 +3,11 @@ package service;
 import dataAccess.*;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
+import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class CreateGameService {
     AuthDAO authDAO;
@@ -19,7 +21,9 @@ public class CreateGameService {
     }
 
     public Integer createGame(String authToken, String gameName) throws DataAccessException, UnauthorizedException, BadRequestException {
-        if(authDAO.getAuth(authToken) == null){  // If the given authtoken is not in the list
+        Map<String, AuthData> authTokens = authDAO.getAuthTokens();
+        AuthData auth = authTokens.get(authToken);
+        if(auth == null){  // If the given authtoken is not in the list
             throw new UnauthorizedException("Error: unauthorized");
         }
         if(gameName == null){  // If invalid input is given

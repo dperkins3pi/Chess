@@ -11,9 +11,15 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Create DAOs
-        AuthDAO authDao = new MemoryAuthDAO();
+        AuthDAO authDao = null;
         GameDAO gameDao = new MemoryGameDAO();
         UserDAO userDao = new MemoryUserDAO();
+        try{
+            authDao = new DatabaseAuthDAO();
+        } catch (DataAccessException e) {
+            System.out.println("stuff");
+            throw new RuntimeException(e);
+        }
 
         // Register your endpoints and handle exceptions here.   //HELP
         Spark.delete("/db", new ClearHandler(authDao, gameDao, userDao)::handle);  //Clear

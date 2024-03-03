@@ -57,7 +57,7 @@ public class ServiceTests{
     }
 
     @Test
-    public void registerServicePositive() throws BadRequestException, DataAccessException, AlreadyTakenException {
+    public void registerServicePositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
         // Call register service and store authtoken
         RegisterService service = new RegisterService(authDAO, gameDAO, userDAO);
         ResponseClass response = service.register("username", "password", "email");
@@ -78,8 +78,8 @@ public class ServiceTests{
         AuthData theAuthData2 = new AuthData(authToken2, "username2");
 
         // See if users are correctly logged in
-        Assertions.assertEquals(authDAO.getAuthTokens().get(authToken), theAuthData);
-        Assertions.assertEquals(authDAO.getAuthTokens().get(authToken2), theAuthData2);
+        Assertions.assertEquals(authDAO.getAuth(authToken), theAuthData);
+        Assertions.assertEquals(authDAO.getAuth(authToken2), theAuthData2);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package dataAccess;
 
 import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 import model.AuthData;
 
 import java.sql.ResultSet;
@@ -59,9 +60,9 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuth(String authToken) throws DataAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException, UnauthorizedException {
         String username = null;
-        String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // Counts the number of items in the DAO
+        String sql = "SELECT username FROM authDAO WHERE authToken = ?";  // Counts the number of items in the DAO
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
@@ -77,7 +78,8 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public String getUsername(String authToken) throws DataAccessException {
+    public String getUsername(String authToken) throws DataAccessException, UnauthorizedException {
+        if(!isValid(authToken)) throw new UnauthorizedException("Invalid authtoken");
         String username = null;
         String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // Select user
         try (var conn = DatabaseManager.getConnection()) {
@@ -95,21 +97,17 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException {
-        String sql = "DELETE FROM AuthDAO WHERE authToken = ?";  // Delete
+    public void deleteAuth(String authToken) throws DataAccessException, UnauthorizedException {
+        if(!isValid(authToken)) throw new UnauthorizedException("Invalid authtoken");
+        String sql = "DELETE FROM authDAO WHERE authToken = ?";  // Delete
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
-                preparedStatement.executeQuery();
+                preparedStatement.executeUpdate();
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    @Override
-    public Map<String, AuthData> getAuthTokens() throws DataAccessException {
-        return null;
     }
 
     public boolean isEmpty(){   // Checks to see if is empty
@@ -126,6 +124,11 @@ public class DatabaseAuthDAO implements AuthDAO{
              throw new RuntimeException(ex);
         }
         return row_count == 0;
+    }
+
+    private boolean isValid(String authToken) throws DataAccessException, UnauthorizedException {   // Sees if the authtoken is valid
+        AuthData authData = getAuth(authToken);
+        return (authData.username() != null);
     }
 
     private final String[] createStatements = {

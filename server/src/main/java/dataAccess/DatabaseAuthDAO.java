@@ -2,8 +2,10 @@ package dataAccess;
 
 import model.AuthData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.UUID;
 
 public class DatabaseAuthDAO implements AuthDAO{
     public DatabaseAuthDAO() throws DataAccessException {
@@ -11,12 +13,31 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
     @Override
     public void clear() throws DataAccessException {
-
+        String sql = "DELETE FROM AuthDAO";  // SQL command
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.executeUpdate(); // Run the commnand
+            }
+        } catch (SQLException ex) {   // If the table was never created
+            throw new DataAccessException(String.format("Unable to clear authToken: %s", ex.getMessage()));
+        }
     }
 
     @Override
     public String createAuth(String username) throws DataAccessException {
-        return null;
+        String newToken = UUID.randomUUID().toString();  // Create authToken
+
+        String sql = "INSERT INTO AuthDAO (authToken, username) values (?, ?)";  // SQL command
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, newToken);   // Get the data
+                preparedStatement.setString(2, username);
+                preparedStatement.executeUpdate(); // Perform the statement
+            }
+        } catch (SQLException ex) {   // If the table was never created
+            throw new DataAccessException(String.format("Unable to create authToken: %s", ex.getMessage()));
+        }
+        return newToken;
     }
 
     @Override
@@ -39,19 +60,22 @@ public class DatabaseAuthDAO implements AuthDAO{
         return null;
     }
 
-    // String for the SQL commands
+    public boolean isEmpty(){   // Checks to see if is empty
+        String sql = "SELECT COUNT(*) from AuthDAO";  // Counts the number of items in the DAO
+        int row_count = 0;
+        try (var conn = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                ResultSet rs = preparedStatement.executeQuery(sql);
+                while(rs.next()){
+                    row_count = rs.getInt(1);
+                }
+            }
+        } catch (Exception ex) {
+             throw new RuntimeException(ex);
+        }
+        return row_count == 0;
+    }
 
-//    """
-//            CREATE TABLE IF NOT EXISTS  pet (
-//              `id` int NOT NULL AUTO_INCREMENT,
-//              `name` varchar(256) NOT NULL,
-//              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-//              `json` TEXT DEFAULT NULL,
-//              PRIMARY KEY (`id`),
-//              INDEX(type),
-//              INDEX(name)
-//            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//            """
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS authDAO(

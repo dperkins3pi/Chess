@@ -3,9 +3,7 @@ import dataAccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
-import model.AuthData;
-import model.GameData;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.*;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
@@ -13,7 +11,6 @@ import passoffTests.testClasses.TestModels;
 import response.ResponseClass;
 import server.Server;
 import service.*;
-
 import java.util.Collection;
 import java.util.HashMap;
 

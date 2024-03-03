@@ -1,5 +1,6 @@
 package dataAccess;
 
+import exceptions.AlreadyTakenException;
 import model.AuthData;
 
 import java.sql.ResultSet;
@@ -24,10 +25,13 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public String createAuth(String username) throws DataAccessException {
+    public String createAuth(String username) throws DataAccessException, AlreadyTakenException {
         String newToken = UUID.randomUUID().toString();  // Create authToken
 
         String sql = "INSERT INTO AuthDAO (authToken, username) values (?, ?)";  // SQL command
+        if(contains(username)){
+            throw new AlreadyTakenException("The username is already taken");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, newToken);   // Get the data
@@ -40,19 +44,67 @@ public class DatabaseAuthDAO implements AuthDAO{
         return newToken;
     }
 
+    public boolean contains(String username){   // Sees if the username already in DAO
+        String sql = "SELECT username FROM AuthDAO WHERE username = ?";  // SQL command
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, username);   // Get the data
+                ResultSet rs = preparedStatement.executeQuery(); // Perform the statement
+                if(rs.next()) return true;  // Get the username
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return false;
+    }
+
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        return null;
+        String username = null;
+        String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // Counts the number of items in the DAO
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, authToken);
+                ResultSet rs = preparedStatement.executeQuery();
+                while(rs.next()){
+                    username = rs.getObject("username").toString();  // Get the username
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return new AuthData(authToken, username);
     }
 
     @Override
     public String getUsername(String authToken) throws DataAccessException {
-        return null;
+        String username = null;
+        String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // Select user
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, authToken);
+                ResultSet rs = preparedStatement.executeQuery();
+                while(rs.next()){
+                    username = rs.getObject("username").toString();  // Get the username
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return username;
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-
+        String sql = "DELETE FROM AuthDAO WHERE authToken = ?";  // Delete
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, authToken);
+                preparedStatement.executeQuery();
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override

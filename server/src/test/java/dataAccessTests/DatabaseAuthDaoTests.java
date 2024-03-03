@@ -1,7 +1,9 @@
 package dataAccessTests;
 
 import dataAccess.*;
+import exceptions.AlreadyTakenException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
@@ -19,7 +21,7 @@ public class DatabaseAuthDaoTests {
     }
 
     @Test
-    public void clearAuthPositive() throws DataAccessException {
+    public void clearAuthPositive() throws DataAccessException, AlreadyTakenException {
         // Create users
         authDAO.createAuth("username1");
         authDAO.createAuth("username2");
@@ -28,9 +30,17 @@ public class DatabaseAuthDaoTests {
     }
 
     @Test
-    public void createAuthPositive() throws DataAccessException {
+    public void createAuthPositive() throws DataAccessException, AlreadyTakenException {
         assertDoesNotThrow(() -> authDAO.createAuth("username1"));  // See if no error is thrown
         assertDoesNotThrow(() -> authDAO.createAuth("username2"));  // See if no error is thrown
-        assertDoesNotThrow(() -> authDAO.createAuth("username3"));  // See if no error is thrown
+
+        String token = authDAO.createAuth("username3");  // See if no error is thrown
+        assertEquals(authDAO.getUsername(token), "username3");   // see if the username was added to the DAO
+    }
+    @Test
+    public void createAuthNegative() throws DataAccessException {
+        assertDoesNotThrow(() -> authDAO.createAuth("username1"));  // See if no error is thrown
+        assertDoesNotThrow(() -> authDAO.createAuth("username2"));  // See if no error is thrown
+        Assertions.assertThrows(AlreadyTakenException.class, () -> authDAO.createAuth("username2"));  // Error should be thrown if same username is created
     }
 }

@@ -1,11 +1,12 @@
 package dataAccess;
+import exceptions.AlreadyTakenException;
 import model.AuthData;
 
 import java.util.Map;
 
 public interface AuthDAO {
     void clear() throws DataAccessException;
-    String createAuth(String username) throws DataAccessException; // Create a new authorization and return it
+    String createAuth(String username) throws DataAccessException, AlreadyTakenException; // Create a new authorization and return it
     AuthData getAuth(String authToken) throws DataAccessException; // Retrieve an authorization given an authToken.
 
     String getUsername(String authToken) throws DataAccessException;

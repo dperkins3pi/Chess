@@ -3,6 +3,7 @@ package service;
 import dataAccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
 import model.UserData;
 import response.ResponseClass;
 
@@ -15,7 +16,7 @@ public class RegisterService {
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
-    public ResponseClass register(String username, String password, String email) throws DataAccessException, AlreadyTakenException, BadRequestException {
+    public ResponseClass register(String username, String password, String email) throws DataAccessException, AlreadyTakenException, BadRequestException, UnauthorizedException {
         if(username == null || password == null || email == null){  // If invalid input is given
             throw new BadRequestException("Error: bad request");
         }

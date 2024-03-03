@@ -21,6 +21,10 @@ public class DatabaseAuthDaoTests {
         authDAO = new DatabaseAuthDAO();
         authDAO.clear();   // Clear it out
     }
+    @AfterEach
+    public void cleanup() throws TestException, DataAccessException {
+        authDAO.clear();   // Clear it out
+    }
 
     @Test
     public void clearAuthPositive() throws DataAccessException, AlreadyTakenException {

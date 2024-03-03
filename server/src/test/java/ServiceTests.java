@@ -83,7 +83,7 @@ public class ServiceTests{
     }
 
     @Test
-    public void registerServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
+    public void registerServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
         // Call register service that should work
         RegisterService service = new RegisterService(authDAO, gameDAO, userDAO);
         ResponseClass response = service.register("username", "password", "email");
@@ -116,7 +116,7 @@ public class ServiceTests{
     }
 
     @Test
-    public void logininServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
+    public void logininServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
         // Logging in without valid username
         LoginService service = new LoginService(authDAO, gameDAO, userDAO);
         Assertions.assertThrows(UnauthorizedException.class, () -> service.login("username", "password"));
@@ -207,7 +207,7 @@ public class ServiceTests{
         Assertions.assertEquals(gameDAO.getGame(id2), game2);
     }
     @Test
-    public void createGameServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
+    public void createGameServiceNegative() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
         // createGameService with invalid authToken (since no one is logged in)
         CreateGameService service = new CreateGameService(authDAO, gameDAO, userDAO);
         Assertions.assertThrows(UnauthorizedException.class, () -> service.createGame("cheese", "Game1"));

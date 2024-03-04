@@ -1,17 +1,16 @@
 package dataAccess;
 
-import exceptions.AlreadyTakenException;
+import chess.ChessGame;
 import exceptions.BadRequestException;
 import model.GameData;
-
+import com.google.gson.Gson;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
+import java.util.Collections;
 
 public class DatabaseGameDAO implements GameDAO{
-
-    private int id = 0;
 
     public DatabaseGameDAO() throws DataAccessException {
         configureDatabase();
@@ -30,38 +29,119 @@ public class DatabaseGameDAO implements GameDAO{
 
     @Override
     public Integer createGame(String gameName) throws DataAccessException, BadRequestException {
-        String sql = "INSERT INTO gameDAO (whiteUsername, blackUsername, gameName, game) values (?, ?, ?, ?)";  // SQL command
+        String sql = "INSERT INTO gameDAO (gameName, game) values (?, ?)";  // SQL command
         if(gameName == null){
             throw new BadRequestException("Invalid game name");
         }
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
-                preparedStatement.setString(1, "");   // Get the data
-                preparedStatement.setString(2, "");
-                preparedStatement.setString(3, gameName);
-                preparedStatement.setString(4, "");
+                preparedStatement.setString(1, gameName);
+                preparedStatement.setString(2, new Gson().toJson(new ChessGame()));  // Convert the game to JSON
                 preparedStatement.executeUpdate(); // Perform the statement
             }
         } catch (SQLException ex) {   // If the table was never created
             throw new DataAccessException(String.format("Unable to create game: %s", ex.getMessage()));
         }
-        id += 1;
-        return id;
+        return getID(gameName);
     }
 
     @Override
     public GameData getGame(Integer id) throws DataAccessException {
-        return null;
+        String whiteUsername = null;
+        String blackUsername = null;
+        String gameName = null;
+        String game_string;
+        ChessGame game = null;
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameDAO WHERE gameID = ?";  // Select user
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, id.toString());
+                ResultSet rs = preparedStatement.executeQuery();
+                while(rs.next()){
+                    whiteUsername = rs.getString("whiteUsername");
+                    blackUsername = rs.getString("blackUsername");
+                    gameName = rs.getString("gameName");  // Get the game name
+                    game_string = rs.getString("game");  // Get the game as a JSON string
+                    game = new Gson().fromJson(game_string, ChessGame.class);  // Create a Chess game instance
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        if (gameName == null) return null;   // If the game doesn't exist, return null
+        return new GameData(id, whiteUsername, blackUsername, gameName, game);
     }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
-        return null;
+    public Collection<GameData> listGames() {
+        int gameID;
+        String whiteUsername = null;
+        String blackUsername = null;
+        String gameName = null;
+        String game_string;
+        ChessGame game = null;
+        Collection<GameData> games = new ArrayList<>();
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameDAO";  // Select user
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                ResultSet rs = preparedStatement.executeQuery();
+                while(rs.next()){
+                    gameID = rs.getInt("gameID");
+                    whiteUsername = rs.getString("whiteUsername");
+                    blackUsername = rs.getString("blackUsername");
+                    gameName = rs.getString("gameName");  // Get the game name
+                    game_string = rs.getString("game");  // Get the game as a JSON string
+                    game = new Gson().fromJson(game_string, ChessGame.class);  // Create a Chess game instance
+                    games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));  // Insert into map
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return Collections.unmodifiableCollection(games);
     }
 
     @Override
-    public void updateGame(GameData game) throws DataAccessException {
+    public void updateGame(GameData game) throws DataAccessException, BadRequestException {
+        // Get the game data
+        Integer id = game.gameID();
+        if(getGame(id) == null) throw new BadRequestException("The game is not in the databse");
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
+        String gameName = game.gameName();
+        ChessGame the_game = game.game();
+        String sql = "UPDATE GameDAO " +
+                "SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? " +
+                "WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, whiteUsername);
+                preparedStatement.setString(2, blackUsername);
+                preparedStatement.setString(3, gameName);
+                preparedStatement.setString(4, new Gson().toJson(the_game));
+                preparedStatement.setString(5, id.toString());
+                preparedStatement.executeUpdate();  // Perform the update
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
+    private Integer getID(String gameName) throws DataAccessException {  // Gets the id of a certain game
+        Integer id = null;
+        String sql = "SELECT gameID FROM GameDAO WHERE gameName = ?";  // Select user
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, gameName);
+                ResultSet rs = preparedStatement.executeQuery();
+                while(rs.next()){
+                    id = (Integer) rs.getObject("gameID");
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return id;
     }
 
     public boolean isEmpty(){   // Checks to see if is empty
@@ -88,7 +168,7 @@ public class DatabaseGameDAO implements GameDAO{
               `whiteUsername` VARCHAR(256),
               `blackUsername` VARCHAR(256),
               `gameName` VARCHAR(256) NOT NULL,
-              `game` BLOB NOT NULL,
+              `game` TEXT NOT NULL,
               PRIMARY KEY (`gameID`)
             )
             """

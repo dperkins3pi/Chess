@@ -64,6 +64,6 @@ public class DatabaseUserDaoTests {
         userDao.createUser("username1", "password1", "email1");
         userDao.createUser("username2", "password2", "email2");
         UserData authData = userDao.getUser("Wrong Username");
-        Assertions.assertNull(authData.password());
+        Assertions.assertNull(authData);
     }
 }

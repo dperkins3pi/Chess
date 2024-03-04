@@ -79,7 +79,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuth(String authToken) throws DataAccessException, UnauthorizedException {
+    public AuthData getAuth(String authToken) {
         String username = null;
         String sql = "SELECT username FROM authDAO WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -117,7 +117,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException, UnauthorizedException {
+    public void deleteAuth(String authToken) throws UnauthorizedException {
         if(!isValid(authToken)) {
             throw new UnauthorizedException("Invalid authtoken");
         }
@@ -148,10 +148,9 @@ public class DatabaseAuthDAO implements AuthDAO{
         return row_count == 0;
     }
 
-    private boolean isValid(String authToken) throws DataAccessException, UnauthorizedException {   // Sees if the authtoken is valid
+    private boolean isValid(String authToken) {   // Sees if the authtoken is valid
         AuthData authData = getAuth(authToken);
-        if (authData == null) return false;
-        else return (authData.username() != null);
+        return authData != null;
     }
 
     private final String[] createStatements = {

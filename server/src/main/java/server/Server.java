@@ -13,10 +13,10 @@ public class Server {
         // Create DAOs
         AuthDAO authDao;
         GameDAO gameDao = new MemoryGameDAO();
-        UserDAO userDao = new MemoryUserDAO();
+        UserDAO userDao;
         try{
             authDao = new DatabaseAuthDAO();
-            authDao.clear();
+            userDao = new DatabaseUserDAO();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }

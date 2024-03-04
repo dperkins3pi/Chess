@@ -59,12 +59,13 @@ public class DatabaseUserDAO implements UserDAO{
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+        if(password == null) return null;
         return new UserData(username, password, email);
     }
 
     private boolean isValid(String username) throws DataAccessException, UnauthorizedException {   // Sees if the authtoken is valid
         UserData user = getUser(username);
-        return (user.password() != null);
+        return user != null;
     }
 
     public boolean isEmpty(){   // Checks to see if is empty

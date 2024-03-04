@@ -20,6 +20,7 @@ public class LoginService {
 
     public ResponseClass login(String username, String password) throws DataAccessException, UnauthorizedException, AlreadyTakenException, BadRequestException {
         UserData user = userDAO.getUser(username);
+        System.out.println("user: " + user);
         if (user != null){  // If the user already exists
             if (user.password().equals(password)) {  // If the password is correct
                 String authToken = authDAO.createAuth(username);

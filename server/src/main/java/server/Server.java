@@ -12,11 +12,12 @@ public class Server {
 
         // Create DAOs
         AuthDAO authDao;
-        GameDAO gameDao = new MemoryGameDAO();
+        GameDAO gameDao;
         UserDAO userDao;
         try{
             authDao = new DatabaseAuthDAO();
             userDao = new DatabaseUserDAO();
+            gameDao = new DatabaseGameDAO();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }

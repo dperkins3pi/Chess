@@ -3,12 +3,12 @@ package dataAccessTests;
 import dataAccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.UnauthorizedException;
-import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import passoffTests.testClasses.TestException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,8 +42,11 @@ public class DatabaseUserDaoTests {
         userDao.createUser("username2", "password2", "email2");  // See if no error is thrown
         UserData user = userDao.getUser("username2");
         assertEquals(user.username(), "username2");   // see if the username was added to the DAO
-        assertEquals(user.password(), "password2");   // see if the username was added to the DAO
-        assertEquals(user.email(), "email2");   // see if the username was added to the DAO
+
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        String hashedPassword = encoder.encode("password2");
+        assertEquals(user.password(), "password2");   // see if the hashed password was added to the DAO
+        assertEquals(user.email(), "email2");   // see if the email was added to the DAO
     }
     @Test
     public void createUserNegative() throws DataAccessException, UnauthorizedException, AlreadyTakenException {

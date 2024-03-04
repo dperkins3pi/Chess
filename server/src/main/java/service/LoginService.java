@@ -5,6 +5,7 @@ import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import response.ResponseClass;
 
 public class LoginService {
@@ -19,10 +20,10 @@ public class LoginService {
     }
 
     public ResponseClass login(String username, String password) throws DataAccessException, UnauthorizedException, AlreadyTakenException, BadRequestException {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  //Hash the password
         UserData user = userDAO.getUser(username);
-        System.out.println("user: " + user);
         if (user != null){  // If the user already exists
-            if (user.password().equals(password)) {  // If the password is correct
+            if (encoder.matches(password, user.password())) {  // If the password is correct
                 String authToken = authDAO.createAuth(username);
                 return new ResponseClass(username, authToken);    // Return response object
             }

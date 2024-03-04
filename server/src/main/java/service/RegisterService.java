@@ -5,6 +5,7 @@ import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import response.ResponseClass;
 
 public class RegisterService {
@@ -22,7 +23,9 @@ public class RegisterService {
         }
         UserData user = userDAO.getUser(username);
         if(user == null){   //If the user does not already exist
-            userDAO.createUser(username, password, email);   // Create the user and store it
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  //Hash the password
+            String hashedPassword = encoder.encode(password);
+            userDAO.createUser(username, hashedPassword, email);   // Create the user and store it
             String authToken = authDAO.createAuth(username);
             return new ResponseClass(username, authToken);    // Return response object
         }

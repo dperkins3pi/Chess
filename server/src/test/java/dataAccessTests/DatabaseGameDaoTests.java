@@ -4,7 +4,6 @@ import chess.ChessGame;
 import dataAccess.*;
 import model.GameData;
 import exceptions.BadRequestException;
-import exceptions.UnauthorizedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,10 +21,10 @@ public class DatabaseGameDaoTests {
         gameDAO = new DatabaseGameDAO();
         gameDAO.clear();   // Clear it out
     }
-//    @AfterEach
-//    public void cleanup() throws TestException, DataAccessException {
-//        gameDAO.clear();   // Clear it out
-//    }
+    @AfterEach
+    public void cleanup() throws TestException, DataAccessException {
+        gameDAO.clear();   // Clear it out
+    }
 
     @Test
     public void clearGamePositive() throws DataAccessException, BadRequestException {
@@ -72,7 +71,6 @@ public class DatabaseGameDaoTests {
         gameDAO.createGame("game1");
         int id = gameDAO.createGame("game2");
         var games = gameDAO.listGames();
-        System.out.println(games);
         // See if game2 was added correctly
         Assertions.assertTrue(games.contains(new GameData(id, null, null, "game2", new ChessGame())));
     }

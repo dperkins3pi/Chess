@@ -2,14 +2,14 @@ package dataAccess;
 
 import exceptions.AlreadyTakenException;
 import exceptions.UnauthorizedException;
-import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class DatabaseUserDAO implements UserDAO{
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     public DatabaseUserDAO() throws DataAccessException {
         configureDatabase();
     }
@@ -28,7 +28,6 @@ public class DatabaseUserDAO implements UserDAO{
     @Override
     public void createUser(String username, String password, String email) throws DataAccessException, UnauthorizedException, AlreadyTakenException {
         if(isValid(username)) throw new AlreadyTakenException("Invalid authtoken");
-
         String sql = "INSERT INTO userDao (username, password, email) values (?, ?, ?)";  // SQL command
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {

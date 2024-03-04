@@ -5,6 +5,7 @@ import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.*;
 import org.junit.jupiter.api.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
 import passoffTests.testClasses.TestModels;
@@ -70,8 +71,13 @@ public class ServiceTests{
         UserData theUserData2 = new UserData("username2", "password2", "email2");
 
         // See if users are correctly registered
-        Assertions.assertEquals(userDAO.getUser("username"), theUserData);
-        Assertions.assertEquals(userDAO.getUser("username2"), theUserData2);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Assertions.assertEquals(userDAO.getUser("username").username(), "username");
+        Assertions.assertEquals(userDAO.getUser("username").email(), "email");
+        Assertions.assertTrue(encoder.matches("password", userDAO.getUser("username").password()));
+        Assertions.assertEquals(userDAO.getUser("username2").username(), "username2");
+        Assertions.assertEquals(userDAO.getUser("username2").email(), "email2");
+        Assertions.assertTrue(encoder.matches("password2", userDAO.getUser("username2").password()));
 
         // Create authdata objects that should be stored
         AuthData theAuthData = new AuthData(authToken, "username");

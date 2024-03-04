@@ -7,7 +7,6 @@ import model.AuthData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.UUID;
 
 public class DatabaseAuthDAO implements AuthDAO{
@@ -52,23 +51,6 @@ public class DatabaseAuthDAO implements AuthDAO{
                 ResultSet rs = preparedStatement.executeQuery(); // Perform the statement
                 if(rs.next()) {
                     System.out.println("ya" + rs.getObject("username"));
-                    return true;  // Get the username
-                }
-            }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        return false;
-    }
-
-    public boolean containsAuth(String authToken){   // Sees if the username already in DAO
-        String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // SQL command
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sql)) {
-                preparedStatement.setString(1, authToken);   // Get the data
-                ResultSet rs = preparedStatement.executeQuery(); // Perform the statement
-                if(rs.next()) {
-                    System.out.println("cot");
                     return true;  // Get the username
                 }
             }

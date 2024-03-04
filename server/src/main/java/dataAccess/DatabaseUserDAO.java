@@ -3,19 +3,17 @@ package dataAccess;
 import exceptions.AlreadyTakenException;
 import exceptions.UnauthorizedException;
 import model.UserData;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseUserDAO implements UserDAO{
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     public DatabaseUserDAO() throws DataAccessException {
         configureDatabase();
     }
     @Override
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM userDao";  // SQL command
+        String sql = "DELETE FROM userDAO";  // SQL command
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.executeUpdate(); // Run the commnand
@@ -28,7 +26,7 @@ public class DatabaseUserDAO implements UserDAO{
     @Override
     public void createUser(String username, String password, String email) throws DataAccessException, UnauthorizedException, AlreadyTakenException {
         if(isValid(username)) throw new AlreadyTakenException("Invalid authtoken");
-        String sql = "INSERT INTO userDao (username, password, email) values (?, ?, ?)";  // SQL command
+        String sql = "INSERT INTO userDAO (username, password, email) values (?, ?, ?)";  // SQL command
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);   // Get the data
@@ -43,7 +41,7 @@ public class DatabaseUserDAO implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        String sql = "SELECT username, password, email FROM userDao WHERE username = ?";  // Select user
+        String sql = "SELECT username, password, email FROM userDAO WHERE username = ?";  // Select user
         String password = null;
         String email = null;
         try (var conn = DatabaseManager.getConnection()) {
@@ -68,7 +66,7 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     public boolean isEmpty(){   // Checks to see if is empty
-        String sql = "SELECT COUNT(*) from UserDao";  // Counts the number of items in the DAO
+        String sql = "SELECT COUNT(*) from userDAO";  // Counts the number of items in the DAO
         int row_count = 0;
         try (var conn = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
             try (var preparedStatement = conn.prepareStatement(sql)) {
@@ -86,7 +84,7 @@ public class DatabaseUserDAO implements UserDAO{
     // String for the SQL commands
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  userDao (
+            CREATE TABLE IF NOT EXISTS  userDAO (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,

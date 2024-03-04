@@ -52,7 +52,7 @@ public class DatabaseGameDAO implements GameDAO{
         String gameName = null;
         String game_string;
         ChessGame game = null;
-        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameDAO WHERE gameID = ?";  // Select user
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM gameDAO WHERE gameID = ?";  // Select user
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, id.toString());
@@ -81,7 +81,7 @@ public class DatabaseGameDAO implements GameDAO{
         String game_string;
         ChessGame game = null;
         Collection<GameData> games = new ArrayList<>();
-        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameDAO";  // Select user
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM gameDAO";  // Select user
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 ResultSet rs = preparedStatement.executeQuery();
@@ -110,7 +110,7 @@ public class DatabaseGameDAO implements GameDAO{
         String blackUsername = game.blackUsername();
         String gameName = game.gameName();
         ChessGame the_game = game.game();
-        String sql = "UPDATE GameDAO " +
+        String sql = "UPDATE gameDAO " +
                 "SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? " +
                 "WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -129,7 +129,7 @@ public class DatabaseGameDAO implements GameDAO{
 
     private Integer getID(String gameName) throws DataAccessException {  // Gets the id of a certain game
         Integer id = null;
-        String sql = "SELECT gameID FROM GameDAO WHERE gameName = ?";  // Select user
+        String sql = "SELECT gameID FROM gameDAO WHERE gameName = ?";  // Select user
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, gameName);

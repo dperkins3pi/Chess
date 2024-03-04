@@ -15,7 +15,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
     @Override
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM AuthDAO";  // SQL command
+        String sql = "DELETE FROM authDAO";  // SQL command
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.executeUpdate(); // Run the commnand
@@ -30,7 +30,7 @@ public class DatabaseAuthDAO implements AuthDAO{
         String newToken = UUID.randomUUID().toString();  // Create authToken
         if (username == null) throw new BadRequestException("Invalid username");
 
-        String sql = "INSERT INTO AuthDAO (authToken, username) values (?, ?)";  // SQL command
+        String sql = "INSERT INTO authDAO (authToken, username) values (?, ?)";  // SQL command
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, newToken);   // Get the data
@@ -44,7 +44,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     public boolean contains(String username){   // Sees if the username already in DAO
-        String sql = "SELECT username FROM AuthDAO WHERE username = ?";  // SQL command
+        String sql = "SELECT username FROM authDAO WHERE username = ?";  // SQL command
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);   // Get the data
@@ -83,7 +83,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     public String getUsername(String authToken) throws DataAccessException, UnauthorizedException {
         if(!isValid(authToken)) throw new UnauthorizedException("Invalid authtoken");
         String username = null;
-        String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // Select user
+        String sql = "SELECT username FROM authDAO WHERE authToken = ?";  // Select user
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
@@ -115,7 +115,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     public boolean isEmpty(){   // Checks to see if is empty
-        String sql = "SELECT COUNT(*) from AuthDAO";  // Counts the number of items in the DAO
+        String sql = "SELECT COUNT(*) from authDAO";  // Counts the number of items in the DAO
         int row_count = 0;
         try (var conn = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
             try (var preparedStatement = conn.prepareStatement(sql)) {

@@ -2,6 +2,7 @@ package dataAccessTests;
 
 import dataAccess.*;
 import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +28,7 @@ public class DatabaseAuthDaoTests {
     }
 
     @Test
-    public void clearAuthPositive() throws DataAccessException, AlreadyTakenException {
+    public void clearAuthPositive() throws DataAccessException, BadRequestException {
         // Create users
         authDAO.createAuth("username1");
         authDAO.createAuth("username2");
@@ -36,7 +37,7 @@ public class DatabaseAuthDaoTests {
     }
 
     @Test
-    public void createAuthPositive() throws DataAccessException, AlreadyTakenException, UnauthorizedException {
+    public void createAuthPositive() throws DataAccessException, UnauthorizedException, BadRequestException {
         assertDoesNotThrow(() -> authDAO.createAuth("username1"));  // See if no error is thrown
         assertDoesNotThrow(() -> authDAO.createAuth("username2"));  // See if no error is thrown
 
@@ -47,47 +48,47 @@ public class DatabaseAuthDaoTests {
     public void createAuthNegative() throws DataAccessException {
         assertDoesNotThrow(() -> authDAO.createAuth("username1"));  // See if no error is thrown
         assertDoesNotThrow(() -> authDAO.createAuth("username2"));  // See if no error is thrown
-        Assertions.assertThrows(AlreadyTakenException.class, () -> authDAO.createAuth("username2"));  // Error should be thrown if same username is created
+        Assertions.assertThrows(BadRequestException.class, () -> authDAO.createAuth(null));  // Error should be thrown if same username is created
     }
 
     @Test
-    public void deleteAuthPositive() throws DataAccessException, AlreadyTakenException, UnauthorizedException {
+    public void deleteAuthPositive() throws DataAccessException, UnauthorizedException, BadRequestException {
         authDAO.createAuth("username1");
         String token = authDAO.createAuth("username2");
         authDAO.deleteAuth(token);
         Assertions.assertFalse(authDAO.contains("username2"));  //Should no longer contain it
     }
     @Test
-    public void deleteAuthNegative() throws DataAccessException, AlreadyTakenException, UnauthorizedException {
+    public void deleteAuthNegative() throws DataAccessException, BadRequestException {
         authDAO.createAuth("username1");
         authDAO.createAuth("username2");
         Assertions.assertThrows(UnauthorizedException.class, () -> authDAO.deleteAuth("IncorrectAuthToken"));  // Error should be thrown if same username is created
     }
 
     @Test
-    public void getUsernamePositive() throws DataAccessException, AlreadyTakenException, UnauthorizedException {
+    public void getUsernamePositive() throws DataAccessException, UnauthorizedException, BadRequestException {
         authDAO.createAuth("username1");
         String token = authDAO.createAuth("username2");
         Assertions.assertEquals(authDAO.getUsername(token), "username2");
     }
     @Test
-    public void getUsernameNegative() throws DataAccessException, AlreadyTakenException {
+    public void getUsernameNegative() throws DataAccessException, BadRequestException {
         authDAO.createAuth("username1");
         authDAO.createAuth("username2");
         Assertions.assertThrows(UnauthorizedException.class, () -> authDAO.getUsername("IncorrectAuthToken"));  // Error should be thrown if same username is created
     }
 
     @Test
-    public void getAuthPositive() throws DataAccessException, AlreadyTakenException, UnauthorizedException {
-        String token = authDAO.createAuth("username1");
+    public void getAuthPositive() throws DataAccessException, AlreadyTakenException, UnauthorizedException, BadRequestException {
+        String token = authDAO.createAuth("username");
         authDAO.getAuth(token);
-        Assertions.assertNotNull(authDAO.getAuth("username1"));
+        Assertions.assertNotNull(authDAO.getAuth(token));
     }
     @Test
-    public void getAuthNegative() throws DataAccessException, AlreadyTakenException, UnauthorizedException {
+    public void getAuthNegative() throws DataAccessException, AlreadyTakenException, UnauthorizedException, BadRequestException {
         authDAO.createAuth("username1");
         authDAO.createAuth("username2");
         AuthData authData = authDAO.getAuth("Wrong Token");
-        Assertions.assertNull(authData.username());
+        Assertions.assertNull(authData);
     }
 }

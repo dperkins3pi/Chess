@@ -1,6 +1,7 @@
 package dataAccess;
 
 import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 
@@ -26,13 +27,11 @@ public class DatabaseAuthDAO implements AuthDAO{
     }
 
     @Override
-    public String createAuth(String username) throws DataAccessException, AlreadyTakenException {
+    public String createAuth(String username) throws DataAccessException, BadRequestException {
         String newToken = UUID.randomUUID().toString();  // Create authToken
+        if (username == null) throw new BadRequestException("Invalid username");
 
         String sql = "INSERT INTO AuthDAO (authToken, username) values (?, ?)";  // SQL command
-        if(contains(username)){
-            throw new AlreadyTakenException("The username is already taken");
-        }
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, newToken);   // Get the data
@@ -51,7 +50,27 @@ public class DatabaseAuthDAO implements AuthDAO{
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, username);   // Get the data
                 ResultSet rs = preparedStatement.executeQuery(); // Perform the statement
-                if(rs.next()) return true;  // Get the username
+                if(rs.next()) {
+                    System.out.println("ya" + rs.getObject("username"));
+                    return true;  // Get the username
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return false;
+    }
+
+    public boolean containsAuth(String authToken){   // Sees if the username already in DAO
+        String sql = "SELECT username FROM AuthDAO WHERE authToken = ?";  // SQL command
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, authToken);   // Get the data
+                ResultSet rs = preparedStatement.executeQuery(); // Perform the statement
+                if(rs.next()) {
+                    System.out.println("cot");
+                    return true;  // Get the username
+                }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -62,7 +81,7 @@ public class DatabaseAuthDAO implements AuthDAO{
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException, UnauthorizedException {
         String username = null;
-        String sql = "SELECT username FROM authDAO WHERE authToken = ?";  // Counts the number of items in the DAO
+        String sql = "SELECT username FROM authDAO WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
@@ -74,6 +93,7 @@ public class DatabaseAuthDAO implements AuthDAO{
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+        if (username == null) return null;
         return new AuthData(authToken, username);
     }
 
@@ -98,7 +118,9 @@ public class DatabaseAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException, UnauthorizedException {
-        if(!isValid(authToken)) throw new UnauthorizedException("Invalid authtoken");
+        if(!isValid(authToken)) {
+            throw new UnauthorizedException("Invalid authtoken");
+        }
         String sql = "DELETE FROM authDAO WHERE authToken = ?";  // Delete
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(sql)) {
@@ -128,7 +150,8 @@ public class DatabaseAuthDAO implements AuthDAO{
 
     private boolean isValid(String authToken) throws DataAccessException, UnauthorizedException {   // Sees if the authtoken is valid
         AuthData authData = getAuth(authToken);
-        return (authData.username() != null);
+        if (authData == null) return false;
+        else return (authData.username() != null);
     }
 
     private final String[] createStatements = {

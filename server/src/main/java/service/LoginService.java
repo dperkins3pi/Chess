@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.UserData;
 import response.ResponseClass;
@@ -17,7 +18,7 @@ public class LoginService {
         this.userDAO = userDAO;
     }
 
-    public ResponseClass login(String username, String password) throws DataAccessException, UnauthorizedException, AlreadyTakenException {
+    public ResponseClass login(String username, String password) throws DataAccessException, UnauthorizedException, AlreadyTakenException, BadRequestException {
         UserData user = userDAO.getUser(username);
         if (user != null){  // If the user already exists
             if (user.password().equals(password)) {  // If the password is correct

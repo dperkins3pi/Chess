@@ -11,7 +11,6 @@ public class PreLoginUI {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Welcome to 240 chess. Type Help to get started." +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);
-        System.out.println();
         Scanner scanner = new Scanner(System.in);
         String line = "";
         while (!line.equals("quit")) {  // Read input until the use quits

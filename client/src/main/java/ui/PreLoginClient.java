@@ -2,6 +2,8 @@ package ui;
 
 import java.util.Arrays;
 import exception.ResponseException;
+import response.ResponseClass;
+import server.ServerFacade;
 
 public class PreLoginClient {
     private final ServerFacade server;
@@ -32,7 +34,9 @@ public class PreLoginClient {
                 }
             }
         } catch(ResponseException ex){
-            System.out.println(ex.getMessage());
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input: " +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + ex.getMessage());
+            System.out.println("Please try again");
             help();
         }
     }
@@ -45,10 +49,11 @@ public class PreLoginClient {
         }
         String username = params[0];
         String password = params[1];
-        server.login(username, password);
+        ResponseClass request = server.login(username, password);
+        System.out.println("Logged in as " + request.getUsername());
     }
     public void register(String... params) throws ResponseException {
-        if(params.length < 2) {  // Throw an error if an invalid number of parameters are given
+        if(params.length < 3) {  // Throw an error if an invalid number of parameters are given
             String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
             error_string += "Expected: register <USERNAME> <PASSWORD> <EMAIL>\n";
             throw new ResponseException(error_string);
@@ -56,7 +61,8 @@ public class PreLoginClient {
         String username = params[0];
         String password = params[1];
         String email = params[2];
-        server.register(username, password, email);
+        ResponseClass request = server.register(username, password, email);
+        System.out.println("Logged in as " + request.getUsername());
     }
 
     public void help() {

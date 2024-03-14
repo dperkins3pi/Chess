@@ -20,6 +20,7 @@ public class RegisterHandler {
     }
     public Object handle(Request request, Response response) throws DataAccessException {
         // Get data from request
+
         RegisterRequest registerRequest = new Gson().fromJson(request.body(), RegisterRequest.class);
         String username = registerRequest.getUsername();
         String password = registerRequest.getPassword();

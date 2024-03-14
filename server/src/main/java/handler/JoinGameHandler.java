@@ -5,14 +5,11 @@ import dataAccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
-import model.GameData;
 import request.JoinGameRequest;
 import response.ResponseClass;
 import service.JoinGameService;
 import spark.Request;
 import spark.Response;
-
-import java.util.Collection;
 
 public class JoinGameHandler {
     AuthDAO authDAO;

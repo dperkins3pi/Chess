@@ -1,9 +1,10 @@
-package ui;
+package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import java.io.*;
 import java.net.*;
 import request.*;
+import response.ResponseClass;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -12,17 +13,16 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void login(String username, String password) throws ResponseException {
+    public ResponseClass login(String username, String password) throws ResponseException {
         var path = "/session";
         LoginRequest user = new LoginRequest(username, password);
-        this.makeRequest("POST", path, user, LoginRequest.class);
+        return this.makeRequest("POST", path, user, ResponseClass.class);
     }
 
-    public void register(String username, String password, String email) throws ResponseException {
+    public ResponseClass register(String username, String password, String email) throws ResponseException {
         var path = "/user";
         RegisterRequest user = new RegisterRequest(username, password, email);
-        var response = this.makeRequest("POST", path, user, RegisterRequest.class);
-        System.out.println(response);
+        return this.makeRequest("POST", path, user, ResponseClass.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {

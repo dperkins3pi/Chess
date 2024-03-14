@@ -4,14 +4,11 @@ import com.google.gson.Gson;
 import dataAccess.*;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
-import model.GameData;
 import request.CreateGameRequest;
 import response.ResponseClass;
 import service.CreateGameService;
 import spark.Request;
 import spark.Response;
-
-import java.util.Collection;
 
 public class CreateGameHandler {
     AuthDAO authDAO;

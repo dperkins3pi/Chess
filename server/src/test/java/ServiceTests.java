@@ -6,14 +6,10 @@ import exceptions.UnauthorizedException;
 import model.*;
 import org.junit.jupiter.api.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
-import passoffTests.testClasses.TestModels;
 import response.ResponseClass;
-import server.Server;
 import service.*;
 import java.util.Collection;
-import java.util.HashMap;
 
 public class ServiceTests{
 

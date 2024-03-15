@@ -1,38 +1,35 @@
 package ui;
+
 import java.util.Scanner;
 
-public class PreLoginUI {
-    private final PreLoginClient client;
+public class PostLoginUI {
+    private final PostLoginClient client;
     private final String serverUrl;
-    private String authToken = null;
-
-    public PreLoginUI(String serverUrl) {
+    public PostLoginUI(String serverUrl, String authToken) {
         this.serverUrl = serverUrl;
-        client = new PreLoginClient(serverUrl);
+        client = new PostLoginClient(serverUrl, authToken);
     }
 
     public void run() {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
-                " Welcome to 240 chess. Type help to get started." +
+                " Type help to get started. " +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);
         Scanner scanner = new Scanner(System.in);
         String line = "";
 
         while (!line.equals("quit")) {  // Read input until the use quits
             System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA
-                    + "[LOGGED_OUT] >>> " + EscapeSequences.SET_TEXT_COLOR_WHITE);
+                    + "[LOGGED_IN] >>> " + EscapeSequences.SET_TEXT_COLOR_WHITE);
             line = scanner.nextLine();
             try {
-                authToken = client.eval(line);
-                if(authToken != null) break;// Break if successfully logged in
+                if(client.eval(line)) break;   // Break if successfully logged in
             } catch (Throwable e) {
                 var msg = e.getMessage();
                 System.out.print(msg);
             }
         }
-
-        if (!line.equals("quit")){  // If the user didn't quit, move to PostLoginUI
-            new PostLoginUI(this.serverUrl, authToken).run();
-        }
+//        if (!line.equals("quit")){  // If the user didn't quit, move to PostLoginUI
+//            new PostLoginUI(this.serverUrl).run();
+//        }
     }
 }

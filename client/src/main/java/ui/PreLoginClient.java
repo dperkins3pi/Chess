@@ -11,51 +11,46 @@ public class PreLoginClient {
         server = new ServerFacade(serverUrl);
     }
 
-    public void eval(String input) {  // Run the function based on input
-        try {
-            var tokens = input.toLowerCase().split(" "); // Tokenize the input
-            if (tokens.length == 0) { // If no input was given, try again
+    public String eval(String input) throws ResponseException {  // Run the function based on input
+        var tokens = input.toLowerCase().split(" "); // Tokenize the input
+        if (tokens.length == 0) { // If no input was given, try again
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:\n");
+            help();  // If the input is empty, default to help
+            return null;
+        }
+        String cmd = tokens[0];
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
+        switch (cmd) {
+            case "help" -> help();
+            case "login" -> {return login(params);}
+            case "register" -> {if(register(params)) return null;}
+            case "quit" -> {}
+            default -> {
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                         EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:\n");
-                help();  // If the input is empty, default to help
-                return;
+                help();
             }
-            String cmd = tokens[0];
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
-            switch (cmd) {
-                case "help" -> help();
-                case "login" -> login(params);
-                case "register" -> register(params);
-                case "quit" -> {}
-                default -> {
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
-                            EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:\n");
-                    help();
-                }
-            }
-        } catch(ResponseException ex){
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input: " +
-                    EscapeSequences.SET_TEXT_COLOR_WHITE + ex.getMessage());
-            System.out.println("Please try again");
-            help();
         }
+        return null;
     }
 
-    public void login(String... params) throws ResponseException {
+    public String login(String... params) throws ResponseException {
         if(params.length < 2) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-            error_string += "Expected: login <USERNAME> <PASSWORD>\n";
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When logging in, enter both your username and password\n";
             throw new ResponseException(error_string);
         }
         String username = params[0];
         String password = params[1];
         ResponseClass request = server.login(username, password);
         System.out.println("Logged in as " + request.getUsername());
+        return request.getAuthToken();
     }
-    public void register(String... params) throws ResponseException {
+    public Boolean register(String... params) throws ResponseException {
         if(params.length < 3) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input\n" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-            error_string += "Expected: register <USERNAME> <PASSWORD> <EMAIL>\n";
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When registering in, enter your username, password, ane email\n";
             throw new ResponseException(error_string);
         }
         String username = params[0];
@@ -63,6 +58,7 @@ public class PreLoginClient {
         String email = params[2];
         ResponseClass request = server.register(username, password, email);
         System.out.println("Logged in as " + request.getUsername());
+        return true;
     }
 
     public void help() {

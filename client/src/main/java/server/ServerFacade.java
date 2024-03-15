@@ -25,6 +25,12 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, ResponseClass.class);
     }
 
+    public ResponseClass createGame(String authToken, String gameName) throws ResponseException {
+        var path = "/game";
+        CreateRequest game = new CreateRequest(authToken, gameName);
+        return this.makeRequest("POST", path, game, ResponseClass.class);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();

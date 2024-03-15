@@ -1,6 +1,7 @@
 package ui;
 
 import exception.ResponseException;
+import response.GameResponseClass;
 import response.ResponseClass;
 import server.ServerFacade;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class PostLoginClient {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
         switch (cmd) {
             case "create" -> {create(params);}
-            case "list" -> {}
+            case "list" -> {list();}
             case "join" -> {}
             case "observe" -> {}
             case "logout" -> {}
@@ -47,9 +48,14 @@ public class PostLoginClient {
             throw new ResponseException(error_string);
         }
         String gameName = params[0];
-        System.out.println("auth" + authToken);
-        server.createGame(authToken, gameName);
-        System.out.println("Game created");
+        ResponseClass response = server.createGame(authToken, gameName);
+        System.out.println("Game created with id " + response.getGameID());
+    }
+
+    public void list() throws ResponseException {
+        GameResponseClass response = server.listGames(authToken);
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + "Here are the current games:" + EscapeSequences.SET_TEXT_COLOR_WHITE);
+        response.printGames();
     }
 
     public void help() {

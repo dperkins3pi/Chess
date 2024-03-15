@@ -4,6 +4,7 @@ import exception.ResponseException;
 import java.io.*;
 import java.net.*;
 import request.*;
+import response.GameResponseClass;
 import response.ResponseClass;
 
 public class ServerFacade {
@@ -31,6 +32,12 @@ public class ServerFacade {
         return this.makeRequest("POST", path, game, ResponseClass.class);
     }
 
+    public GameResponseClass listGames(String authToken) throws ResponseException {
+        var path = "/game";
+        ListRequest token = new ListRequest(authToken);
+        return this.makeRequest("GET", path, token, GameResponseClass.class);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -41,7 +48,14 @@ public class ServerFacade {
                 http.addRequestProperty("Authorization", ((CreateRequest) request).getAuthToken());
                 ((CreateRequest) request).setAuthToken(null); // To exclude it from the body
             }
-            writeBody(request, http);
+            if(request instanceof ListRequest) {  // If it has a header
+                http.setDoOutput(false);
+                http.addRequestProperty("Authorization", ((ListRequest) request).getAuthToken());
+                ((ListRequest) request).setAuthToken(null); // To exclude it from the body
+            }
+            else {
+                writeBody(request, http);
+            }
             http.connect();
             return readBody(http, responseClass);
         } catch (Exception ex) {
@@ -52,7 +66,7 @@ public class ServerFacade {
     private <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws Exception {
         T response = null;
         if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
+            try (InputStream respBody = http.getInputStream()) {  //Fails on get request!!!!!!
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);

@@ -14,6 +14,8 @@ public class ResponseClass {   // Used to return response objects
         return authToken;
     }
 
+    public Integer getGameID() {return gameID;}
+
     public ResponseClass(String username, String authToken) {
         this.username = username;
         this.authToken = authToken;

@@ -1,14 +1,22 @@
 package clientTests;
 
+import chess.ChessGame;
 import dataAccess.*;
 import exception.ResponseException;
+import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
+import request.RegisterRequest;
+import response.GameResponseClass;
 import response.ResponseClass;
 import server.Server;
 import server.ServerFacade;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.Collection;
+import java.util.Collections;
 
 
 public class ServerFacadeTests {
@@ -105,6 +113,41 @@ public class ServerFacadeTests {
         // Register new user and try logging in with the wrong password
         serverFacade.register("username", "password", "email");
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.login("username", "password2"));
+
+    }
+
+    @Test
+    public void createGamePositive() throws DataAccessException, ResponseException {
+        // Register user and create the game
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        ResponseClass gameResponse = serverFacade.createGame(registerResponse.getAuthToken(), "game1");
+        int id = gameResponse.getGameID();
+        GameData game = gameDAO.getGame(id);
+        ChessGame the_game = game.game();
+        Assertions.assertNotNull(the_game);  // See if the game was actually added
+        Assertions.assertEquals(the_game, new ChessGame());  // See if a new game was added
+    }
+    @Test
+    public void createGameNegative() {
+        // See if creating a game without registering before creates an error
+        Assertions.assertThrows(ResponseException.class, () ->  serverFacade.createGame("wrong token", "game1"));
+    }
+
+    @Test
+    public void listGamesPositive() throws DataAccessException, ResponseException {
+        // Register user and create the game
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        ResponseClass gameResponse = serverFacade.createGame(registerResponse.getAuthToken(), "game1");
+        int id = gameResponse.getGameID();
+        GameResponseClass response = serverFacade.listGames(registerResponse.getAuthToken());
+        // Create the game and see if it is euqal to newGames
+        Collection<GameData> newGames = Collections.singleton(new GameData(id, null, null, "game1", new ChessGame()));
+        Assertions.assertTrue(response.Equals(newGames));
+    }
+    @Test
+    public void listGamesNegative()  {
+        // Should return an error if the user is not authorized to access the games
+        Assertions.assertThrows(ResponseException.class, () ->  serverFacade.listGames("wrong token"));
 
     }
 

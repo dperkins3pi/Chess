@@ -151,4 +151,17 @@ public class ServerFacadeTests {
 
     }
 
+    @Test
+    public void logOutPositive() throws DataAccessException, UnauthorizedException, ResponseException {
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        String authToken = registerResponse.getAuthToken();
+        serverFacade.logOut(authToken);
+        Assertions.assertNull(authDAO.getAuth(authToken));  //Should no longer contain the authToken
+    }
+    @Test
+    public void logOutNegative() throws ResponseException {
+        serverFacade.register("username", "password", "email");
+        Assertions.assertThrows(UnauthorizedException.class, () -> authDAO.deleteAuth("IncorrectAuthToken"));  // Error should be thrown if same username is created
+    }
+
 }

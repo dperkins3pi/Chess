@@ -11,6 +11,7 @@ public class PostLoginUI {
     }
 
     public void run() {
+        String state = "loggedIn";
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Type help to get started. " +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);
@@ -22,14 +23,15 @@ public class PostLoginUI {
                     + "[LOGGED_IN] >>> " + EscapeSequences.SET_TEXT_COLOR_WHITE);
             line = scanner.nextLine();
             try {
-                client.eval(line);
+                state = client.eval(line);
+                if(state.equals("loggedOut")) break;
             } catch (Throwable e) {
                 var msg = e.getMessage();
                 System.out.print(msg + "\n");
             }
         }
-//        if (!line.equals("quit")){  // If the user didn't quit, move to PostLoginUI
-//            new PostLoginUI(this.serverUrl).run();
-//        }
+        if (!line.equals("quit") && state.equals("loggedOut")){  // If the user didn't quit, move to PostLoginUI
+            new PreLoginUI(this.serverUrl).run();
+        }
     }
 }

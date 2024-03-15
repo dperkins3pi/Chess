@@ -1,9 +1,9 @@
 package request;
 
-public class ListRequest {
+public class AuthRequest {
     String authToken;
 
-    public ListRequest(String authToken) {
+    public AuthRequest(String authToken) {
         this.authToken = authToken;
     }
 

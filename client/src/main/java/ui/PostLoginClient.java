@@ -14,13 +14,13 @@ public class PostLoginClient {
         this.authToken = authToken;
     }
 
-    public boolean eval(String input) throws ResponseException {  // Run the function based on input
+    public String eval(String input) throws ResponseException {  // Run the function based on input
         var tokens = input.toLowerCase().split(" "); // Tokenize the input
         if (tokens.length == 0) { // If no input was given, try again
             System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:\n");
             help();  // If the input is empty, default to help
-            return false;
+            return "loggedIn";
         }
         String cmd = tokens[0];
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
@@ -29,7 +29,10 @@ public class PostLoginClient {
             case "list" -> {list();}
             case "join" -> {}
             case "observe" -> {}
-            case "logout" -> {}
+            case "logout" -> {
+                logOut();
+                return "loggedOut";  // Logged out
+            }
             case "quit" -> {}
             case "help" -> help();
             default -> {
@@ -38,7 +41,7 @@ public class PostLoginClient {
                 help();
             }
         }
-        return false;
+        return "loggedIn";
     }
 
     public void create(String... params) throws ResponseException {
@@ -56,6 +59,10 @@ public class PostLoginClient {
         GameResponseClass response = server.listGames(authToken);
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + "Here are the current games:" + EscapeSequences.SET_TEXT_COLOR_WHITE);
         response.printGames();
+    }
+
+    public void logOut() throws ResponseException {
+        server.logOut(authToken);
     }
 
     public void help() {

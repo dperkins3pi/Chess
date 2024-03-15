@@ -34,8 +34,14 @@ public class ServerFacade {
 
     public GameResponseClass listGames(String authToken) throws ResponseException {
         var path = "/game";
-        ListRequest token = new ListRequest(authToken);
+        AuthRequest token = new AuthRequest(authToken);
         return this.makeRequest("GET", path, token, GameResponseClass.class);
+    }
+
+    public void logOut(String authToken) throws ResponseException {
+        var path = "/session";
+        AuthRequest token = new AuthRequest(authToken);
+        this.makeRequest("DELETE", path, token, GameResponseClass.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -48,10 +54,10 @@ public class ServerFacade {
                 http.addRequestProperty("Authorization", ((CreateRequest) request).getAuthToken());
                 ((CreateRequest) request).setAuthToken(null); // To exclude it from the body
             }
-            if(request instanceof ListRequest) {  // If it has a header
+            if(request instanceof AuthRequest) {  // If it has a header
                 http.setDoOutput(false);
-                http.addRequestProperty("Authorization", ((ListRequest) request).getAuthToken());
-                ((ListRequest) request).setAuthToken(null); // To exclude it from the body
+                http.addRequestProperty("Authorization", ((AuthRequest) request).getAuthToken());
+                ((AuthRequest) request).setAuthToken(null); // To exclude it from the body
             }
             else {
                 writeBody(request, http);

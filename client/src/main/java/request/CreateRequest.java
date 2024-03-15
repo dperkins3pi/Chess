@@ -12,6 +12,10 @@ public class CreateRequest {
         return authToken;
     }
 
+    public void setAuthToken(String authToken){
+        this.authToken = authToken;
+    }
+
     public CreateRequest(String authToken, String gameName) {
         this.authToken = authToken;
         this.gameName = gameName;

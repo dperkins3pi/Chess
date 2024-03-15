@@ -24,7 +24,7 @@ public class PreLoginClient {
         switch (cmd) {
             case "help" -> help();
             case "login" -> {return login(params);}
-            case "register" -> {if(register(params)) return null;}
+            case "register" -> {return register(params);}
             case "quit" -> {}
             default -> {
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
@@ -47,10 +47,10 @@ public class PreLoginClient {
         System.out.println("Logged in as " + request.getUsername());
         return request.getAuthToken();
     }
-    public Boolean register(String... params) throws ResponseException {
+    public String register(String... params) throws ResponseException {
         if(params.length < 3) {  // Throw an error if an invalid number of parameters are given
             String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
-                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When registering in, enter your username, password, ane email\n";
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When registering, enter your username, password, ane email\n";
             throw new ResponseException(error_string);
         }
         String username = params[0];
@@ -58,7 +58,7 @@ public class PreLoginClient {
         String email = params[2];
         ResponseClass request = server.register(username, password, email);
         System.out.println("Logged in as " + request.getUsername());
-        return true;
+        return request.getAuthToken();
     }
 
     public void help() {

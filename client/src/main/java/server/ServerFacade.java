@@ -37,7 +37,10 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+            if(request instanceof CreateRequest) {  // If it has a header
+                http.addRequestProperty("Authorization", ((CreateRequest) request).getAuthToken());
+                ((CreateRequest) request).setAuthToken(null); // To exclude it from the body
+            }
             writeBody(request, http);
             http.connect();
             return readBody(http, responseClass);
@@ -46,7 +49,7 @@ public class ServerFacade {
         }
     }
 
-    private <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+    private <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws Exception {
         T response = null;
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
@@ -54,6 +57,12 @@ public class ServerFacade {
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
                 }
+            }
+            catch (Exception e){  // To output the exception in a more understandable format
+                InputStream inputStream = http.getErrorStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String jsonString = reader.readLine();
+                throw new Exception(jsonString);
             }
         }
         return response;

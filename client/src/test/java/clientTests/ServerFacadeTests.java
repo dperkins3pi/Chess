@@ -2,18 +2,13 @@ package clientTests;
 
 import dataAccess.*;
 import exception.ResponseException;
-import exceptions.AlreadyTakenException;
-import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.*;
 import response.ResponseClass;
 import server.Server;
 import server.ServerFacade;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import service.LoginService;
-import service.RegisterService;
 
 
 public class ServerFacadeTests {

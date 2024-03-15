@@ -47,8 +47,9 @@ public class PostLoginClient {
             throw new ResponseException(error_string);
         }
         String gameName = params[0];
-        ResponseClass request = server.createGame(authToken, gameName);
-        System.out.println("Logged in as " + request.getUsername());
+        System.out.println("auth" + authToken);
+        server.createGame(authToken, gameName);
+        System.out.println("Game created");
     }
 
     public void help() {

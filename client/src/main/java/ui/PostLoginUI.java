@@ -22,10 +22,10 @@ public class PostLoginUI {
                     + "[LOGGED_IN] >>> " + EscapeSequences.SET_TEXT_COLOR_WHITE);
             line = scanner.nextLine();
             try {
-                if(client.eval(line)) break;   // Break if successfully logged in
+                client.eval(line);
             } catch (Throwable e) {
                 var msg = e.getMessage();
-                System.out.print(msg);
+                System.out.print(msg + "\n");
             }
         }
 //        if (!line.equals("quit")){  // If the user didn't quit, move to PostLoginUI

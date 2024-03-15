@@ -27,7 +27,7 @@ public class PreLoginUI {
                 if(authToken != null) break;// Break if successfully logged in
             } catch (Throwable e) {
                 var msg = e.getMessage();
-                System.out.print(msg);
+                System.out.print(msg + "\n");
             }
         }
 

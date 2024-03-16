@@ -28,8 +28,14 @@ public class PostLoginClient {
         switch (cmd) {
             case "create" -> {create(params);}
             case "list" -> {list();}
-            case "join" -> {join(params);}
-            case "observe" -> {join(params);}  // Same as join (but with no color specified)
+            case "join" -> {
+                join(params);
+                return "gamePlay";
+            }
+            case "observe" -> {
+                join(params);
+                return "gamePlay";
+            }  // Same as join (but with no color specified)
             case "logout" -> {
                 logOut();
                 return "loggedOut";  // Logged out
@@ -53,7 +59,7 @@ public class PostLoginClient {
         }
         String gameName = params[0];
         ResponseClass response = server.createGame(authToken, gameName);
-        System.out.println("Game created with id " + response.getGameID());
+        System.out.println("Game created. Type in 'list' to see it");
     }
 
     public void list() throws ResponseException {
@@ -90,6 +96,7 @@ public class PostLoginClient {
         GameResponseClass response = server.listGames(authToken);
         id = response.getID(id);   // Convert to correct id number
         server.joinGame(authToken, color, id);
+        System.out.println("You joined the game");
     }
 
     public void help() {

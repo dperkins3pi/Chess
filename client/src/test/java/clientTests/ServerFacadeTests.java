@@ -194,4 +194,24 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(authToken, "WHITE", id));
     }
 
+    @Test
+    public void observePositive() throws ResponseException {
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        String authToken = registerResponse.getAuthToken();
+        ResponseClass gameResponse = serverFacade.createGame(authToken, "game1");
+        int id = gameResponse.getGameID();
+        Assertions.assertDoesNotThrow(() -> serverFacade.joinGame(authToken, null, id));
+    }
+
+    @Test
+    public void observeNegative() throws ResponseException {
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        String authToken = registerResponse.getAuthToken();
+        ResponseClass gameResponse = serverFacade.createGame(authToken, "game1");
+        int id = gameResponse.getGameID();
+
+        // Try observing without an auth token or with wrong id
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(authToken, null, 0));
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame("wrongToken", null, id));
+    }
 }

@@ -31,13 +31,22 @@ public class GameResponseClass {
         return true;
     }
 
+    public Integer getID(int id){
+        for (var game : games){   // Converts the id the user gives to the real id stored in the DAO
+            return game.gameID() + id - 1;
+        }
+        return null;
+    }
+
     public void printGames(){
+        int i = 1;  // For counting the games
         for (var game : games){
-            String toPrint = "- ID: " + String.valueOf(game.gameID());
-            toPrint += ", Name: " + game.gameName();
+            String toPrint = "#" + i + ": " + game.gameName();
             toPrint += ", White Username: " + game.whiteUsername();
             toPrint += ", Black Username: " + game.blackUsername();
+            toPrint += ", ID: " + String.valueOf(game.gameID());
             System.out.println(toPrint);
+            i += 1;
         }
     }
 

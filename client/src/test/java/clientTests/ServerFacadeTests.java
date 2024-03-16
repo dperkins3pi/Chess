@@ -164,4 +164,34 @@ public class ServerFacadeTests {
         Assertions.assertThrows(UnauthorizedException.class, () -> authDAO.deleteAuth("IncorrectAuthToken"));  // Error should be thrown if same username is created
     }
 
+    @Test
+    public void joinGamePositive() throws ResponseException {
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        String authToken = registerResponse.getAuthToken();
+        ResponseClass gameResponse = serverFacade.createGame(authToken, "game1");
+        int id = gameResponse.getGameID();
+        serverFacade.joinGame(authToken, "WHITE", id);
+
+        GameResponseClass response = serverFacade.listGames(registerResponse.getAuthToken());
+        // Create the game and see if it is equal to newGames
+        Collection<GameData> newGames = Collections.singleton(new GameData(id, "username", null, "game1", new ChessGame()));
+        Assertions.assertTrue(response.Equals(newGames));
+    }
+
+    @Test
+    public void joinGameNegative() throws ResponseException {
+        ResponseClass registerResponse = serverFacade.register("username", "password", "email");
+        String authToken = registerResponse.getAuthToken();
+        ResponseClass gameResponse = serverFacade.createGame(authToken, "game1");
+        int id = gameResponse.getGameID();
+
+        // Try joining without an auth token or with wrong id
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame("invalidAth", "WHITE", id));
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(authToken, "WHITE", 0));
+
+        // Try joining a game that already is taken
+        serverFacade.joinGame(authToken, "WHITE", id);
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(authToken, "WHITE", id));
+    }
+
 }

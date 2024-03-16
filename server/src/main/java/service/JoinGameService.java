@@ -30,7 +30,7 @@ public class JoinGameService {
         GameData game = gameDAO.getGame(gameID);
         String username = authDAO.getUsername(authToken);
         if(game == null){  //The game does not exist
-            throw new BadRequestException("Error: bad request2");
+            throw new BadRequestException("Error: That game does not exist");
         }
         String gameName = game.gameName();
         String whiteUsername = game.whiteUsername();
@@ -52,7 +52,7 @@ public class JoinGameService {
                 gameDAO.updateGame(game);  // Update the game
             }
             else{  // Invalid team color selected
-                throw new BadRequestException("Error: bad request3");
+                throw new BadRequestException("Error: Invalid team color");
             }
     }
 }

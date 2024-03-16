@@ -1,6 +1,7 @@
 package ui;
 
 import exception.ResponseException;
+import request.JoinGameAuthRequest;
 import response.GameResponseClass;
 import response.ResponseClass;
 import server.ServerFacade;
@@ -27,8 +28,8 @@ public class PostLoginClient {
         switch (cmd) {
             case "create" -> {create(params);}
             case "list" -> {list();}
-            case "join" -> {}
-            case "observe" -> {}
+            case "join" -> {join(params);}
+            case "observe" -> {join(params);}  // Same as join (but with no color specified)
             case "logout" -> {
                 logOut();
                 return "loggedOut";  // Logged out
@@ -36,8 +37,8 @@ public class PostLoginClient {
             case "quit" -> {}
             case "help" -> help();
             default -> {
-                System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
-                        EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:\n");
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
+                        EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:");
                 help();
             }
         }
@@ -47,7 +48,7 @@ public class PostLoginClient {
     public void create(String... params) throws ResponseException {
         if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
             String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
-                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When creating a game, enter the game name\n";
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When creating a game, enter the game name";
             throw new ResponseException(error_string);
         }
         String gameName = params[0];
@@ -63,6 +64,32 @@ public class PostLoginClient {
 
     public void logOut() throws ResponseException {
         server.logOut(authToken);
+        System.out.println("You successfully logged out");
+    }
+
+    public void join(String... params) throws ResponseException {
+        if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When joining a game, enter the game id as a number.\n" +
+                    "You also may enter the color (if you aren't spectating)";
+            throw new ResponseException(error_string);
+        }
+        String gameID = params[0];
+        int id;
+        try{
+            id = Integer.parseInt(gameID);   // convert it to an integer
+        } catch (Exception e){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When joining a game, enter the game id as a number.\n" +
+                    "You also may enter the color (if you aren't spectating)";
+            throw new ResponseException(error_string);
+        }
+        String color = null;
+        if(params.length == 2) color = params[1];  // If they specified a color, get it
+
+        GameResponseClass response = server.listGames(authToken);
+        id = response.getID(id);   // Convert to correct id number
+        server.joinGame(authToken, color, id);
     }
 
     public void help() {

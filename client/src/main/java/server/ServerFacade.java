@@ -41,7 +41,14 @@ public class ServerFacade {
     public void logOut(String authToken) throws ResponseException {
         var path = "/session";
         AuthRequest token = new AuthRequest(authToken);
-        this.makeRequest("DELETE", path, token, GameResponseClass.class);
+        this.makeRequest("DELETE", path, token, ResponseClass.class);
+    }
+
+    public void joinGame(String authToken, String color, Integer gameID) throws ResponseException {
+        var path = "/game";
+        if(color != null) color = color.toUpperCase();  // Needs to be in all caps to work
+        JoinGameAuthRequest request = new JoinGameAuthRequest(authToken, gameID, color);
+        this.makeRequest("PUT", path, request, ResponseClass.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -54,7 +61,11 @@ public class ServerFacade {
                 http.addRequestProperty("Authorization", ((CreateRequest) request).getAuthToken());
                 ((CreateRequest) request).setAuthToken(null); // To exclude it from the body
             }
-            if(request instanceof AuthRequest) {  // If it has a header
+            if(request instanceof JoinGameAuthRequest) {  // If it has a header
+                http.addRequestProperty("Authorization", ((JoinGameAuthRequest) request).getAuthToken());
+                ((JoinGameAuthRequest) request).setAuthToken(null); // To exclude it from the body
+            }
+            if(request instanceof AuthRequest) {  // If it has a header and is a get statement
                 http.setDoOutput(false);
                 http.addRequestProperty("Authorization", ((AuthRequest) request).getAuthToken());
                 ((AuthRequest) request).setAuthToken(null); // To exclude it from the body

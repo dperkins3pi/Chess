@@ -5,8 +5,10 @@ import java.util.Scanner;
 public class GamePlayUI {
     private final GamePlayClient client;
     private final String serverUrl;
+    private final String authToken;
     public GamePlayUI(String serverUrl, String authToken) {
         this.serverUrl = serverUrl;
+        this.authToken = authToken;
         client = new GamePlayClient(serverUrl, authToken);
     }
 
@@ -15,6 +17,7 @@ public class GamePlayUI {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Type help if you need it. " +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);
+        client.display();
         Scanner scanner = new Scanner(System.in);
         String line = "";
 
@@ -33,6 +36,9 @@ public class GamePlayUI {
         }
         if (!line.equals("quit") && state.equals("loggedOut")){  // If the user didn't quit, move to PreLoginUI
             new PreLoginUI(this.serverUrl).run();
+        } else if (!line.equals("quit")){  // If the user didn't quit, move to PreLoginUI
+            new PostLoginUI(this.serverUrl, authToken).run();
         }
+
     }
 }

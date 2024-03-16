@@ -27,6 +27,7 @@ public class GamePlayClient {
         String cmd = tokens[0];
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
         switch (cmd) {
+            case "exit" -> {return "loggedIn";}
             case "logout" -> {
                 logOut();
                 return "loggedOut";  // Logged out
@@ -87,9 +88,9 @@ public class GamePlayClient {
         theString += "    h \u2001g \u2001f \u2001e \u2001d \u2001c \u2001b \u2001a  \u2001 " + terminalColor + "\n";
         for (int i=0; i<8; i++){  // Go through the rows
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
-            for (int j=0; j<8; j++){  // Go through the columns
-                if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_WHITE;
-                else theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+            for (int j=7; j>=0; j--){  // Go through the columns
+                if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+                else theString += EscapeSequences.SET_BG_COLOR_WHITE;
                 theString += displayPiece(squares[i][j]);
             }
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " " + terminalColor;
@@ -108,9 +109,9 @@ public class GamePlayClient {
         theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor + "\n";
         for (int i=7; i>=0; i--){  // Go through the rows
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
-            for (int j=7; j>=0; j--){  // Go through the columns
-                if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_WHITE;
-                else theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+            for (int j=0; j<8; j++){  // Go through the columns
+                if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+                else theString += EscapeSequences.SET_BG_COLOR_WHITE;
                 theString += displayPiece(squares[i][j]);
             }
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " " + terminalColor;
@@ -136,6 +137,10 @@ public class GamePlayClient {
         String helpString = EscapeSequences.SET_TEXT_COLOR_YELLOW;
         helpString += "display" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         helpString += " - shows the current board\n";
+
+        helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
+        helpString += "exit" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - the game\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
         helpString += "logout" + EscapeSequences.SET_TEXT_COLOR_WHITE;

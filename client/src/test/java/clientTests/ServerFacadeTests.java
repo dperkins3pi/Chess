@@ -3,12 +3,11 @@ package clientTests;
 import chess.ChessGame;
 import dataAccess.*;
 import exception.ResponseException;
-import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import request.RegisterRequest;
+import ui.GamePlayClient;
 import response.GameResponseClass;
 import response.ResponseClass;
 import server.Server;
@@ -213,5 +212,11 @@ public class ServerFacadeTests {
         // Try observing without an auth token or with wrong id
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(authToken, null, 0));
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame("wrongToken", null, id));
+    }
+
+    @Test
+    public void display() {  // Test the display of the chess game
+        GamePlayClient gamePlay = new GamePlayClient("server", "token");
+        Assertions.assertDoesNotThrow(gamePlay::display);   // See if no error is thrown
     }
 }

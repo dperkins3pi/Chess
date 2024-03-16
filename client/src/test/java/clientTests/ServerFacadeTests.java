@@ -46,6 +46,12 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @AfterEach
+    void reset() throws DataAccessException {
+        authDAO.clear();
+        gameDAO.clear();
+        userDAO.clear();
+    }
 
     @Test
     public void registerPositive() throws ResponseException, UnauthorizedException, DataAccessException {

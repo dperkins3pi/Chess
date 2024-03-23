@@ -1,8 +1,10 @@
 package ui;
 
+import handler.GameHandler;
+
 import java.util.Scanner;
 
-public class GamePlayUI {
+public class GamePlayUI implements GameHandler {
     private final GamePlayClient client;
     private final String serverUrl;
     private final String authToken;

@@ -3,8 +3,6 @@ package ui;
 import chess.ChessGame;
 import exception.ResponseException;
 import handler.GameHandler;
-import server.WebSocketFacade;
-import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
@@ -28,12 +26,12 @@ public class GamePlayUI implements GameHandler {
 
     }
 
-    public void run() {
+    public void run() throws ResponseException {
         String state = "gamePlay";
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Type help if you need it. " +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);
-        client.display();
+        client.redraw();
         Scanner scanner = new Scanner(System.in);
         String line = "";
 

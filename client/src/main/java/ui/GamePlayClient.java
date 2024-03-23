@@ -4,7 +4,6 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import exception.ResponseException;
-import handler.GameHandler;
 import server.ServerFacade;
 import server.WebSocketFacade;
 
@@ -21,7 +20,7 @@ public class GamePlayClient {
         this.wsFacade = new WebSocketFacade(serverUrl);
     }
 
-    public String eval(String input) throws ResponseException {  // Run the function based on input
+    public String eval(String input) {  // Run the function based on input
         var tokens = input.toLowerCase().split(" "); // Tokenize the input
         if (tokens.length == 0) { // If no input was given, try again
             System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
@@ -31,15 +30,12 @@ public class GamePlayClient {
         String cmd = tokens[0];
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
         switch (cmd) {
-            case "exit" -> {return "loggedIn";}
-            case "logout" -> {
-                logOut();
-                return "loggedOut";  // Logged out
-            }
-            case "display" -> display();
-            case "quit" -> {
-            }
             case "help" -> help();
+            case "redraw" -> redraw();
+            case "leave" -> {return "loggedIn";}
+            case "move" -> {}
+            case "resign" -> {return "loggedIn";}
+            case "highlight" -> {}
             default -> {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                         EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:");
@@ -83,7 +79,7 @@ public class GamePlayClient {
         }
         return null;
     }
-    private void displayTop(){
+    private void drawWhite(){
         ChessBoard board = game.getBoard();
         String terminalColor = "\u001B[0m";
         ChessPiece[][] squares = board.getSquares();
@@ -104,7 +100,7 @@ public class GamePlayClient {
         theString += "    h \u2001g \u2001f \u2001e \u2001d \u2001c \u2001b \u2001a  \u2001 " + terminalColor;
         System.out.println(theString);
     }
-    private void displayBottom(){
+    private void drawBlack(){
         ChessBoard board = game.getBoard();
         String terminalColor = "\u001B[0m";
         ChessPiece[][] squares = board.getSquares();
@@ -125,10 +121,10 @@ public class GamePlayClient {
         theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor;
         System.out.println(theString);
     }
-    public void display(){   // To display it correctly, used the monospaced setting
-        displayTop();
+    public void redraw(){   // To display it correctly, used the monospaced setting
+        drawWhite();
         System.out.println();
-        displayBottom();
+        drawBlack();
     }
 
     public void logOut() throws ResponseException {
@@ -139,20 +135,24 @@ public class GamePlayClient {
     public void help() {
         // Create the string to help the user
         String helpString = EscapeSequences.SET_TEXT_COLOR_YELLOW;
-        helpString += "display" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-        helpString += " - shows the current board\n";
+        helpString += "redraw" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - the current board\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
-        helpString += "exit" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += "leave" + EscapeSequences.SET_TEXT_COLOR_WHITE;
         helpString += " - the game\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
-        helpString += "logout" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-        helpString += " - when you are done\n";
+        helpString += "move" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - make a move\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
-        helpString += "quit" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-        helpString += " - playing chess\n";
+        helpString += "resign" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - the game\n";
+
+        helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
+        helpString += "highlight" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - legal moves\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
         helpString += "help" + EscapeSequences.SET_TEXT_COLOR_WHITE;

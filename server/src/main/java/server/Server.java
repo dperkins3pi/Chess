@@ -3,6 +3,7 @@ package server;
 import dataAccess.*;
 import handler.*;
 import spark.*;
+import websocket.WebSocketHandler;
 
 public class Server {
 
@@ -21,6 +22,8 @@ public class Server {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+
+        Spark.webSocket("/connect", new WebSocketHandler());
 
         // Register your endpoints and handle exceptions here.   //HELP
         Spark.delete("/db", new ClearHandler(authDao, gameDao, userDao)::handle);  //Clear

@@ -1,5 +1,7 @@
 package ui;
 
+import exception.ResponseException;
+
 import java.util.Scanner;
 
 public class PostLoginUI {
@@ -12,7 +14,7 @@ public class PostLoginUI {
         client = new PostLoginClient(serverUrl, authToken);
     }
 
-    public void run() {
+    public void run() throws ResponseException {
         String state = "loggedIn";
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Type help to get started. " +

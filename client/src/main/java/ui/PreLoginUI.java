@@ -1,4 +1,6 @@
 package ui;
+import exception.ResponseException;
+
 import java.util.Scanner;
 
 public class PreLoginUI {
@@ -11,7 +13,7 @@ public class PreLoginUI {
         client = new PreLoginClient(serverUrl);
     }
 
-    public void run() {
+    public void run() throws ResponseException {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Welcome to 240 chess. Type help to get started." +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);

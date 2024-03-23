@@ -1,6 +1,10 @@
 package ui;
 
+import chess.ChessGame;
+import exception.ResponseException;
 import handler.GameHandler;
+import server.WebSocketFacade;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
@@ -8,10 +12,20 @@ public class GamePlayUI implements GameHandler {
     private final GamePlayClient client;
     private final String serverUrl;
     private final String authToken;
-    public GamePlayUI(String serverUrl, String authToken) {
+    public GamePlayUI(String serverUrl, String authToken) throws ResponseException {
         this.serverUrl = serverUrl;
         this.authToken = authToken;
         client = new GamePlayClient(serverUrl, authToken);
+    }
+
+    @Override
+    public void updateGame(ChessGame game) {
+
+    }
+
+    @Override
+    public void printMessage(String message) {
+
     }
 
     public void run() {

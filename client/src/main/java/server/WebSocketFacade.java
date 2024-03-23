@@ -5,6 +5,8 @@ import javax.websocket.*;
 import com.google.gson.Gson;
 import handler.GameHandler;
 import exception.ResponseException;
+import webSocketMessages.userCommands.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,7 +47,13 @@ public class WebSocketFacade extends Endpoint {
     public void makeMove() {
     }
 
-    public void leaveGame() {
+    public void leaveGame(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var action = new LeaveCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
     }
 
     public void resignGame() {

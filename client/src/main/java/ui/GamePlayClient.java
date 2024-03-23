@@ -4,23 +4,20 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import exception.ResponseException;
-import server.ServerFacade;
 import server.WebSocketFacade;
 
 import java.util.Arrays;
 
 public class GamePlayClient {
-    private final ServerFacade server;
     private final String authToken;
     private ChessGame game = new ChessGame();  //Will change this when gameplay is implemented
     private final WebSocketFacade wsFacade;
     public GamePlayClient(String serverUrl, String authToken) throws ResponseException {
-        this.server = new ServerFacade(serverUrl);
         this.authToken = authToken;
         this.wsFacade = new WebSocketFacade(serverUrl);
     }
 
-    public String eval(String input) {  // Run the function based on input
+    public String eval(String input) throws ResponseException {  // Run the function based on input
         var tokens = input.toLowerCase().split(" "); // Tokenize the input
         if (tokens.length == 0) { // If no input was given, try again
             System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
@@ -31,8 +28,8 @@ public class GamePlayClient {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
         switch (cmd) {
             case "help" -> help();
-            case "redraw" -> redraw();
-            case "leave" -> {return "loggedIn";}
+            case "redraw" -> draw();
+            case "leave" -> {return leaveGame();}
             case "move" -> {}
             case "resign" -> {return "loggedIn";}
             case "highlight" -> {}
@@ -43,6 +40,11 @@ public class GamePlayClient {
             }
         }
         return "gamePlay";
+    }
+
+    private String leaveGame() throws ResponseException {
+        wsFacade.leaveGame(authToken, 1);   // TODO: Get the correct ID
+        return "loggedIn";
     }
 
     private String displayPiece(ChessPiece piece){   // Returns a string to represent the piece
@@ -121,15 +123,10 @@ public class GamePlayClient {
         theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor;
         System.out.println(theString);
     }
-    public void redraw(){   // To display it correctly, used the monospaced setting
+    public void draw(){   // To display it correctly, used the monospaced setting
         drawWhite();
         System.out.println();
         drawBlack();
-    }
-
-    public void logOut() throws ResponseException {
-        server.logOut(authToken);
-        System.out.println("You successfully logged out");
     }
 
     public void help() {

@@ -5,6 +5,7 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import exception.ResponseException;
 import handler.GameHandler;
+import request.JoinGameOutput;
 import server.WebSocketFacade;
 
 import java.util.Arrays;
@@ -13,9 +14,12 @@ public class GamePlayClient {
     private final String authToken;
     private ChessGame game = new ChessGame();  //Will change this when gameplay is implemented
     private final WebSocketFacade wsFacade;
-    public GamePlayClient(String serverUrl, String authToken, GameHandler gameHandler) throws ResponseException {
+    public GamePlayClient(String serverUrl, String authToken, GameHandler gameHandler, JoinGameOutput output) throws ResponseException {
         this.authToken = authToken;
         this.wsFacade = new WebSocketFacade(serverUrl, gameHandler);
+        // Join game from websocket as well
+        if ("observe".equals(output.getState())) joinObserver(authToken, output.getGameID());
+        else if ("join".equals(output.getState())) join(authToken, output.getGameID(), output.getColor());
     }
 
     public String eval(String input) throws ResponseException {  // Run the function based on input
@@ -42,7 +46,12 @@ public class GamePlayClient {
         }
         return "gamePlay";
     }
-
+    private void join(String authToken, Integer gameID, String color) throws ResponseException {
+        wsFacade.joinPlayer(authToken, gameID, color);
+    }
+    private void joinObserver(String authToken, Integer gameID) throws ResponseException {
+        wsFacade.joinObserver(authToken, gameID);
+    }
     private String leaveGame() throws ResponseException {
         wsFacade.leaveGame(authToken, 1);   // TODO: Get the correct ID
         return "loggedIn";

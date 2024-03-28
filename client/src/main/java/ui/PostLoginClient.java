@@ -1,9 +1,8 @@
 package ui;
 
 import exception.ResponseException;
-import request.JoinGameAuthRequest;
+import request.JoinGameOutput;
 import response.GameResponseClass;
-import response.ResponseClass;
 import server.ServerFacade;
 import java.util.Arrays;
 
@@ -15,13 +14,13 @@ public class PostLoginClient {
         this.authToken = authToken;
     }
 
-    public String eval(String input) throws ResponseException {  // Run the function based on input
+    public JoinGameOutput eval(String input) throws ResponseException {  // Run the function based on input
         var tokens = input.toLowerCase().split(" "); // Tokenize the input
         if (tokens.length == 0) { // If no input was given, try again
             System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:\n");
             help();  // If the input is empty, default to help
-            return "loggedIn";
+            return new JoinGameOutput("loggedIn", null, null);
         }
         String cmd = tokens[0];
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
@@ -29,16 +28,14 @@ public class PostLoginClient {
             case "create" -> {create(params);}
             case "list" -> {list();}
             case "join" -> {
-                join(params);
-                return "gamePlay";
+                return join(params);
             }
             case "observe" -> {
-                join(params);
-                return "gamePlay";
+                return join(params);
             }  // Same as join (but with no color specified)
             case "logout" -> {
                 logOut();
-                return "loggedOut";  // Logged out
+                return new JoinGameOutput("loggedOut", null, null);  // Logged out
             }
             case "quit" -> {}
             case "help" -> help();
@@ -48,7 +45,7 @@ public class PostLoginClient {
                 help();
             }
         }
-        return "loggedIn";
+        return new JoinGameOutput("loggedIn", null, null);
     }
 
     public void create(String... params) throws ResponseException {
@@ -73,7 +70,7 @@ public class PostLoginClient {
         System.out.println("You successfully logged out");
     }
 
-    public void join(String... params) throws ResponseException {
+    public JoinGameOutput join(String... params) throws ResponseException {
         if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
             String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When joining a game, enter the game id as a number.\n" +
@@ -91,12 +88,17 @@ public class PostLoginClient {
             throw new ResponseException(error_string);
         }
         String color = null;
-        if(params.length == 2) color = params[1];  // If they specified a color, get it
+        String output = "observe";
+        if(params.length == 2) {
+            color = params[1];  // If they specified a color, get it
+            output = "join";
+        }
 
         GameResponseClass response = server.listGames(authToken);
         id = response.getID(id);   // Convert to correct id number
         server.joinGame(authToken, color, id);
         System.out.println("You joined the game");
+        return new JoinGameOutput(output, id, color);
     }
 
     public void help() {

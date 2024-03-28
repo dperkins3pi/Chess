@@ -39,13 +39,23 @@ public class WebSocketFacade extends Endpoint {
     }
 
     // Outgoing messages
-    public void joinPlayer() {
+    public void joinPlayer(String authToken, Integer gameID, String color) throws ResponseException {
+        try {
+            var action = new JoinPlayerCommand(authToken, gameID, color);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
     }
 
-    public void joinObserver() {
-    }
-
-    public void makeMove() {
+    public void joinObserver(String authToken, Integer gameID) throws ResponseException {
+        try {
+            JoinObserverCommand action = new JoinObserverCommand(authToken, gameID);
+            System.out.println(action.getClass());
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
     }
 
     public void leaveGame(String authToken, Integer gameID) throws ResponseException {
@@ -55,6 +65,10 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
+
+    }
+
+    public void makeMove() {
     }
 
     public void resignGame() {

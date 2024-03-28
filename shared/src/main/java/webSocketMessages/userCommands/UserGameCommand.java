@@ -1,5 +1,7 @@
 package webSocketMessages.userCommands;
 
+import chess.ChessMove;
+
 import java.util.Objects;
 
 /**
@@ -10,6 +12,9 @@ import java.util.Objects;
  */
 public class UserGameCommand {
 
+    public Integer gameID = null;
+    public ChessMove move = null;
+    public String teamColor = null;
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
     }

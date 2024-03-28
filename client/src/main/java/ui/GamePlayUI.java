@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import exception.ResponseException;
 import handler.GameHandler;
+import request.JoinGameOutput;
 
 import java.util.Scanner;
 
@@ -10,10 +11,10 @@ public class GamePlayUI implements GameHandler {
     private final GamePlayClient client;
     private final String serverUrl;
     private final String authToken;
-    public GamePlayUI(String serverUrl, String authToken) throws ResponseException {
+    public GamePlayUI(String serverUrl, String authToken, JoinGameOutput output) throws ResponseException {
         this.serverUrl = serverUrl;
         this.authToken = authToken;
-        client = new GamePlayClient(serverUrl, authToken, this);
+        client = new GamePlayClient(serverUrl, authToken, this, output);
     }
 
     @Override

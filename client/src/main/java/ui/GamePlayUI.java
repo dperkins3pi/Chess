@@ -13,7 +13,7 @@ public class GamePlayUI implements GameHandler {
     public GamePlayUI(String serverUrl, String authToken) throws ResponseException {
         this.serverUrl = serverUrl;
         this.authToken = authToken;
-        client = new GamePlayClient(serverUrl, authToken);
+        client = new GamePlayClient(serverUrl, authToken, this);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class GamePlayUI implements GameHandler {
 
     @Override
     public void printMessage(String message) {
-
+        System.out.println(message);
     }
 
     public void run() throws ResponseException {

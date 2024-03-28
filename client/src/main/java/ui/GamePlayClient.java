@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import exception.ResponseException;
+import handler.GameHandler;
 import server.WebSocketFacade;
 
 import java.util.Arrays;
@@ -12,9 +13,9 @@ public class GamePlayClient {
     private final String authToken;
     private ChessGame game = new ChessGame();  //Will change this when gameplay is implemented
     private final WebSocketFacade wsFacade;
-    public GamePlayClient(String serverUrl, String authToken) throws ResponseException {
+    public GamePlayClient(String serverUrl, String authToken, GameHandler gameHandler) throws ResponseException {
         this.authToken = authToken;
-        this.wsFacade = new WebSocketFacade(serverUrl);
+        this.wsFacade = new WebSocketFacade(serverUrl, gameHandler);
     }
 
     public String eval(String input) throws ResponseException {  // Run the function based on input

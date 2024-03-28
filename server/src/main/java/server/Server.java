@@ -34,7 +34,7 @@ public class Server {
         Spark.post("/game", new CreateGameHandler(authDao, gameDao, userDao)::handle);  //CreateGame
         Spark.put("/game", new JoinGameHandler(authDao, gameDao, userDao)::handle);  //JoinGame
 
-        Spark.init();
+//        Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
     }

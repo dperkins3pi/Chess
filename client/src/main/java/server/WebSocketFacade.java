@@ -17,7 +17,8 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     GameHandler gameHandler;
 
-    public WebSocketFacade(String url) throws ResponseException {
+    public WebSocketFacade(String url, GameHandler gamePlay) throws ResponseException {
+        this.gameHandler = gamePlay;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
@@ -29,7 +30,7 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.println(message);
+                    gameHandler.printMessage(message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

@@ -58,7 +58,7 @@ public class PostLoginClient {
             throw new ResponseException(error_string);
         }
         String gameName = params[0];
-        ResponseClass response = server.createGame(authToken, gameName);
+        server.createGame(authToken, gameName);
         System.out.println("Game created. Type in 'list' to see it");
     }
 

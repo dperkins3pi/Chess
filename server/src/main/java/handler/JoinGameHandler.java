@@ -22,7 +22,7 @@ public class JoinGameHandler {
         this.userDAO = userDAO;
     }
 
-    public Object handle(Request request, Response response) throws DataAccessException, UnauthorizedException {
+    public Object handle(Request request, Response response) {
         // Get data from request
         String authToken = request.headers("Authorization");
         JoinGameRequest gameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);

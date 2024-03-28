@@ -7,10 +7,11 @@ public class WebSocketSessions {
     // Maps gameID to Map<AuthToken, session>
 
     public void addSessionToGame(Integer gameID, String authToken, Session session){
-
+        HashMap<String, Session> tokenToSession = new HashMap<>();
+        tokenToSession.put(authToken, session);
+        sessionMap.put(gameID, tokenToSession);
     }
     public void removeSessionFromGame(Integer gameID, String authToken, Session session){
-
     }
     public void removeSession(Session session){
 

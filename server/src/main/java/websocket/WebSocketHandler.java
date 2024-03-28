@@ -1,15 +1,15 @@
 package websocket;
 
-import chess.ChessBoard;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
-import service.JoinGameService;
 import webSocketMessages.userCommands.LeaveCommand;
 import webSocketMessages.userCommands.UserGameCommand;
 
 @WebSocket
 public class WebSocketHandler {
+    WebSocketSessions sessions = new WebSocketSessions();
+
 
 //    @OnWebSocketConnect
 //    public void onConnect(Session session){
@@ -39,28 +39,14 @@ public class WebSocketHandler {
 
     public void leave(UserGameCommand action){
         LeaveCommand leaveAction = (LeaveCommand) action;
-        String authToken = action.getAuthString();
+        String authToken = leaveAction.getAuthString();
+        Integer gameID = leaveAction.getGameID();
     }
 
     public void sendMessage(Integer gameID, String message, String authToken){
 
     }
     public void broadcastMessage(Integer gameID, String message, String exceptThisAuthToken){
-
-//        public Connection(String visitorName, Session session) {
-//            this.visitorName = visitorName;
-//            this.session = session;
-//        }
-//
-//        public void send(String msg) throws IOException {
-//            session.getRemote().sendString(msg);
-//        }
-
-
-    }
-
-
-//    public void broadcast(String excludeVisitorName, Notification notification) throws IOException {
 //        var removeList = new ArrayList<Connection>();
 //        for (var c : connections.values()) {
 //            if (c.session.isOpen()) {
@@ -76,5 +62,6 @@ public class WebSocketHandler {
 //        for (var c : removeList) {
 //            connections.remove(c.visitorName);
 //        }
-//    }
+    }
+
 }

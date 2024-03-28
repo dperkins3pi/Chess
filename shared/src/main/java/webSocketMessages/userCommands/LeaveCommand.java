@@ -6,6 +6,11 @@ public class LeaveCommand extends UserGameCommand{
         this.gameID = gameID;
         this.commandType = CommandType.LEAVE;
     }
+    public LeaveCommand(UserGameCommand command){
+        super(command.getAuthString());
+        this.gameID = command.gameID;
+        this.commandType = CommandType.JOIN_OBSERVER;
+    }
     public Integer getGameID(){
         return this.gameID;
     }

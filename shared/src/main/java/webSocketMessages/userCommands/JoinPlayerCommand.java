@@ -7,6 +7,13 @@ public class JoinPlayerCommand extends UserGameCommand{
         this.teamColor = teamColor;
         this.commandType = CommandType.JOIN_PLAYER;
     }
+
+    public JoinPlayerCommand(UserGameCommand command){
+        super(command.getAuthString());
+        this.gameID = command.gameID;
+        this.teamColor = command.teamColor;
+        this.commandType = CommandType.JOIN_OBSERVER;
+    }
     public Integer getGameID(){
         return this.gameID;
     }

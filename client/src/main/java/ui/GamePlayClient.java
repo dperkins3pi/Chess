@@ -12,14 +12,15 @@ import java.util.Arrays;
 
 public class GamePlayClient {
     private final String authToken;
+    private Integer gameID;
     private ChessGame game = new ChessGame();  //Will change this when gameplay is implemented
     private final WebSocketFacade wsFacade;
     public GamePlayClient(String serverUrl, String authToken, GameHandler gameHandler, JoinGameOutput output) throws ResponseException {
         this.authToken = authToken;
         this.wsFacade = new WebSocketFacade(serverUrl, gameHandler);
         // Join game from websocket as well
-        if ("observe".equals(output.getState())) joinObserver(authToken, output.getGameID());
-        else if ("join".equals(output.getState())) join(authToken, output.getGameID(), output.getColor());
+        if ("observe".equals(output.getState())) joinObserver(output.getGameID());
+        else if ("join".equals(output.getState())) join(output.getGameID(), output.getColor());
     }
 
     public String eval(String input) throws ResponseException {  // Run the function based on input
@@ -46,14 +47,16 @@ public class GamePlayClient {
         }
         return "gamePlay";
     }
-    private void join(String authToken, Integer gameID, String color) throws ResponseException {
+    private void join(Integer gameID, String color) throws ResponseException {
         wsFacade.joinPlayer(authToken, gameID, color);
+        this.gameID = gameID;
     }
-    private void joinObserver(String authToken, Integer gameID) throws ResponseException {
+    private void joinObserver(Integer gameID) throws ResponseException {
         wsFacade.joinObserver(authToken, gameID);
+        this.gameID = gameID;
     }
     private String leaveGame() throws ResponseException {
-        wsFacade.leaveGame(authToken, 1);   // TODO: Get the correct ID
+        wsFacade.leaveGame(authToken, gameID);
         return "loggedIn";
     }
 

@@ -14,7 +14,10 @@ public class WebSocketSessions {
         sessionMap.put(gameID, tokenToSession);
     }
     public void removeSessionFromGame(Integer gameID, String authToken, Session session){
-        sessionMap.get(gameID).remove(authToken, session);
+        HashMap<String, Session> tokenToSession = sessionMap.get(gameID);  // Get part the we need to alter
+        sessionMap.remove(gameID);  // Remove old one
+        tokenToSession.remove(authToken, session);  // Alter the value to remove the specified session
+        sessionMap.put(gameID, tokenToSession);  // Add altered one back
     }
     public void removeSession(Session session){
         for (HashMap<String, Session> tokenToSession : sessionMap.values()){

@@ -21,25 +21,31 @@ public class WebSocketHandler {
         // Call one of the following method to process the message
         // System.out.println("message received: " + action.getCommandType());
         switch (action.getCommandType()) {
-            case JOIN_PLAYER -> {;}
+            case JOIN_PLAYER -> {join(action, session);}
             case JOIN_OBSERVER -> {joinObserver(action, session);}
             case MAKE_MOVE -> {;}
-            case LEAVE -> {leave(action);}
+            case LEAVE -> {leave(action, session);}
             case RESIGN -> {;}
         }
     }
 
+    public void join(UserGameCommand action, Session session){
+        JoinPlayerCommand joinAction = new JoinPlayerCommand(action);
+        String authToken = joinAction.getAuthString();
+        Integer gameID = joinAction.getGameID();
+        sessions.addSessionToGame(gameID, authToken, session);
+    }
     public void joinObserver(UserGameCommand action, Session session){
         JoinObserverCommand joinAction = new JoinObserverCommand(action);
         String authToken = joinAction.getAuthString();
         Integer gameID = joinAction.getGameID();
         sessions.addSessionToGame(gameID, authToken, session);
     }
-    public void leave(UserGameCommand action){
-        System.out.println("I am here in leave");
-        LeaveCommand leaveAction = (LeaveCommand) action;
+    public void leave(UserGameCommand action, Session session){   //TODO: Make it actually remove the game from the DAO
+        LeaveCommand leaveAction = new LeaveCommand(action);
         String authToken = leaveAction.getAuthString();
         Integer gameID = leaveAction.getGameID();
+        sessions.removeSessionFromGame(gameID, authToken, session);
     }
 
     public void sendMessage(Integer gameID, String message, String authToken){

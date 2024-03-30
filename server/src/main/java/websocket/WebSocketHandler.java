@@ -1,15 +1,19 @@
 package websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.*;
 import dataAccess.*;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 @WebSocket
 public class WebSocketHandler {
@@ -54,17 +58,37 @@ public class WebSocketHandler {
         String color = joinAction.getTeamColor();
         sessions.addSessionToGame(gameID, authToken, session);
         // TODO Messages not being broadcast!!!!!!!
-        String message = " joined the game as " + color;
+        String username = null;
+        try {
+            username = authDAO.getUsername(authToken);
+        } catch (DataAccessException | UnauthorizedException e) {
+            throw new RuntimeException(e);
+        }
+        String message = username + " joined the game as " + color;
+        message = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, message, authToken);
+
+        String message2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        this.sendMessage(message2, session);
     }
     public void joinObserver(UserGameCommand action, Session session) throws IOException {
         JoinObserverCommand joinAction = new JoinObserverCommand(action);
         String authToken = joinAction.getAuthString();
         Integer gameID = joinAction.getGameID();
         sessions.addSessionToGame(gameID, authToken, session);
-        // TODO Messages not being broadcast!!!!!!!
-        String message = " joined the game as an observer";
+        String username = null;
+        try {
+            username = authDAO.getUsername(authToken);
+        } catch (DataAccessException | UnauthorizedException e) {
+            throw new RuntimeException(e);
+        }
+
+        String message = username + " joined the game as an observer";
+        message = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, message, authToken);
+
+        String message2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        this.sendMessage(message2, session);
     }
     public void leave(UserGameCommand action, Session session) throws IOException {
         LeaveCommand leaveAction = new LeaveCommand(action);
@@ -80,32 +104,44 @@ public class WebSocketHandler {
             String username = authDAO.getUsername(authToken);
             String white = game.whiteUsername();
             String black = game.blackUsername();
-            if (white.equals(username)) white = null;   // Determine which user to remove
-            if (black.equals(username)) black = null;
+            if(username != null) {
+                if (username.equals(white)) white = null;   // Determine which user to remove
+                if (username.equals(black)) black = null;
+            }
             GameData updatedGame = new GameData(game.gameID(), white, black, game.gameName(), game.game());
             gameDao.updateGame(updatedGame);
         } catch (DataAccessException | BadRequestException | UnauthorizedException e) {
             throw new RuntimeException(e);
         }
 
-        // TODO Messages not being broadcast!!!!!!!
-        String message = " left the game";
+        String username = null;
+        try {
+            username = authDAO.getUsername(authToken);
+        } catch (DataAccessException | UnauthorizedException e) {
+            throw new RuntimeException(e);
+        }
+
+        String message = username + " left the game";
+        message = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, message, authToken);
     }
 
-    public void sendMessage(Integer gameID, String message, String authToken){
-
+    public void sendMessage(String message, Session session) throws IOException {
+        session.getRemote().sendString(message);
     }
     public void broadcastMessage(Integer gameID, String message, String exceptThisAuthToken) throws IOException {
         HashMap<String, Session> theSessions = sessions.getSessionsForGame(gameID);
         Session exceptThisSession = theSessions.get(exceptThisAuthToken);
-        for (var c : theSessions.values()) {
+        for (Map.Entry<String, Session> entry: theSessions.entrySet()) {
+            String authToken = entry.getKey();
+            Session c = entry.getValue();
             if (c.isOpen()) {
                 if (!c.equals(exceptThisSession)) {
                     c.getRemote().sendString(message);
                 }
-            } else {
-                c.disconnect();    // Clean up any connections that were left open.   //TODO: Remove user from game
+            } else {  // User no longer active, so he/she will leave the game
+                LeaveCommand action = new LeaveCommand(authToken, gameID);
+                leave(action, c);   // Remove the user from the game
             }
         }
     }

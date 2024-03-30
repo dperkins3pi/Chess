@@ -14,7 +14,7 @@ public class UserGameCommand {
 
     public Integer gameID = null;
     public ChessMove move = null;
-    public String teamColor = null;
+    public String playerColor = null;
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
     }

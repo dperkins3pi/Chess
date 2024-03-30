@@ -5,6 +5,8 @@ import javax.websocket.*;
 import com.google.gson.Gson;
 import handler.GameHandler;
 import exception.ResponseException;
+import webSocketMessages.serverMessages.NotificationMessage;
+import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
@@ -30,7 +32,8 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    gameHandler.printMessage(message);
+                    NotificationMessage JSONmessage = new Gson().fromJson(message, NotificationMessage.class);
+                    gameHandler.printMessage(JSONmessage.getMessage());
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -75,13 +78,6 @@ public class WebSocketFacade extends Endpoint {
 
     public void sendMessage(){
 
-    }
-
-    // Process incoming messages
-    public void onMessage(String message){
-        // Deserialize the message
-        // Call game handler to process the message
-        System.out.println(message);
     }
 
     //Endpoint Requires this method, but we will not use it

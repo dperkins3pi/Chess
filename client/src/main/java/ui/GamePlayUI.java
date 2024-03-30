@@ -1,9 +1,15 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import handler.GameHandler;
 import request.JoinGameOutput;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
@@ -24,7 +30,15 @@ public class GamePlayUI implements GameHandler {
 
     @Override
     public void printMessage(String message) {
-        System.out.println(message);
+        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+        if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            NotificationMessage notificationMessage = new NotificationMessage(serverMessage);
+            String messageToPrint = notificationMessage.getMessage();
+            if (messageToPrint != null) System.out.println(messageToPrint);
+        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+            LoadGameMessage loadGameMessage = new LoadGameMessage(serverMessage);
+            client.draw(loadGameMessage.getGame());
+        }
     }
 
     public void run() throws ResponseException {
@@ -32,7 +46,6 @@ public class GamePlayUI implements GameHandler {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_BLUE +
                 " Type help if you need it. " +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW + EscapeSequences.WHITE_KING + EscapeSequences.SET_TEXT_COLOR_WHITE);
-        client.draw();
         Scanner scanner = new Scanner(System.in);
         String line = "";
 

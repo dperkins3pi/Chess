@@ -65,11 +65,11 @@ public class WebSocketHandler {
             throw new RuntimeException(e);
         }
         String message = username + " joined the game as " + color;
-        message = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, message, authToken);
+        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+        this.broadcastMessage(gameID, JSONMessage, authToken);
 
-        String message2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
-        this.sendMessage(message2, session);
+        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        this.sendMessage(JSONMessage2, session);
     }
     public void joinObserver(UserGameCommand action, Session session) throws IOException {
         JoinObserverCommand joinAction = new JoinObserverCommand(action);
@@ -84,11 +84,11 @@ public class WebSocketHandler {
         }
 
         String message = username + " joined the game as an observer";
-        message = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, message, authToken);
+        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+        this.broadcastMessage(gameID, JSONMessage, authToken);
 
-        String message2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
-        this.sendMessage(message2, session);
+        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        this.sendMessage(JSONMessage2, session);
     }
     public void leave(UserGameCommand action, Session session) throws IOException {
         LeaveCommand leaveAction = new LeaveCommand(action);
@@ -122,8 +122,8 @@ public class WebSocketHandler {
         }
 
         String message = username + " left the game";
-        message = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, message, authToken);
+        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+        this.broadcastMessage(gameID, JSONMessage, authToken);
     }
 
     public void sendMessage(String message, Session session) throws IOException {

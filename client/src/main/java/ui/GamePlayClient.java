@@ -6,6 +6,8 @@ import chess.ChessPiece;
 import exception.ResponseException;
 import handler.GameHandler;
 import request.JoinGameOutput;
+import response.GameResponseClass;
+import server.ServerFacade;
 import server.WebSocketFacade;
 
 import java.util.Arrays;
@@ -13,14 +15,22 @@ import java.util.Arrays;
 public class GamePlayClient {
     private final String authToken;
     private Integer gameID;
-    private ChessGame game = new ChessGame();  //Will change this when gameplay is implemented
+    private final ServerFacade server;
     private final WebSocketFacade wsFacade;
+    private final String color;
     public GamePlayClient(String serverUrl, String authToken, GameHandler gameHandler, JoinGameOutput output) throws ResponseException {
         this.authToken = authToken;
+        this.server = new ServerFacade(serverUrl);
         this.wsFacade = new WebSocketFacade(serverUrl, gameHandler);
         // Join game from websocket as well
         if ("observe".equals(output.getState())) joinObserver(output.getGameID());
         else if ("join".equals(output.getState())) join(output.getGameID(), output.getColor());
+        this.color = output.getColor();
+    }
+
+    private ChessGame getGame() throws ResponseException {
+        GameResponseClass response = server.listGames(authToken);
+        return response.getGame(this.gameID);
     }
 
     public String eval(String input) throws ResponseException {  // Run the function based on input
@@ -34,11 +44,11 @@ public class GamePlayClient {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
         switch (cmd) {
             case "help" -> help();
-            case "redraw" -> draw();
+            case "redraw" -> draw(this.getGame());  // TODO: Fix this
             case "leave" -> {return leaveGame();}
-            case "move" -> {}
+            case "move" -> {}  // TODO: Implenet this
             case "resign" -> {return "loggedIn";}
-            case "highlight" -> {}
+            case "highlight" -> {}   // TODO: Implenet this
             default -> {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                         EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:");
@@ -94,7 +104,7 @@ public class GamePlayClient {
         }
         return null;
     }
-    private void drawWhite(){
+    private void drawBlack(ChessGame game){
         ChessBoard board = game.getBoard();
         String terminalColor = "\u001B[0m";
         ChessPiece[][] squares = board.getSquares();
@@ -115,7 +125,7 @@ public class GamePlayClient {
         theString += "    h \u2001g \u2001f \u2001e \u2001d \u2001c \u2001b \u2001a  \u2001 " + terminalColor;
         System.out.println(theString);
     }
-    private void drawBlack(){
+    private void drawWhite(ChessGame game){
         ChessBoard board = game.getBoard();
         String terminalColor = "\u001B[0m";
         ChessPiece[][] squares = board.getSquares();
@@ -136,10 +146,9 @@ public class GamePlayClient {
         theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor;
         System.out.println(theString);
     }
-    public void draw(){   // To display it correctly, used the monospaced setting
-        drawWhite();
-        System.out.println();
-        drawBlack();
+    public void draw(ChessGame game){   // To display it correctly, used the monospaced setting
+        if("black".equals(this.color)) drawBlack(game);
+        else drawWhite(game);   // For both white user and observer
     }
 
     public void help() {

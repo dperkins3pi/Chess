@@ -19,9 +19,11 @@ public class Server {
             authDao = new DatabaseAuthDAO();
             userDao = new DatabaseUserDAO();
             gameDao = new DatabaseGameDAO();
+            //gameDao.clear();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+
 
         Spark.webSocket("/connect", new WebSocketHandler());
 

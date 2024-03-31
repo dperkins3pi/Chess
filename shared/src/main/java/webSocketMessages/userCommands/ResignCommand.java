@@ -8,6 +8,12 @@ public class ResignCommand extends UserGameCommand{
         this.gameID = gameID;
         this.commandType = CommandType.RESIGN;
     }
+
+    public ResignCommand(UserGameCommand command){
+        super(command.getAuthString());
+        this.gameID = command.gameID;
+        this.commandType = CommandType.JOIN_OBSERVER;
+    }
     public Integer getGameID(){
         return this.gameID;
     }

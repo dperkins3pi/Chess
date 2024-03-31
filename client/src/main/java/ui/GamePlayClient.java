@@ -10,6 +10,7 @@ import server.WebSocketFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class GamePlayClient {
     private final String authToken;
@@ -51,7 +52,7 @@ public class GamePlayClient {
             case "redraw" -> draw(this.getGame());  // TODO: Fix this
             case "leave" -> {return leaveGame();}
             case "move" -> {move(params);}  // TODO: Implenet this
-            case "resign" -> {return "loggedIn";}
+            case "resign" -> {resign();}
             case "highlight" -> {}   // TODO: Implenet this
             default -> {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
@@ -138,6 +139,22 @@ public class GamePlayClient {
         ChessPosition endPosition = new ChessPosition(endPositionY, endPositionX);
         ChessMove move = new ChessMove(startPosition, endPosition, null);  //TODO: Worry about promotions
         wsFacade.makeMove(authToken, gameID, move);
+    }
+
+    public void resign() throws ResponseException {
+        System.out.println("Are you sure that you want to resign?\nType in yes or no");
+
+        Scanner scanner = new Scanner(System.in);
+        String line = "";
+
+        while (!(line.equalsIgnoreCase("yes") || line.equalsIgnoreCase("no"))) {  // Read input until the use quits
+            line = scanner.nextLine();
+            if(!(line.equalsIgnoreCase("yes") || line.equalsIgnoreCase("no"))){
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid input. Please enter 'yes' or 'no'" +
+                        EscapeSequences.SET_TEXT_COLOR_MAGENTA + ">>> " + EscapeSequences.SET_TEXT_COLOR_WHITE);
+            }
+        }
+        if(line.equalsIgnoreCase("yes")) wsFacade.resignGame(authToken, gameID);
     }
 
     private String displayPiece(ChessPiece piece){   // Returns a string to represent the piece

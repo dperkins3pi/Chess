@@ -110,6 +110,7 @@ public class DatabaseGameDAO implements GameDAO{
         String blackUsername = game.blackUsername();
         String gameName = game.gameName();
         ChessGame the_game = game.game();
+
         String sql = "UPDATE gameDAO " +
                 "SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? " +
                 "WHERE gameID = ?";

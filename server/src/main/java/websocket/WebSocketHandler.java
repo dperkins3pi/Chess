@@ -48,7 +48,7 @@ public class WebSocketHandler {
             case JOIN_OBSERVER -> {joinObserver(action, session);}
             case MAKE_MOVE -> {makeMove(action, session);}
             case LEAVE -> {leave(action, session);}
-            case RESIGN -> {;}
+            case RESIGN -> {resign(action, session);}
         }
     }
 
@@ -136,6 +136,48 @@ public class WebSocketHandler {
         this.broadcastMessage(gameID, JSONMessage, authToken);
     }
 
+    public void resign(UserGameCommand action, Session session) throws IOException {
+        ResignCommand resignCommand = new ResignCommand(action);
+        String authToken = resignCommand.getAuthString();
+        Integer gameID = resignCommand.getGameID();
+        boolean worked = true;
+
+        String username;
+        try {
+            username = authDAO.getUsername(authToken);
+            ChessGame game = gameDao.getGame(gameID).game();
+            String gameName = gameDao.getGame(gameID).gameName();
+            String white = gameDao.getGame(gameID).whiteUsername();
+            String black = gameDao.getGame(gameID).blackUsername();
+
+            if(!username.equalsIgnoreCase("black") && !username.equalsIgnoreCase("white")){
+                worked = false;
+            }
+            if(game.getTeamTurn() == ChessGame.TeamColor.COMPLETE){   // The game can only be resigned once
+                worked = false;
+            }
+
+            game.setTeamTurn(ChessGame.TeamColor.COMPLETE);  // No one can move anymore by making the team color null
+            GameData updatedGame = new GameData(gameID, white, black, gameName, game);
+            gameDao.updateGame(updatedGame);
+        } catch (DataAccessException | UnauthorizedException | BadRequestException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(worked) {
+            String message = username + " resigned. The game is now over.";
+            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+            this.broadcastMessage(gameID, JSONMessage, authToken);
+
+            String message2 = " You have resigned. The game is now over.";
+            String JSONMessage2 = new Gson().toJson(new NotificationMessage(message2));
+            this.sendMessage(JSONMessage2, session);
+        } else{
+            String message2 = " Error: You can only resign as a player for a game that isn't finished.";
+            String JSONMessage2 = new Gson().toJson(new ErrorMessage(message2));
+            this.sendMessage(JSONMessage2, session);
+        }
+    }
     public void makeMove(UserGameCommand action, Session session) throws IOException {
 
         MakeMoveCommand moveAction = new MakeMoveCommand(action);
@@ -144,19 +186,34 @@ public class WebSocketHandler {
         ChessMove move = moveAction.getMove();
         String username = null;
         ChessGame game = null;
+        String playerColor = null;
         boolean worked = true;
 
         try {
             username = authDAO.getUsername(authToken);
             game = gameDao.getGame(gameID).game();
+            if(gameDao.getGame(gameID).whiteUsername().equals(username)) {
+                if(gameDao.getGame(gameID).blackUsername().equals(username)) playerColor = "both";  // Rare case that player is on both sides
+                else playerColor = "white";
+            } else if (gameDao.getGame(gameID).blackUsername().equals(username)) {
+                playerColor = "black";
+            }
 
             ChessBoard board = game.getBoard();
             ChessPiece piece = board.getPiece(move.getStartPosition());
-            if(piece == null || !piece.getTeamColor().toString().equalsIgnoreCase(action.playerColor)){
+
+            if(piece == null || !piece.getTeamColor().toString().equals(game.getTeamTurn().toString())){
                 String error_string = "Invalid positions given.\n" +
                         "The starting position must be on a piece of your team";
                 throw new InvalidMoveException(error_string);
+            } else if (!piece.getTeamColor().toString().equalsIgnoreCase(playerColor)) {
+                if(!piece.getTeamColor().toString().equalsIgnoreCase("both")){
+                    String error_string = "Invalid move attempt.\n" +
+                            "You can only move pieces of your color";
+                    throw new InvalidMoveException(error_string);
+                }
             }
+
             game.makeMove(move);
             GameData oldGameData = gameDao.getGame(gameID);
             GameData newGameData = new GameData(gameID, oldGameData.whiteUsername(), oldGameData.blackUsername(),
@@ -179,7 +236,7 @@ public class WebSocketHandler {
             this.broadcastMessage(gameID, JSONMessage2, authToken);
         }
         else{   // An error was thrown
-            String errorMessage = "Invalid Move and/or Incorrect Turn.\n Please try again or wait for your turn.";
+            String errorMessage = "Invalid Move and/or Incorrect Turn.\nPlease try again or wait for your turn.";
             String JSONMessage = new Gson().toJson(new ErrorMessage(errorMessage));
             this.sendMessage(JSONMessage, session);
         }

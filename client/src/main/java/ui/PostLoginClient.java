@@ -95,7 +95,12 @@ public class PostLoginClient {
         }
         GameResponseClass response = server.listGames(authToken);
         id = response.getID(id);   // Convert to correct id number
-        server.joinGame(authToken, color, id);
+        try {
+            server.joinGame(authToken, color, id);
+        }
+        catch (ResponseException e){
+            return new JoinGameOutput(output, null, null);  // Return nulls so that we know the error occured
+        }
         System.out.println("You joined the game");
         return new JoinGameOutput(output, id, color);
     }

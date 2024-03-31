@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import handler.GameHandler;
 import exception.ResponseException;
 import ui.EscapeSequences;
+import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;

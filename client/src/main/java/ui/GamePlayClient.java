@@ -23,9 +23,8 @@ public class GamePlayClient {
         this.server = new ServerFacade(serverUrl);
         this.wsFacade = new WebSocketFacade(serverUrl, gameHandler);
         // Join game from websocket as well
-        if ("observe".equals(output.getState())) joinObserver(output.getGameID());
-        else if ("join".equals(output.getState())) join(output.getGameID(), output.getColor());
-        else if ("failed".equals(output.getState())) joinObserver(null);
+        if ("observe".equals(output.getState())) joinObserver(output);
+        else if ("join".equals(output.getState())) join(output);
         this.color = output.getColor();
     }
 
@@ -62,13 +61,13 @@ public class GamePlayClient {
         }
         return "gamePlay";
     }
-    private void join(Integer gameID, String color) throws ResponseException {
-        wsFacade.joinPlayer(authToken, gameID, color);
-        this.gameID = gameID;
+    private void join(JoinGameOutput output) throws ResponseException {
+        wsFacade.joinPlayer(authToken, output.getGameID(), output.getColor());
+        this.gameID = output.getGameID();
     }
-    private void joinObserver(Integer gameID) throws ResponseException {
-        wsFacade.joinObserver(authToken, gameID);
-        this.gameID = gameID;
+    private void joinObserver(JoinGameOutput output) throws ResponseException {
+        wsFacade.joinObserver(authToken, output.getGameID());
+        this.gameID = output.getGameID();
     }
     private String leaveGame() throws ResponseException {
         wsFacade.leaveGame(authToken, gameID);

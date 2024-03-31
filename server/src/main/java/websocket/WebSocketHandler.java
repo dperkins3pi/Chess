@@ -15,6 +15,7 @@ import dataAccess.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
@@ -57,28 +58,51 @@ public class WebSocketHandler {
         String authToken = joinAction.getAuthString();
         Integer gameID = joinAction.getGameID();
         String color = joinAction.getTeamColor();
+        boolean worked = true;
+
         sessions.addSessionToGame(gameID, authToken, session);
         String username = null;
         ChessGame game = null;
         try {
             username = authDAO.getUsername(authToken);
-            game = gameDao.getGame(gameID).game();
-        } catch (DataAccessException | UnauthorizedException e) {
-            throw new RuntimeException(e);
-        }
-        String message = username + " joined the game as " + color;
-        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, JSONMessage, authToken);
+            try {
+                game = gameDao.getGame(gameID).game();
+            } catch (Exception e) {
+                String JSONMessage2;
+                JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The game doesn't exits"));
+                this.sendMessage(JSONMessage2, session);
+                return;
+            }
 
-        String JSONMessage2;
-        if(gameID == null) {  // An error occured so we pass in null
-            JSONMessage2 = new Gson().toJson(new ErrorMessage("An Error Occurred"));
+            if (gameDao.getGame(gameID).blackUsername() == null && gameDao.getGame(gameID).whiteUsername() == null) worked = false;
+            if("white".equalsIgnoreCase(color) && gameDao.getGame(gameID).whiteUsername() != null
+                    && !Objects.equals(gameDao.getGame(gameID).whiteUsername(), username)) worked = false;
+            if("black".equalsIgnoreCase(color) && gameDao.getGame(gameID).blackUsername() != null
+                    && !Objects.equals(gameDao.getGame(gameID).blackUsername(), username)) worked = false;
+
+        } catch (DataAccessException | UnauthorizedException e) {
+            String JSONMessage2;
+            JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The user doesn't exits"));
+            this.sendMessage(JSONMessage2, session);
+            throw new RuntimeException(e);
+
+        }
+        if(worked) {
+            String message = username + " joined the game as " + color;
+            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+            this.broadcastMessage(gameID, JSONMessage, authToken);
+
+            String JSONMessage2;
+            JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
+            this.sendMessage(JSONMessage2, session);
         }
         else{
-            JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
+            String JSONMessage2;
+            JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The player is already taken"));
+            this.sendMessage(JSONMessage2, session);
         }
-        this.sendMessage(JSONMessage2, session);
     }
+
     public void joinObserver(UserGameCommand action, Session session) throws IOException {
         JoinObserverCommand joinAction = new JoinObserverCommand(action);
         String authToken = joinAction.getAuthString();
@@ -88,8 +112,18 @@ public class WebSocketHandler {
         ChessGame game = null;
         try {
             username = authDAO.getUsername(authToken);
-            game = gameDao.getGame(gameID).game();
+            try {
+                game = gameDao.getGame(gameID).game();
+            } catch (Exception e){
+                String JSONMessage2;
+                JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The game doesn't exits"));
+                this.sendMessage(JSONMessage2, session);
+                return;
+            }
         } catch (DataAccessException | UnauthorizedException e) {
+            String JSONMessage2;
+            JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The user doesn't exits"));
+            this.sendMessage(JSONMessage2, session);
             throw new RuntimeException(e);
         }
 

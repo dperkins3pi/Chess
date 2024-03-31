@@ -218,7 +218,6 @@ public class ChessGame {
                     move.getEndPosition().getRow() - move.getStartPosition().getRow() == -2){
                 piece.setPassant(true);
                 setPassantPosition(move.getEndPosition());  // Store what what moved 2
-                System.out.println(passantPosition);
             }
         }
         else{

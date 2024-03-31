@@ -1,8 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import exception.ResponseException;
 import handler.GameHandler;
 import request.JoinGameOutput;
@@ -10,6 +8,7 @@ import response.GameResponseClass;
 import server.ServerFacade;
 import server.WebSocketFacade;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GamePlayClient {
@@ -25,6 +24,7 @@ public class GamePlayClient {
         // Join game from websocket as well
         if ("observe".equals(output.getState())) joinObserver(output.getGameID());
         else if ("join".equals(output.getState())) join(output.getGameID(), output.getColor());
+        else if ("failed".equals(output.getState())) joinObserver(null);
         this.color = output.getColor();
     }
 
@@ -46,7 +46,7 @@ public class GamePlayClient {
             case "help" -> help();
             case "redraw" -> draw(this.getGame());  // TODO: Fix this
             case "leave" -> {return leaveGame();}
-            case "move" -> {}  // TODO: Implenet this
+            case "move" -> {move(params);}  // TODO: Implenet this
             case "resign" -> {return "loggedIn";}
             case "highlight" -> {}   // TODO: Implenet this
             default -> {
@@ -68,6 +68,87 @@ public class GamePlayClient {
     private String leaveGame() throws ResponseException {
         wsFacade.leaveGame(authToken, gameID);
         return "loggedIn";
+    }
+
+    private ArrayList<Integer> readMoveInput(String... params) throws ResponseException {
+        ArrayList<Integer> input = new ArrayList<Integer>();
+        if(params.length < 2) {  // Throw an error if an invalid number of parameters are given
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When making a move, please enter the starting and ending position\n" +
+                    "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
+            throw new ResponseException(error_string);
+        }
+        String startString = params[0];
+        String endString = params[1];
+
+        var tokens1 = startString.split(""); // Tokenize the input
+        var tokens2 = endString.split(""); // Tokenize the input
+        if (tokens1.length != 2 || tokens2.length != 2) { // If no input was given, try again
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting and ending positions should be one letter followed by one number without a space\n" +
+                    "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
+            throw new ResponseException(error_string);
+        }
+        String startPositionStringX = tokens1[0];
+        String startPositionStringY = tokens1[1];
+        String endPositionStringX = tokens2[0];
+        String endPositionStringY = tokens2[1];
+
+        int startPositionX;
+        int startPositionY;
+        int endPositionX;
+        int endPositionY;
+        try{
+            startPositionY = Integer.parseInt(startPositionStringY);   // convert it to an integer
+            endPositionY = Integer.parseInt(endPositionStringY);   // convert it to an integer
+        } catch (Exception e){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting and ending positions should be one letter followed by one number without a space\n" +
+                    "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
+            throw new ResponseException(error_string);
+        }
+        startPositionX = startPositionStringX.charAt(0) - 'a' + 1;
+        endPositionX = endPositionStringX.charAt(0) - 'a' + 1;
+        if((startPositionX < 1 || startPositionX > 8) || (startPositionY < 1 || startPositionY > 8) ||
+                (endPositionX < 1 || endPositionX > 8) || (endPositionY < 1 || endPositionY > 8)){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The first part starting and ending positions should be between a and h\n" +
+                    "The second part starting and ending positions should be between 1 and 8\n" +
+                    "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
+            throw new ResponseException(error_string);
+        }
+        input.add(startPositionX);
+        input.add(startPositionY);
+        input.add(endPositionX);
+        input.add(endPositionY);
+        return input;
+    }
+
+    public void move(String... params) throws ResponseException {
+        ArrayList<Integer> input = readMoveInput(params);
+        Integer startPositionX = input.get(0);
+        Integer startPositionY = input.get(1);
+        Integer endPositionX = input.get(2);
+        Integer endPositionY = input.get(3);
+        ChessPosition startPosition = new ChessPosition(startPositionY, startPositionX);
+        ChessPosition endPosition = new ChessPosition(endPositionY, endPositionX);
+        ChessMove move = new ChessMove(startPosition, endPosition, null);  //TODO: Worrry about promotions
+
+        ChessGame game = getGame();
+        ChessBoard board = game.getBoard();
+        ChessPiece piece = board.getPiece(startPosition);
+        if(piece == null || !piece.getTeamColor().toString().equalsIgnoreCase(this.color)){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting position must be on a piece of your team";
+            throw new ResponseException(error_string);
+        }
+        try{
+            game.makeMove(move);
+        } catch (InvalidMoveException e){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "The chess move is invalid. Try again";
+            System.out.println(" I am here");
+            throw new ResponseException(error_string);
+        }
     }
 
     private String displayPiece(ChessPiece piece){   // Returns a string to represent the piece
@@ -162,8 +243,8 @@ public class GamePlayClient {
         helpString += " - the game\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
-        helpString += "move" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-        helpString += " - make a move\n";
+        helpString += "move <position> <position>" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - to make a move\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
         helpString += "resign" + EscapeSequences.SET_TEXT_COLOR_WHITE;

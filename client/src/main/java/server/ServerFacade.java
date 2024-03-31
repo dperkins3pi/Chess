@@ -6,6 +6,7 @@ import java.net.*;
 import request.*;
 import response.GameResponseClass;
 import response.ResponseClass;
+import ui.GamePlayUI;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -48,7 +49,8 @@ public class ServerFacade {
         var path = "/game";
         if(color != null) color = color.toUpperCase();  // Needs to be in all caps to work
         JoinGameAuthRequest request = new JoinGameAuthRequest(authToken, gameID, color);
-        this.makeRequest("PUT", path, request, ResponseClass.class);
+
+        ResponseClass response = this.makeRequest("PUT", path, request, ResponseClass.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {

@@ -7,6 +7,7 @@ import exceptions.UnauthorizedException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
+import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.*;
@@ -57,7 +58,6 @@ public class WebSocketHandler {
         Integer gameID = joinAction.getGameID();
         String color = joinAction.getTeamColor();
         sessions.addSessionToGame(gameID, authToken, session);
-        // TODO Messages not being broadcast!!!!!!!
         String username = null;
         try {
             username = authDAO.getUsername(authToken);
@@ -68,7 +68,14 @@ public class WebSocketHandler {
         String JSONMessage = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, JSONMessage, authToken);
 
-        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        System.out.println("I am here" + gameID);
+        String JSONMessage2;
+        if(gameID == null) {  // An error occured so we pass in null
+            JSONMessage2 = new Gson().toJson(new ErrorMessage("An Error Occurred"));
+        }
+        else{
+            JSONMessage2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        }
         this.sendMessage(JSONMessage2, session);
     }
     public void joinObserver(UserGameCommand action, Session session) throws IOException {

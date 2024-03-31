@@ -93,7 +93,6 @@ public class PostLoginClient {
             color = params[1];  // If they specified a color, get it
             output = "join";
         }
-
         GameResponseClass response = server.listGames(authToken);
         id = response.getID(id);   // Convert to correct id number
         server.joinGame(authToken, color, id);

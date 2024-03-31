@@ -15,6 +15,9 @@ public class ResponseClass {   // Used to return response objects
     }
 
     public Integer getGameID() {return gameID;}
+    public String getMessage(){
+        return message;
+    }
 
     public ResponseClass(String username, String authToken) {
         this.username = username;

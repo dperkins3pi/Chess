@@ -2,16 +2,10 @@ package server;
 
 import javax.websocket.*;
 
-import chess.ChessGame;
 import chess.ChessMove;
-import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import handler.GameHandler;
 import exception.ResponseException;
-import ui.EscapeSequences;
-import webSocketMessages.serverMessages.ErrorMessage;
-import webSocketMessages.serverMessages.NotificationMessage;
-import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;

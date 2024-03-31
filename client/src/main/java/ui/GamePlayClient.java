@@ -48,11 +48,11 @@ public class GamePlayClient {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);  // Get the other parameters
         switch (cmd) {
             case "help" -> help();
-            case "redraw" -> draw(this.getGame());  // TODO: Fix this
+            case "redraw" -> draw(this.getGame());
             case "leave" -> {return leaveGame();}
-            case "move" -> {move(params);}  // TODO: Implenet this
+            case "move" -> {move(params);}
             case "resign" -> {resign();}
-            case "highlight" -> {}   // TODO: Implenet this
+            case "highlight" -> {highlight(params);}   // TODO: Implenet this
             default -> {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                         EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:");
@@ -61,6 +61,7 @@ public class GamePlayClient {
         }
         return "gamePlay";
     }
+
     private void join(JoinGameOutput output) throws ResponseException {
         wsFacade.joinPlayer(authToken, output.getGameID(), output.getColor());
         this.gameID = output.getGameID();
@@ -116,7 +117,7 @@ public class GamePlayClient {
         if((startPositionX < 1 || startPositionX > 8) || (startPositionY < 1 || startPositionY > 8) ||
                 (endPositionX < 1 || endPositionX > 8) || (endPositionY < 1 || endPositionY > 8)){
             String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
-                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The first part starting and ending positions should be between a and h\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The first part of the starting and ending positions should be between a and h\n" +
                     "The second part starting and ending positions should be between 1 and 8\n" +
                     "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
             throw new ResponseException(error_string);
@@ -235,6 +236,53 @@ public class GamePlayClient {
     public void draw(ChessGame game){   // To display it correctly, used the monospaced setting
         if("black".equals(this.color)) drawBlack(game);
         else drawWhite(game);   // For both white user and observer
+    }
+
+    private ChessPosition readHighlightInput(String... params) throws ResponseException {
+        if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When highlighting valid moves, please enter the starting position\n" +
+                    "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
+            throw new ResponseException(error_string);
+        }
+        String startString = params[0];
+
+        var tokens1 = startString.split(""); // Tokenize the input
+        if (tokens1.length < 2) { // If no input was given, try again
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "When highlighting valid moves, please enter the starting position\n" +
+                    "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
+            throw new ResponseException(error_string);
+        }
+        String positionStringX = tokens1[0];
+        String positionStringY = tokens1[1];
+
+        int positionX;
+        int positionY;
+        try{
+            positionY = Integer.parseInt(positionStringY);   // convert it to an integer
+        } catch (Exception e){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid position given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The position should be one letter followed by one number without a space\n" +
+                    "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
+            throw new ResponseException(error_string);
+        }
+        positionX = positionStringX.charAt(0) - 'a' + 1;
+        if((positionX < 1 || positionX > 8) || (positionY < 1 || positionY > 8)){
+            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid position given.\n" +
+                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The first part of the position should be between a and h\n" +
+                    "The second part starting and ending positions should be between 1 and 8\n" +
+                    "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
+            throw new ResponseException(error_string);
+        }
+
+        return new ChessPosition(positionY, positionX);
+    }
+
+    private void highlight(String... params) throws ResponseException {
+        ChessPosition position = readHighlightInput(params);
+        ChessGame game = getGame();
+        //TODO: HIGHLIGHT THE STUFF
     }
 
     public void help() {

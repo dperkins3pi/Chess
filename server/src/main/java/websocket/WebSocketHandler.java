@@ -1,6 +1,6 @@
 package websocket;
 
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
@@ -46,7 +46,7 @@ public class WebSocketHandler {
         switch (action.getCommandType()) {
             case JOIN_PLAYER -> {join(action, session);}
             case JOIN_OBSERVER -> {joinObserver(action, session);}
-            case MAKE_MOVE -> {;}
+            case MAKE_MOVE -> {makeMove(action, session);}
             case LEAVE -> {leave(action, session);}
             case RESIGN -> {;}
         }
@@ -59,8 +59,10 @@ public class WebSocketHandler {
         String color = joinAction.getTeamColor();
         sessions.addSessionToGame(gameID, authToken, session);
         String username = null;
+        ChessGame game = null;
         try {
             username = authDAO.getUsername(authToken);
+            game = gameDao.getGame(gameID).game();
         } catch (DataAccessException | UnauthorizedException e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +75,7 @@ public class WebSocketHandler {
             JSONMessage2 = new Gson().toJson(new ErrorMessage("An Error Occurred"));
         }
         else{
-            JSONMessage2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+            JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
         }
         this.sendMessage(JSONMessage2, session);
     }
@@ -83,8 +85,10 @@ public class WebSocketHandler {
         Integer gameID = joinAction.getGameID();
         sessions.addSessionToGame(gameID, authToken, session);
         String username = null;
+        ChessGame game = null;
         try {
             username = authDAO.getUsername(authToken);
+            game = gameDao.getGame(gameID).game();
         } catch (DataAccessException | UnauthorizedException e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +97,7 @@ public class WebSocketHandler {
         String JSONMessage = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, JSONMessage, authToken);
 
-        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(new ChessGame()));
+        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
         this.sendMessage(JSONMessage2, session);
     }
     public void leave(UserGameCommand action, Session session) throws IOException {
@@ -130,6 +134,39 @@ public class WebSocketHandler {
         String message = username + " left the game";
         String JSONMessage = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, JSONMessage, authToken);
+    }
+
+    public void makeMove(UserGameCommand action, Session session) throws IOException {
+
+        MakeMoveCommand moveAction = new MakeMoveCommand(action);
+        String authToken = moveAction.getAuthString();
+        Integer gameID = moveAction.getGameID();
+        ChessMove move = moveAction.getMove();
+        String username = null;
+        ChessGame game = null;
+
+        try {
+            username = authDAO.getUsername(authToken);
+            game = gameDao.getGame(gameID).game();
+            game.makeMove(move);
+            GameData oldGameData = gameDao.getGame(gameID);
+            GameData newGameData = new GameData(gameID, oldGameData.whiteUsername(), oldGameData.blackUsername(),
+                    oldGameData.gameName(), game);
+            gameDao.updateGame(newGameData);
+        } catch (InvalidMoveException e){
+            System.out.println("An error was thrown");   //TODO: Actually send an error message
+        } catch (DataAccessException | UnauthorizedException | BadRequestException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Send messages
+        String message = username + " moved his " + game.getBoard().getPiece(move.getEndPosition());
+        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+        this.broadcastMessage(gameID, JSONMessage, authToken);
+
+        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
+        this.sendMessage(JSONMessage2, session);
+        this.broadcastMessage(gameID, JSONMessage2, authToken);
     }
 
     public void sendMessage(String message, Session session) throws IOException {

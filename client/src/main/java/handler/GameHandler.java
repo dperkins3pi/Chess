@@ -4,6 +4,6 @@ import chess.ChessGame;
 import webSocketMessages.serverMessages.ServerMessage;
 
 public interface GameHandler {
-    void updateGame(ChessGame game);
+    void updateGame(String message);
     void printMessage(String message);
 }

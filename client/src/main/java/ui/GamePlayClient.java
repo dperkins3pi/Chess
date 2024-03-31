@@ -33,6 +33,10 @@ public class GamePlayClient {
         return response.getGame(this.gameID);
     }
 
+    public Integer getGameID(){
+        return gameID;
+    }
+
     public String eval(String input) throws ResponseException {  // Run the function based on input
         var tokens = input.toLowerCase().split(" "); // Tokenize the input
         if (tokens.length == 0) { // If no input was given, try again
@@ -142,12 +146,7 @@ public class GamePlayClient {
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting position must be on a piece of your team";
             throw new ResponseException(error_string);
         }
-        try{
-            game.makeMove(move);
-        } catch (InvalidMoveException e){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "The chess move is invalid. Try again";
-            throw new ResponseException(error_string);
-        }
+        wsFacade.makeMove(authToken, gameID, move);
     }
 
     private String displayPiece(ChessPiece piece){   // Returns a string to represent the piece

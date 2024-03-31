@@ -15,31 +15,12 @@ public class WebSocketSessions {
         }
         tokenToSession.put(authToken, session);
         sessionMap.put(gameID, tokenToSession);
-        System.out.println(sessionMap);
-
-        int i = 1;
-        for (HashMap<String, Session> tokenToSession2 : sessionMap.values()){
-            System.out.print(i + ": ");
-            for (Map.Entry<String, Session> entry : tokenToSession.entrySet()){
-                System.out.println("auth" + entry.getKey());
-            }
-            i += 1;
-        }
     }
     public void removeSessionFromGame(Integer gameID, String authToken, Session session){
         HashMap<String, Session> tokenToSession = sessionMap.get(gameID);  // Get part the we need to alter
         sessionMap.remove(gameID);  // Remove old one
         tokenToSession.remove(authToken, session);  // Alter the value to remove the specified session
         sessionMap.put(gameID, tokenToSession);  // Add altered one back
-
-        int i = 1;
-        for (HashMap<String, Session> tokenToSession2 : sessionMap.values()){
-            System.out.print(i + ": ");
-            for (Map.Entry<String, Session> entry : tokenToSession.entrySet()){
-                System.out.println("auth" + entry.getKey());
-            }
-            i += 1;
-        }
     }
     public void removeSession(Session session){
         Integer gameID = null;

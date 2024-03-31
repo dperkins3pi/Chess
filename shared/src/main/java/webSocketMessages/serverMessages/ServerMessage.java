@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
     String message = null;
+    String errorMessage = null;
     ChessGame game = null;
 
     public enum ServerMessageType {

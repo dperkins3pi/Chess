@@ -144,6 +144,7 @@ public class WebSocketHandler {
         ChessMove move = moveAction.getMove();
         String username = null;
         ChessGame game = null;
+        boolean worked = true;
 
         try {
             username = authDAO.getUsername(authToken);
@@ -154,19 +155,26 @@ public class WebSocketHandler {
                     oldGameData.gameName(), game);
             gameDao.updateGame(newGameData);
         } catch (InvalidMoveException e){
-            System.out.println("An error was thrown");   //TODO: Actually send an error message
+            worked = false;
         } catch (DataAccessException | UnauthorizedException | BadRequestException e) {
             throw new RuntimeException(e);
         }
 
         // Send messages
-        String message = username + " moved his " + game.getBoard().getPiece(move.getEndPosition());
-        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, JSONMessage, authToken);
+        if(worked) {
+            String message = username + " moved his " + game.getBoard().getPiece(move.getEndPosition());
+            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
+            this.broadcastMessage(gameID, JSONMessage, authToken);
 
-        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
-        this.sendMessage(JSONMessage2, session);
-        this.broadcastMessage(gameID, JSONMessage2, authToken);
+            String JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
+            this.sendMessage(JSONMessage2, session);
+            this.broadcastMessage(gameID, JSONMessage2, authToken);
+        }
+        else{   // An error was thrown
+            String errorMessage = "Invalid Move. Please try again";
+            String JSONMessage = new Gson().toJson(new ErrorMessage(errorMessage));
+            this.sendMessage(JSONMessage, session);
+        }
     }
 
     public void sendMessage(String message, Session session) throws IOException {

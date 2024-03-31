@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import handler.GameHandler;
 import request.JoinGameOutput;
+import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -43,6 +44,9 @@ public class GamePlayUI implements GameHandler {
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
             LoadGameMessage loadGameMessage = new LoadGameMessage(serverMessage);
             client.draw(loadGameMessage.getGame());
+        } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            ErrorMessage errorMessage = new ErrorMessage(serverMessage);
+            System.out.println(errorMessage.getErrorMessage());
         }
     }
 

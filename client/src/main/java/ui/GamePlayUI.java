@@ -23,16 +23,7 @@ public class GamePlayUI implements GameHandler {
         this.authToken = authToken;
         client = new GamePlayClient(serverUrl, authToken, this, output);
     }
-
-    @Override
-    public void updateGame(String message) {
-        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-        if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            LoadGameMessage loadGameMessage = new LoadGameMessage(serverMessage);
-            ChessGame game = loadGameMessage.getGame();
-            Integer gameID = client.getGameID();
-        }
-    }
+    
 
     @Override
     public void printMessage(String message) {

@@ -314,9 +314,9 @@ public class GamePlayClient {
 
         String theString = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
         theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor + "\n";
-        for (int i=7; i>=0; i--){  // Go through the rows
+        for (int i=0; i<8; i++){  // Go through the rows
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
-            for (int j=0; j<8; j++){  // Go through the columns
+            for (int j=7; j>=0; j--){  // Go through the columns
                 if (position.equals(new ChessPosition(i + 1, j + 1))) theString += EscapeSequences.SET_BG_COLOR_YELLOW;
                 else if (validEndPositions.contains(new ChessPosition(i + 1, j + 1))){
                     if((i - j) % 2 == 0)theString += EscapeSequences.SET_BG_COLOR_DARK_GREEN;
@@ -352,9 +352,6 @@ public class GamePlayClient {
         else if(game.getBoard().getPiece(position).getTeamColor() == ChessGame.TeamColor.BLACK){
             highlightBlack(game, position, validEndPositions);
         }
-
-        //TODO: HIGHLIGHT THE STUFF
-        //TODO: Check for chekmate and check
     }
 
     public void help() {
@@ -376,8 +373,8 @@ public class GamePlayClient {
         helpString += " - the game\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
-        helpString += "highlight" + EscapeSequences.SET_TEXT_COLOR_WHITE;
-        helpString += " - legal moves\n";
+        helpString += "highlight <position>" + EscapeSequences.SET_TEXT_COLOR_WHITE;
+        helpString += " - to show valid moves for a piece\n";
 
         helpString += EscapeSequences.SET_TEXT_COLOR_YELLOW;
         helpString += "help" + EscapeSequences.SET_TEXT_COLOR_WHITE;

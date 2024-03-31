@@ -149,6 +149,14 @@ public class WebSocketHandler {
         try {
             username = authDAO.getUsername(authToken);
             game = gameDao.getGame(gameID).game();
+
+            ChessBoard board = game.getBoard();
+            ChessPiece piece = board.getPiece(move.getStartPosition());
+            if(piece == null || !piece.getTeamColor().toString().equalsIgnoreCase(action.playerColor)){
+                String error_string = "Invalid positions given.\n" +
+                        "The starting position must be on a piece of your team";
+                throw new InvalidMoveException(error_string);
+            }
             game.makeMove(move);
             GameData oldGameData = gameDao.getGame(gameID);
             GameData newGameData = new GameData(gameID, oldGameData.whiteUsername(), oldGameData.blackUsername(),
@@ -171,7 +179,7 @@ public class WebSocketHandler {
             this.broadcastMessage(gameID, JSONMessage2, authToken);
         }
         else{   // An error was thrown
-            String errorMessage = "Invalid Move. Please try again";
+            String errorMessage = "Invalid Move and/or Incorrect Turn.\n Please try again or wait for your turn.";
             String JSONMessage = new Gson().toJson(new ErrorMessage(errorMessage));
             this.sendMessage(JSONMessage, session);
         }

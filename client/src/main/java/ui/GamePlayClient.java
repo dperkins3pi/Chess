@@ -136,16 +136,7 @@ public class GamePlayClient {
         Integer endPositionY = input.get(3);
         ChessPosition startPosition = new ChessPosition(startPositionY, startPositionX);
         ChessPosition endPosition = new ChessPosition(endPositionY, endPositionX);
-        ChessMove move = new ChessMove(startPosition, endPosition, null);  //TODO: Worrry about promotions
-
-        ChessGame game = getGame();
-        ChessBoard board = game.getBoard();
-        ChessPiece piece = board.getPiece(startPosition);
-        if(piece == null || !piece.getTeamColor().toString().equalsIgnoreCase(this.color)){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
-                    EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting position must be on a piece of your team";
-            throw new ResponseException(error_string);
-        }
+        ChessMove move = new ChessMove(startPosition, endPosition, null);  //TODO: Worry about promotions
         wsFacade.makeMove(authToken, gameID, move);
     }
 

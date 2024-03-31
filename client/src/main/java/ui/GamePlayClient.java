@@ -146,7 +146,6 @@ public class GamePlayClient {
             game.makeMove(move);
         } catch (InvalidMoveException e){
             String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "The chess move is invalid. Try again";
-            System.out.println(" I am here");
             throw new ResponseException(error_string);
         }
     }

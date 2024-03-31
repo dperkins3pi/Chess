@@ -68,7 +68,6 @@ public class WebSocketHandler {
         String JSONMessage = new Gson().toJson(new NotificationMessage(message));
         this.broadcastMessage(gameID, JSONMessage, authToken);
 
-        System.out.println("I am here" + gameID);
         String JSONMessage2;
         if(gameID == null) {  // An error occured so we pass in null
             JSONMessage2 = new Gson().toJson(new ErrorMessage("An Error Occurred"));
@@ -149,6 +148,7 @@ public class WebSocketHandler {
             } else {  // User no longer active, so he/she will leave the game
                 LeaveCommand action = new LeaveCommand(authToken, gameID);
                 leave(action, c);   // Remove the user from the game
+                sessions.removeSession(c);
             }
         }
     }

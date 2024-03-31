@@ -10,6 +10,7 @@ import server.WebSocketFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class GamePlayClient {
@@ -279,10 +280,81 @@ public class GamePlayClient {
         return new ChessPosition(positionY, positionX);
     }
 
+    private void highlightWhite(ChessGame game, ChessPosition position, Collection<ChessPosition> validEndPositions){
+        ChessBoard board = game.getBoard();
+        String terminalColor = "\u001B[0m";
+        ChessPiece[][] squares = board.getSquares();
+
+        String theString = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+        theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor + "\n";
+        for (int i=7; i>=0; i--){  // Go through the rows
+            theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
+            for (int j=0; j<8; j++){  // Go through the columns
+                if (position.equals(new ChessPosition(i + 1, j + 1))) theString += EscapeSequences.SET_BG_COLOR_YELLOW;
+                else if (validEndPositions.contains(new ChessPosition(i + 1, j + 1))){
+                    if((i - j) % 2 == 0)theString += EscapeSequences.SET_BG_COLOR_DARK_GREEN;
+                    else theString += EscapeSequences.SET_BG_COLOR_GREEN;
+                }
+                else if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+                else theString += EscapeSequences.SET_BG_COLOR_WHITE;
+                theString += displayPiece(squares[i][j]);
+            }
+            theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " " + terminalColor;
+            theString += "\n";  // Add new line
+        }
+        theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+        theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor;
+        System.out.println(theString);
+    }
+
+    private void highlightBlack(ChessGame game, ChessPosition position, Collection<ChessPosition> validEndPositions){
+        ChessBoard board = game.getBoard();
+        String terminalColor = "\u001B[0m";
+        ChessPiece[][] squares = board.getSquares();
+
+        String theString = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+        theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor + "\n";
+        for (int i=7; i>=0; i--){  // Go through the rows
+            theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
+            for (int j=0; j<8; j++){  // Go through the columns
+                if (position.equals(new ChessPosition(i + 1, j + 1))) theString += EscapeSequences.SET_BG_COLOR_YELLOW;
+                else if (validEndPositions.contains(new ChessPosition(i + 1, j + 1))){
+                    if((i - j) % 2 == 0)theString += EscapeSequences.SET_BG_COLOR_DARK_GREEN;
+                    else theString += EscapeSequences.SET_BG_COLOR_GREEN;
+                }
+                else if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+                else theString += EscapeSequences.SET_BG_COLOR_WHITE;
+                theString += displayPiece(squares[i][j]);
+            }
+            theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " " + terminalColor;
+            theString += "\n";  // Add new line
+        }
+        theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+        theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor;
+        System.out.println(theString);
+    }
+
     private void highlight(String... params) throws ResponseException {
         ChessPosition position = readHighlightInput(params);
         ChessGame game = getGame();
+        if(game.getBoard().getPiece(position) == null){   // If there is no piece there
+            System.out.println("There is no piece there. Please try again");
+            return;
+        }
+        Collection<ChessMove> validMoves = game.validMoves(position);
+        ArrayList<ChessPosition> validEndPositions = new ArrayList<>();  // We only care about end positions
+        for(ChessMove move : validMoves){
+            validEndPositions.add(move.getEndPosition());
+        }
+        if(game.getBoard().getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE){
+            highlightWhite(game, position, validEndPositions);
+        }
+        else if(game.getBoard().getPiece(position).getTeamColor() == ChessGame.TeamColor.BLACK){
+            highlightBlack(game, position, validEndPositions);
+        }
+
         //TODO: HIGHLIGHT THE STUFF
+        //TODO: Check for chekmate and check
     }
 
     public void help() {

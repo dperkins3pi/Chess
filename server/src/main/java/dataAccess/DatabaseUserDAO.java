@@ -88,8 +88,7 @@ public class DatabaseUserDAO implements UserDAO{
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              primary key (`username`)
-            )
+              primary key (`username`) )
             """
     };
     private void configureDatabase() throws DataAccessException {

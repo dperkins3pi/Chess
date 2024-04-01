@@ -56,11 +56,4 @@ public class MemoryAuthDAO implements AuthDAO{
                         throw new DataAccessException("Data Access Exception");
                 }
         }
-        public Map<String, AuthData> getAuthTokens() throws DataAccessException {
-                try {
-                        return authTokens;
-                } catch (Exception e){
-                        throw new DataAccessException("Data Access Exception");
-                }
-        }
 }

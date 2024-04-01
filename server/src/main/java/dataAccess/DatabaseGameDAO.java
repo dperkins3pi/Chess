@@ -147,12 +147,12 @@ public class DatabaseGameDAO implements GameDAO{
 
     public boolean isEmpty(){   // Checks to see if is empty
         String sql = "SELECT COUNT(*) from gameDAO";  // Counts the number of items in the DAO
-        int rowCount = 0;
-        try (var conn = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
-            try (var preparedStatement = conn.prepareStatement(sql)) {
-                ResultSet rs = preparedStatement.executeQuery(sql);
+        var rowCount = 0;
+        try (var connection = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
+            try (var preparedStatement = connection.prepareStatement(sql)) {
+                var rs = preparedStatement.executeQuery(sql);
                 while(rs.next()){
-                    rowCount = rs.getInt(1);
+                    rowCount = rs.getInt(1); //Get next int
                 }
             }
         } catch (Exception ex) {

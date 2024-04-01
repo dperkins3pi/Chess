@@ -4,9 +4,9 @@ import exception.ResponseException;
 import java.io.*;
 import java.net.*;
 import request.*;
-import response.GameResponseClass;
-import response.ResponseClass;
-import ui.GamePlayUI;
+import response.*;
+import response.LoginRequest;
+
 
 public class ServerFacade {
     private final String serverUrl;

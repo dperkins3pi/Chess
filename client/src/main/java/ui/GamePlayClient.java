@@ -53,7 +53,7 @@ public class GamePlayClient {
             case "leave" -> {return leaveGame();}
             case "move" -> {move(params);}
             case "resign" -> {resign();}
-            case "highlight" -> {highlight(params);}   // TODO: Implenet this
+            case "highlight" -> {highlight(params);}
             default -> {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Invalid Input. " +
                         EscapeSequences.SET_TEXT_COLOR_WHITE + "Please enter one of the following commands:");
@@ -138,7 +138,7 @@ public class GamePlayClient {
         Integer endPositionY = input.get(3);
         ChessPosition startPosition = new ChessPosition(startPositionY, startPositionX);
         ChessPosition endPosition = new ChessPosition(endPositionY, endPositionX);
-        ChessMove move = new ChessMove(startPosition, endPosition, null);  //TODO: Worry about promotions
+        ChessMove move = new ChessMove(startPosition, endPosition, null);
         wsFacade.makeMove(authToken, gameID, move);
     }
 
@@ -290,14 +290,7 @@ public class GamePlayClient {
         for (int i=7; i>=0; i--){  // Go through the rows
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
             for (int j=0; j<8; j++){  // Go through the columns
-                if (position.equals(new ChessPosition(i + 1, j + 1))) theString += EscapeSequences.SET_BG_COLOR_YELLOW;
-                else if (validEndPositions.contains(new ChessPosition(i + 1, j + 1))){
-                    if((i - j) % 2 == 0)theString += EscapeSequences.SET_BG_COLOR_DARK_GREEN;
-                    else theString += EscapeSequences.SET_BG_COLOR_GREEN;
-                }
-                else if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
-                else theString += EscapeSequences.SET_BG_COLOR_WHITE;
-                theString += displayPiece(squares[i][j]);
+                theString = positionPrint(position, validEndPositions, squares, theString, i, j);
             }
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " " + terminalColor;
             theString += "\n";  // Add new line
@@ -317,14 +310,7 @@ public class GamePlayClient {
         for (int i=0; i<8; i++){  // Go through the rows
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " ";
             for (int j=7; j>=0; j--){  // Go through the columns
-                if (position.equals(new ChessPosition(i + 1, j + 1))) theString += EscapeSequences.SET_BG_COLOR_YELLOW;
-                else if (validEndPositions.contains(new ChessPosition(i + 1, j + 1))){
-                    if((i - j) % 2 == 0)theString += EscapeSequences.SET_BG_COLOR_DARK_GREEN;
-                    else theString += EscapeSequences.SET_BG_COLOR_GREEN;
-                }
-                else if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
-                else theString += EscapeSequences.SET_BG_COLOR_WHITE;
-                theString += displayPiece(squares[i][j]);
+                theString = positionPrint(position, validEndPositions, squares, theString, i, j);
             }
             theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK + " " + (i+1) + " " + terminalColor;
             theString += "\n";  // Add new line
@@ -332,6 +318,18 @@ public class GamePlayClient {
         theString += EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
         theString += "    a \u2001b \u2001c \u2001d \u2001e \u2001f \u2001g \u2001h  \u2001 " + terminalColor;
         System.out.println(theString);
+    }
+
+    private String positionPrint(ChessPosition position, Collection<ChessPosition> validEndPositions, ChessPiece[][] squares, String theString, int i, int j) {
+        if (position.equals(new ChessPosition(i + 1, j + 1))) theString += EscapeSequences.SET_BG_COLOR_YELLOW;
+        else if (validEndPositions.contains(new ChessPosition(i + 1, j + 1))){
+            if((i - j) % 2 == 0)theString += EscapeSequences.SET_BG_COLOR_DARK_GREEN;
+            else theString += EscapeSequences.SET_BG_COLOR_GREEN;
+        }
+        else if ((i - j) % 2 == 0) theString += EscapeSequences.SET_BG_COLOR_MAGENTA;
+        else theString += EscapeSequences.SET_BG_COLOR_WHITE;
+        theString += displayPiece(squares[i][j]);
+        return theString;
     }
 
     private void highlight(String... params) throws ResponseException {

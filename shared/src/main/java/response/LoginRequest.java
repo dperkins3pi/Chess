@@ -1,4 +1,4 @@
-package request;
+package response;
 
 public class LoginRequest {
     String username;

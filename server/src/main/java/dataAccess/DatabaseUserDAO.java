@@ -84,11 +84,11 @@ public class DatabaseUserDAO implements UserDAO{
     // String for the SQL commands
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  userDAO (
+            create table if not exists  userDAO (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`)
+              primary key (`username`)
             )
             """
     };

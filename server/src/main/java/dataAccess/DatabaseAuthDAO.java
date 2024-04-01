@@ -5,6 +5,8 @@ import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -64,8 +66,8 @@ public class DatabaseAuthDAO implements AuthDAO{
     public AuthData getAuth(String authToken) {
         String username = null;
         String sql = "SELECT username FROM authDAO WHERE authToken = ?";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
                 preparedStatement.setString(1, authToken);
                 ResultSet rs = preparedStatement.executeQuery();
                 while(rs.next()){

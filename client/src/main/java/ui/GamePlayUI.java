@@ -23,7 +23,7 @@ public class GamePlayUI implements GameHandler {
         this.authToken = authToken;
         client = new GamePlayClient(serverUrl, authToken, this, output);
     }
-    
+
 
     @Override
     public void printMessage(String message) {

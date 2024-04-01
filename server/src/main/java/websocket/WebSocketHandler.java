@@ -275,58 +275,7 @@ public class WebSocketHandler {
             String JSONMessage = new Gson().toJson(new ErrorMessage(errorMessage));
             this.sendMessage(JSONMessage, session);
         }
-
-        // See if player is in check
-        String whiteUsername;
-        String blackUsername;
-        String gameName;
-        try {
-            whiteUsername = gameDao.getGame(gameID).whiteUsername();
-            blackUsername = gameDao.getGame(gameID).blackUsername();
-            gameName = gameDao.getGame(gameID).gameName();
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("Im here");
-        if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
-            System.out.println("In check mate1");
-            String message = whiteUsername + " is in check mate.\nThe game is over.";
-            String JSONMessage = new Gson().toJson(new ErrorMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
-            this.sendMessage(JSONMessage, session);
-            game.setTeamTurn(ChessGame.TeamColor.COMPLETE);  // No one can move anymore by making the team color null
-            GameData updatedGame = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
-            try {
-                gameDao.updateGame(updatedGame);
-            } catch (DataAccessException | BadRequestException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-            System.out.println("In check mate2");
-            String message = blackUsername + " is in check mate.\nThe game is over.";
-            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
-            this.sendMessage(JSONMessage, session);
-            game.setTeamTurn(ChessGame.TeamColor.COMPLETE);  // No one can move anymore by making the team color null
-            GameData updatedGame = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
-            try {
-                gameDao.updateGame(updatedGame);
-            } catch (DataAccessException | BadRequestException e) {
-                throw new RuntimeException(e);
-            }
-        } else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
-            System.out.println("Im here1");
-            String message = whiteUsername + " is in check.";
-            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
-            this.sendMessage(JSONMessage, session);
-        } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-            System.out.println("Im here2");
-            String message = blackUsername + " is in check.";
-            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
-            this.sendMessage(JSONMessage, session);
-        }
+        //Note: Check mate is handled in shared
     }
 
     public void sendMessage(String message, Session session) throws IOException {

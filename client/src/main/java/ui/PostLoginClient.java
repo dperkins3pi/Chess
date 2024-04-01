@@ -50,9 +50,9 @@ public class PostLoginClient {
 
     public void create(String... params) throws ResponseException {
         if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When creating a game, enter the game name";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String gameName = params[0];
         server.createGame(authToken, gameName);
@@ -72,20 +72,20 @@ public class PostLoginClient {
 
     public JoinGameOutput join(String... params) throws ResponseException {
         if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When joining a game, enter the game id as a number.\n" +
                     "You also may enter the color (if you aren't spectating)";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String gameID = params[0];
         int id;
         try{
             id = Integer.parseInt(gameID);   // convert it to an integer
         } catch (Exception e){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When joining a game, enter the game id as a number.\n" +
                     "You also may enter the color (if you aren't spectating)";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String color = null;
         String output = "observe";

@@ -20,7 +20,7 @@ public class GameResponseClass {
         return games;
     }
 
-    public Boolean Equals(Collection<GameData> games){
+    public Boolean equals(Collection<GameData> games){
         var gameNames = new ArrayList<GameNameData>();
         for(GameData game:games){   //Iterate through each game and save data
             int gameID = game.gameID();

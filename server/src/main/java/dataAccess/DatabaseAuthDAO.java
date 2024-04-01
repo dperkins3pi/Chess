@@ -116,18 +116,18 @@ public class DatabaseAuthDAO implements AuthDAO{
 
     public boolean isEmpty(){   // Checks to see if is empty
         String sql = "SELECT COUNT(*) from authDAO";  // Counts the number of items in the DAO
-        int row_count = 0;
+        int rowCount = 0;
         try (var conn = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 ResultSet rs = preparedStatement.executeQuery(sql);
                 while(rs.next()){
-                    row_count = rs.getInt(1);
+                    rowCount = rs.getInt(1);
                 }
             }
         } catch (Exception ex) {
              throw new RuntimeException(ex);
         }
-        return row_count == 0;
+        return rowCount == 0;
     }
 
     private boolean isValid(String authToken) {   // Sees if the authtoken is valid

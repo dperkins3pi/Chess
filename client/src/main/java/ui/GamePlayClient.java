@@ -79,10 +79,10 @@ public class GamePlayClient {
     private ArrayList<Integer> readMoveInput(String... params) throws ResponseException {
         ArrayList<Integer> input = new ArrayList<Integer>();
         if(params.length < 2) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When making a move, please enter the starting and ending position\n" +
                     "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String startString = params[0];
         String endString = params[1];
@@ -90,10 +90,10 @@ public class GamePlayClient {
         var tokens1 = startString.split(""); // Tokenize the input
         var tokens2 = endString.split(""); // Tokenize the input
         if (tokens1.length != 2 || tokens2.length != 2) { // If no input was given, try again
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting and ending positions should be one letter followed by one number without a space\n" +
                     "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String startPositionStringX = tokens1[0];
         String startPositionStringY = tokens1[1];
@@ -108,20 +108,20 @@ public class GamePlayClient {
             startPositionY = Integer.parseInt(startPositionStringY);   // convert it to an integer
             endPositionY = Integer.parseInt(endPositionStringY);   // convert it to an integer
         } catch (Exception e){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "The starting and ending positions should be one letter followed by one number without a space\n" +
                     "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         startPositionX = startPositionStringX.charAt(0) - 'a' + 1;
         endPositionX = endPositionStringX.charAt(0) - 'a' + 1;
         if((startPositionX < 1 || startPositionX > 8) || (startPositionY < 1 || startPositionY > 8) ||
                 (endPositionX < 1 || endPositionX > 8) || (endPositionY < 1 || endPositionY > 8)){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid positions given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "The first part of the starting and ending positions should be between a and h\n" +
                     "The second part starting and ending positions should be between 1 and 8\n" +
                     "Ex: 'move b2 b3' would move the piece at position b2 to position b3";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         input.add(startPositionX);
         input.add(startPositionY);
@@ -241,19 +241,19 @@ public class GamePlayClient {
 
     private ChessPosition readHighlightInput(String... params) throws ResponseException {
         if(params.length < 1) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When highlighting valid moves, please enter the starting position\n" +
                     "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String startString = params[0];
 
         var tokens1 = startString.split(""); // Tokenize the input
         if (tokens1.length < 2) { // If no input was given, try again
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When highlighting valid moves, please enter the starting position\n" +
                     "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String positionStringX = tokens1[0];
         String positionStringY = tokens1[1];
@@ -263,18 +263,18 @@ public class GamePlayClient {
         try{
             positionY = Integer.parseInt(positionStringY);   // convert it to an integer
         } catch (Exception e){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid position given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid position given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "The position should be one letter followed by one number without a space\n" +
                     "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         positionX = positionStringX.charAt(0) - 'a' + 1;
         if((positionX < 1 || positionX > 8) || (positionY < 1 || positionY > 8)){
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid position given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Invalid position given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "The first part of the position should be between a and h\n" +
                     "The second part starting and ending positions should be between 1 and 8\n" +
                     "Ex: 'highlight b2' would highlight the possible moves for the piece at position b2";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
 
         return new ChessPosition(positionY, positionX);

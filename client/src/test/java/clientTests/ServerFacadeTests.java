@@ -7,7 +7,6 @@ import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import ui.GamePlayClient;
 import response.GameResponseClass;
 import response.ResponseClass;
 import server.Server;
@@ -147,7 +146,7 @@ public class ServerFacadeTests {
         GameResponseClass response = serverFacade.listGames(registerResponse.getAuthToken());
         // Create the game and see if it is euqal to newGames
         Collection<GameData> newGames = Collections.singleton(new GameData(id, null, null, "game1", new ChessGame()));
-        Assertions.assertTrue(response.Equals(newGames));
+        Assertions.assertTrue(response.equals(newGames));
     }
     @Test
     public void listGamesNegative()  {
@@ -180,7 +179,7 @@ public class ServerFacadeTests {
         GameResponseClass response = serverFacade.listGames(registerResponse.getAuthToken());
         // Create the game and see if it is equal to newGames
         Collection<GameData> newGames = Collections.singleton(new GameData(id, "username", null, "game1", new ChessGame()));
-        Assertions.assertTrue(response.Equals(newGames));
+        Assertions.assertTrue(response.equals(newGames));
     }
 
     @Test

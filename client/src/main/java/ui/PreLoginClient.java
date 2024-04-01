@@ -37,9 +37,9 @@ public class PreLoginClient {
 
     public String login(String... params) throws ResponseException {
         if(params.length < 2) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When logging in, enter both your username and password.";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String username = params[0];
         String password = params[1];
@@ -49,9 +49,9 @@ public class PreLoginClient {
     }
     public String register(String... params) throws ResponseException {
         if(params.length < 3) {  // Throw an error if an invalid number of parameters are given
-            String error_string = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
+            String errorString = EscapeSequences.SET_TEXT_COLOR_RED + "Incorrect number of inputs given.\n" +
                     EscapeSequences.SET_TEXT_COLOR_WHITE + "When registering, enter your username, password, and email";
-            throw new ResponseException(error_string);
+            throw new ResponseException(errorString);
         }
         String username = params[0];
         String password = params[1];

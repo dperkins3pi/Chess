@@ -50,7 +50,7 @@ public class DatabaseGameDAO implements GameDAO{
         String whiteUsername = null;
         String blackUsername = null;
         String gameName = null;
-        String game_string;
+        String gameString;
         ChessGame game = null;
         String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM gameDAO WHERE gameID = ?";  // Select user
         try (var conn = DatabaseManager.getConnection()) {
@@ -61,8 +61,8 @@ public class DatabaseGameDAO implements GameDAO{
                     whiteUsername = rs.getString("whiteUsername");
                     blackUsername = rs.getString("blackUsername");
                     gameName = rs.getString("gameName");  // Get the game name
-                    game_string = rs.getString("game");  // Get the game as a JSON string
-                    game = new Gson().fromJson(game_string, ChessGame.class);  // Create a Chess game instance
+                    gameString = rs.getString("game");  // Get the game as a JSON string
+                    game = new Gson().fromJson(gameString, ChessGame.class);  // Create a Chess game instance
                 }
             }
         } catch (Exception ex) {
@@ -78,7 +78,7 @@ public class DatabaseGameDAO implements GameDAO{
         String whiteUsername = null;
         String blackUsername = null;
         String gameName = null;
-        String game_string;
+        String gameString;
         ChessGame game = null;
         Collection<GameData> games = new ArrayList<>();
         String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM gameDAO";  // Select user
@@ -90,8 +90,8 @@ public class DatabaseGameDAO implements GameDAO{
                     whiteUsername = rs.getString("whiteUsername");
                     blackUsername = rs.getString("blackUsername");
                     gameName = rs.getString("gameName");  // Get the game name
-                    game_string = rs.getString("game");  // Get the game as a JSON string
-                    game = new Gson().fromJson(game_string, ChessGame.class);  // Create a Chess game instance
+                    gameString = rs.getString("game");  // Get the game as a JSON string
+                    game = new Gson().fromJson(gameString, ChessGame.class);  // Create a Chess game instance
                     games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));  // Insert into map
                 }
             }
@@ -109,7 +109,7 @@ public class DatabaseGameDAO implements GameDAO{
         String whiteUsername = game.whiteUsername();
         String blackUsername = game.blackUsername();
         String gameName = game.gameName();
-        ChessGame the_game = game.game();
+        ChessGame theGame = game.game();
 
         String sql = "UPDATE gameDAO " +
                 "SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? " +
@@ -119,7 +119,7 @@ public class DatabaseGameDAO implements GameDAO{
                 preparedStatement.setString(1, whiteUsername);
                 preparedStatement.setString(2, blackUsername);
                 preparedStatement.setString(3, gameName);
-                preparedStatement.setString(4, new Gson().toJson(the_game));
+                preparedStatement.setString(4, new Gson().toJson(theGame));
                 preparedStatement.setString(5, id.toString());
                 preparedStatement.executeUpdate();  // Perform the update
             }
@@ -147,18 +147,18 @@ public class DatabaseGameDAO implements GameDAO{
 
     public boolean isEmpty(){   // Checks to see if is empty
         String sql = "SELECT COUNT(*) from gameDAO";  // Counts the number of items in the DAO
-        int row_count = 0;
+        int rowCount = 0;
         try (var conn = DatabaseManager.getConnection()) {    //Error is here!!!!!!!!!
             try (var preparedStatement = conn.prepareStatement(sql)) {
                 ResultSet rs = preparedStatement.executeQuery(sql);
                 while(rs.next()){
-                    row_count = rs.getInt(1);
+                    rowCount = rs.getInt(1);
                 }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        return row_count == 0;
+        return rowCount == 0;
     }
 
     // String for the SQL commands

@@ -68,9 +68,9 @@ public class WebSocketHandler {
             try {
                 game = gameDao.getGame(gameID).game();
             } catch (Exception e) {
-                String JSONMessage2;
-                JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The game doesn't exits"));
-                this.sendMessage(JSONMessage2, session);
+                String jsonMessage2;
+                jsonMessage2 = new Gson().toJson(new ErrorMessage("Error: The game doesn't exits"));
+                this.sendMessage(jsonMessage2, session);
                 return;
             }
 
@@ -81,25 +81,25 @@ public class WebSocketHandler {
                     && !Objects.equals(gameDao.getGame(gameID).blackUsername(), username)) worked = false;
 
         } catch (DataAccessException | UnauthorizedException e) {
-            String JSONMessage2;
-            JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The user doesn't exits"));
-            this.sendMessage(JSONMessage2, session);
+            String jsonMessage2;
+            jsonMessage2 = new Gson().toJson(new ErrorMessage("Error: The user doesn't exits"));
+            this.sendMessage(jsonMessage2, session);
             throw new RuntimeException(e);
 
         }
         if(worked) {
             String message = username + " joined the game as " + color;
-            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
+            String jsonMessage = new Gson().toJson(new NotificationMessage(message));
+            this.broadcastMessage(gameID, jsonMessage, authToken);
 
-            String JSONMessage2;
-            JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
-            this.sendMessage(JSONMessage2, session);
+            String jsonMessage2;
+            jsonMessage2 = new Gson().toJson(new LoadGameMessage(game));
+            this.sendMessage(jsonMessage2, session);
         }
         else{
-            String JSONMessage2;
-            JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The player is already taken"));
-            this.sendMessage(JSONMessage2, session);
+            String jsonMessage2;
+            jsonMessage2 = new Gson().toJson(new ErrorMessage("Error: The player is already taken"));
+            this.sendMessage(jsonMessage2, session);
         }
     }
 
@@ -115,24 +115,24 @@ public class WebSocketHandler {
             try {
                 game = gameDao.getGame(gameID).game();
             } catch (Exception e){
-                String JSONMessage2;
-                JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The game doesn't exits"));
-                this.sendMessage(JSONMessage2, session);
+                String jsonMessage2;
+                jsonMessage2 = new Gson().toJson(new ErrorMessage("Error: The game doesn't exits"));
+                this.sendMessage(jsonMessage2, session);
                 return;
             }
         } catch (DataAccessException | UnauthorizedException e) {
-            String JSONMessage2;
-            JSONMessage2 = new Gson().toJson(new ErrorMessage("Error: The user doesn't exits"));
-            this.sendMessage(JSONMessage2, session);
+            String jsonMessage2;
+            jsonMessage2 = new Gson().toJson(new ErrorMessage("Error: The user doesn't exits"));
+            this.sendMessage(jsonMessage2, session);
             throw new RuntimeException(e);
         }
 
         String message = username + " joined the game as an observer";
-        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, JSONMessage, authToken);
+        String jsonMessage = new Gson().toJson(new NotificationMessage(message));
+        this.broadcastMessage(gameID, jsonMessage, authToken);
 
-        String JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
-        this.sendMessage(JSONMessage2, session);
+        String jsonMessage2 = new Gson().toJson(new LoadGameMessage(game));
+        this.sendMessage(jsonMessage2, session);
     }
     public void leave(UserGameCommand action, Session session) throws IOException {
         LeaveCommand leaveAction = new LeaveCommand(action);
@@ -166,8 +166,8 @@ public class WebSocketHandler {
         }
 
         String message = username + " left the game";
-        String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-        this.broadcastMessage(gameID, JSONMessage, authToken);
+        String jsonMessage = new Gson().toJson(new NotificationMessage(message));
+        this.broadcastMessage(gameID, jsonMessage, authToken);
     }
 
     public void resign(UserGameCommand action, Session session) throws IOException {
@@ -200,16 +200,16 @@ public class WebSocketHandler {
 
         if(worked) {
             String message = username + " resigned. The game is now over.";
-            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
+            String jsonMessage = new Gson().toJson(new NotificationMessage(message));
+            this.broadcastMessage(gameID, jsonMessage, authToken);
 
             String message2 = " You have resigned. The game is now over.";
-            String JSONMessage2 = new Gson().toJson(new NotificationMessage(message2));
-            this.sendMessage(JSONMessage2, session);
+            String jsonMessage2 = new Gson().toJson(new NotificationMessage(message2));
+            this.sendMessage(jsonMessage2, session);
         } else{
             String message2 = " Error: You can only resign as a player for a game that isn't finished.";
-            String JSONMessage2 = new Gson().toJson(new ErrorMessage(message2));
-            this.sendMessage(JSONMessage2, session);
+            String jsonMessage2 = new Gson().toJson(new ErrorMessage(message2));
+            this.sendMessage(jsonMessage2, session);
         }
     }
     public void makeMove(UserGameCommand action, Session session) throws IOException {
@@ -238,14 +238,14 @@ public class WebSocketHandler {
             ChessPiece piece = board.getPiece(move.getStartPosition());
 
             if(piece == null || !piece.getTeamColor().toString().equals(game.getTeamTurn().toString())){
-                String error_string = "Invalid positions given.\n" +
+                String errorString = "Invalid positions given.\n" +
                         "The starting position must be on a piece of your team";
-                throw new InvalidMoveException(error_string);
+                throw new InvalidMoveException(errorString);
             } else if (!piece.getTeamColor().toString().equalsIgnoreCase(playerColor)) {
                 if(!piece.getTeamColor().toString().equalsIgnoreCase("both")){
-                    String error_string = "Invalid move attempt.\n" +
+                    String errorString = "Invalid move attempt.\n" +
                             "You can only move pieces of your color";
-                    throw new InvalidMoveException(error_string);
+                    throw new InvalidMoveException(errorString);
                 }
             }
 
@@ -263,17 +263,17 @@ public class WebSocketHandler {
         // Send messages
         if(worked) {
             String message = username + " moved his " + game.getBoard().getPiece(move.getEndPosition());
-            String JSONMessage = new Gson().toJson(new NotificationMessage(message));
-            this.broadcastMessage(gameID, JSONMessage, authToken);
+            String jsonMessage = new Gson().toJson(new NotificationMessage(message));
+            this.broadcastMessage(gameID, jsonMessage, authToken);
 
-            String JSONMessage2 = new Gson().toJson(new LoadGameMessage(game));
-            this.sendMessage(JSONMessage2, session);
-            this.broadcastMessage(gameID, JSONMessage2, authToken);
+            String jsonMessage2 = new Gson().toJson(new LoadGameMessage(game));
+            this.sendMessage(jsonMessage2, session);
+            this.broadcastMessage(gameID, jsonMessage2, authToken);
         }
         else{   // An error was thrown
             String errorMessage = "Invalid Move and/or Incorrect Turn.\nPlease try again or wait for your turn.";
-            String JSONMessage = new Gson().toJson(new ErrorMessage(errorMessage));
-            this.sendMessage(JSONMessage, session);
+            String jsonMessage = new Gson().toJson(new ErrorMessage(errorMessage));
+            this.sendMessage(jsonMessage, session);
         }
         //Note: Check mate is handled in shared
     }
